@@ -1,0 +1,24 @@
+export type TImage = {
+  source?;
+  width?;
+  height?;
+  padding?;
+  margin?;
+  paddingTop?;
+  paddingBottom?;
+  paddingLeft?;
+  paddingRight?;
+  marginTop?;
+  marginBottom?;
+  marginLeft?;
+  marginRight?;
+  paddingVertical?;
+  paddingHorizontal?;
+  marginVertical?;
+  marginHorizontal?;
+  borderRadius?;
+  style?;
+  resizeMode?;
+  tintColor?;
+  rest?;
+};
