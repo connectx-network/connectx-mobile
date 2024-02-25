@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* checkinTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* checkinTests.m */; };
+		07DB9FE52089469195C8B23C /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0A420150B5054E9C97F9C488 /* icomoon.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-checkin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-checkin.a */; };
 		13843AD1713741AB8090BFC7 /* Lexend-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F49CD4F5DC84F9B95180DF0 /* Lexend-Light.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
@@ -39,6 +40,7 @@
 		00E356EE1AD99517003FC87E /* checkinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = checkinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* checkinTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = checkinTests.m; sourceTree = "<group>"; };
+		0A420150B5054E9C97F9C488 /* icomoon.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = icomoon.ttf; path = ../src/assets/fonts/icomoon.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* checkin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = checkin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = checkin/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = checkin/AppDelegate.mm; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				2F3A4B89843F48F8B1BB6260 /* Lexend-Regular.ttf */,
 				3076490B568A4C5980DB19B9 /* Lexend-SemiBold.ttf */,
 				DDFCD044CE7C475B9B24BC51 /* Lexend-Thin.ttf */,
+				0A420150B5054E9C97F9C488 /* icomoon.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -289,6 +292,7 @@
 				CF875F6235474107A04BCEA1 /* Lexend-Regular.ttf in Resources */,
 				7161D6CAE0524212A1CEE2D0 /* Lexend-SemiBold.ttf in Resources */,
 				5D669E91A4B14B70AA9DD61E /* Lexend-Thin.ttf in Resources */,
+				07DB9FE52089469195C8B23C /* icomoon.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,7 @@ export default {
   BLUE: '#201a30',
   BLACK: '#000000',
   YELLOW: '#F7931A',
-  BACKGROUND: '#0F1A2A',
+  BACKGROUND: '#1F1212',
   TEXT_COLOR: '#303030',
   GREEN: '#6EFA95',
   GREEN_HOLDER: '#30AA51',

@@ -88,6 +88,15 @@ export function resetRoute(routesFilter: string[], route: any) {
   });
 }
 
+function handleAction(name, params = {}, replace = false) {
+  if (!navigator) return;
+  const action = (replace ? StackActions.replace : CommonActions.navigate)(
+    name,
+    params,
+  );
+  navigator?.dispatch(action);
+}
+
 function dispatch(actions: any): void {
   navigator.dispatch(actions);
 }
@@ -109,6 +118,7 @@ const NavigationService = {
   resetRoute,
   dispatch,
   popToTop,
+  handleAction,
 };
 
 export default NavigationService;

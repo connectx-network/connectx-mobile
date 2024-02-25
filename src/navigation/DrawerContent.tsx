@@ -1,25 +1,101 @@
-import {getSize} from '@base/common/responsive';
+import {IconApp} from '@assets/icons';
+import AvatarIcon from '@assets/icons/common/AvatarIcon';
+import CalendarIcon from '@assets/icons/home/CalendarIcon';
+import ChatIcon from '@assets/icons/home/ChatIcon';
+import CommunityIcon from '@assets/icons/home/CommnunityIcon';
+import MapIcon from '@assets/icons/home/MapIcon';
+import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {keyExtractor} from '@base/utils/Utils';
 import {Block, Text} from '@components';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import React, {FC, memo, useCallback, useEffect, useState} from 'react';
-import {Linking, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {
+  FC,
+  ReactNode,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import {SvgProps} from 'react-native-svg';
 import NavigationService from './navigationService';
+import {
+  CHAT_STACK,
+  COMMUNITY_STACK,
+  DETAIL_EVENT_SCREEN,
+  EDIT_PROFILE_SCREEN,
+  EVENTS_SCREEN,
+  EVENT_STACK,
+  HOME_SCREEN,
+  HOME_STACK,
+  MAP_SCREEN,
+  MAP_STACK,
+  PROFILE_OWNER_EVENT_SCREEN,
+  PROFILE_SCREEN,
+  PROFILE_STACK,
+} from './routes';
+import LogoutIcon from '@assets/icons/home/LogoutIcon';
+import ProfileIcon from '@assets/icons/home/ProfileIcon';
 
 interface IProps extends DrawerContentComponentProps {}
 
+export const LIST_MENU = [
+  {
+    name: 'Home',
+    screens: [HOME_SCREEN, DETAIL_EVENT_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
+    screen: HOME_STACK,
+    icon: (props?: SvgProps) => (
+      <IconApp
+        name={'-icon-_home'}
+        size={getSize.m(22)}
+        color={props?.color || '#767676'}
+      />
+    ),
+  },
+  {
+    name: 'My Profile',
+    screens: [PROFILE_SCREEN, EDIT_PROFILE_SCREEN],
+    screen: PROFILE_STACK,
+    icon: (props?: SvgProps) => <ProfileIcon {...props} />,
+  },
+  {
+    name: 'Message',
+    screens: [CHAT_STACK],
+    screen: CHAT_STACK,
+    icon: (props?: SvgProps) => <ChatIcon {...props} />,
+  },
+  {
+    name: 'Events',
+    screens: [EVENTS_SCREEN],
+    screen: EVENT_STACK,
+    icon: (props?: SvgProps) => <CalendarIcon {...props} />,
+  },
+  {
+    name: 'Map',
+    screens: [MAP_SCREEN],
+    screen: MAP_STACK,
+    icon: (props?: SvgProps) => <MapIcon {...props} />,
+  },
+  {
+    name: 'Community',
+    screens: [COMMUNITY_STACK],
+    screen: COMMUNITY_STACK,
+    icon: (props?: SvgProps) => <CommunityIcon {...props} />,
+  },
+  {
+    name: 'Sign Out',
+    icon: (props?: SvgProps) => <LogoutIcon {...props} />,
+  },
+];
+
 const DrawerContent: FC<IProps> = ({}) => {
-  const {top, bottom} = useSafeAreaInsets();
+  const {top} = useSafeAreaInsets();
   const [currentRoute, setCurrentRoute] = useState<string | undefined>(
     NavigationService.getCurrentRoute()?.name,
   );
-
-  const handleClose = useCallback(() => {
-    NavigationService.closeDrawer();
-  }, []);
 
   useEffect(() => {
     const nextRoute = NavigationService.getCurrentRoute();
@@ -33,27 +109,36 @@ const DrawerContent: FC<IProps> = ({}) => {
       name,
       focused,
       handleMenu,
+      icon,
     }: {
       name: string;
       focused: boolean;
       handleMenu: () => void;
+      icon: (props?: SvgProps) => ReactNode;
     }) => (
       <TouchableOpacity
         onPress={handleMenu}
         style={[styles.itemMenu, focused && styles.itemMenuActive]}
         activeOpacity={0.5}>
-        <Text style={styles.textTab}>{name}</Text>
+        {icon({color: focused ? '#5669FF' : Color.WHITE})}
+        <Text color={focused ? '#5669FF' : Color.WHITE} style={styles.textTab}>
+          {name}
+        </Text>
       </TouchableOpacity>
     ),
   );
 
   const renderItem = useCallback(
     ({item}) => {
-      const _handleMenu = () => NavigationService.navigate(item.screen);
+      const _handleMenu = () => {
+        if (item.screen) {
+          NavigationService.navigate(item.screen);
+        }
+      };
       return (
         <ItemMenu
           {...item}
-          focused={item.screens.some(route => route === currentRoute)}
+          focused={item?.screens?.some(route => route === currentRoute)}
           handleMenu={_handleMenu}
         />
       );
@@ -61,58 +146,18 @@ const DrawerContent: FC<IProps> = ({}) => {
     [currentRoute],
   );
 
-  const handleHotline = useCallback(() => {}, []);
-
-  const handleFacebook = useCallback(() => {
-    Linking.openURL('https://www.facebook.com/daugiavpa');
-  }, []);
-  const handleZalo = useCallback(() => {
-    Linking.openURL('https://zalo.me/147568229032205773');
-  }, []);
-
   return (
     <Block style={[styles.container, {paddingTop: top || getSize.m(10)}]}>
-      <Block style={styles.header}>
-        <TouchableOpacity
-          onPress={handleClose}
-          style={styles.btnClose}
-          activeOpacity={0.5}>
-          <Icon
-            name={'close-outline'}
-            size={getSize.m(18)}
-            color={Color.BLACK}
-          />
-        </TouchableOpacity>
+      <Block style={styles.avatarDefault}>
+        <AvatarIcon />
       </Block>
-      {/* <FlatList
+      <Text style={styles.username}>Jonny Deep</Text>
+      <FlatList
         data={LIST_MENU}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
-      /> */}
-      <Block style={styles.followMe}>
-        <Text style={styles.textFollowMe}>Theo dõi chúng tôi trên</Text>
-        <Block row alignCenter>
-          <TouchableOpacity
-            onPress={handleFacebook}
-            style={styles.iconFb}
-            activeOpacity={0.5}>
-            <Text>Facebook</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleZalo} activeOpacity={0.5}>
-            <Text>Zalo</Text>
-          </TouchableOpacity>
-        </Block>
-      </Block>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        onPress={handleHotline}
-        style={[styles.hotline, {marginBottom: bottom || getSize.m(12)}]}>
-        <Block>
-          <Text style={styles.numberHotline}>1900.0555.15</Text>
-          <Text style={styles.noteCall}>Gọi để được hỗ trợ</Text>
-        </Block>
-      </TouchableOpacity>
+      />
     </Block>
   );
 };
@@ -121,79 +166,36 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Color.BACKGROUND,
     flex: 1,
-    paddingRight: getSize.s(22),
+    paddingHorizontal: getSize.s(20),
+    width: WIDTH_SCREEN * 0.6,
   },
-  header: {
-    flexDirection: 'row',
+  avatarDefault: {
+    width: getSize.m(60),
+    height: getSize.m(60),
+    borderRadius: getSize.m(60),
+    backgroundColor: '#BCD4F8',
     alignItems: 'center',
-    marginBottom: getSize.m(20),
-    marginTop: getSize.m(12),
     justifyContent: 'center',
   },
-  logo: {
-    width: getSize.m(93),
-    height: getSize.m(30),
-  },
-  btnClose: {
-    padding: getSize.m(3),
-    alignSelf: 'flex-end',
-    backgroundColor: '#EBEAEA',
-    borderRadius: getSize.m(20),
-    position: 'absolute',
-    right: 0,
+  username: {
+    fontSize: getSize.m(19, 0.3),
+    fontFamily: Font.font_medium_500,
+    marginTop: getSize.m(12),
+    marginBottom: getSize.v(30),
   },
   itemMenu: {
-    paddingHorizontal: getSize.s(22),
-    borderTopRightRadius: getSize.m(12),
-    borderBottomRightRadius: getSize.m(12),
     height: getSize.m(52),
-    justifyContent: 'center',
-  },
-  itemMenuActive: {
-    backgroundColor: Color.BORDER_BOX,
-  },
-  textTab: {
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_semi_bold_600,
-  },
-  hotline: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: getSize.s(22),
-    paddingVertical: getSize.m(12),
+    marginBottom: getSize.v(6),
   },
-  iconCall: {
-    width: getSize.m(36),
-    height: getSize.m(36),
-    borderRadius: getSize.m(18),
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: getSize.m(8),
+  itemMenuActive: {
+    // backgroundColor: Color.BORDER_BOX,
   },
-  numberHotline: {
-    color: Color.WHITE,
-    fontFamily: Font.font_bold_700,
+  textTab: {
     fontSize: getSize.m(16, 0.3),
-  },
-  noteCall: {
-    color: '#CBD4E1',
-    fontSize: getSize.m(13, 0.3),
-    marginTop: getSize.m(2),
     fontFamily: Font.font_regular_400,
-  },
-  followMe: {
-    paddingLeft: getSize.s(22),
-    marginBottom: getSize.m(8),
-  },
-  textFollowMe: {
-    color: Color.WHITE,
-    fontFamily: Font.font_semi_bold_600,
-    marginBottom: getSize.m(4),
-    fontSize: getSize.m(15, 0.1),
-  },
-  iconFb: {
-    marginRight: getSize.m(6),
+    marginLeft: getSize.m(12),
   },
 });
 

@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {WIDTH_SCREEN, getSize} from './responsive';
+import Color from '@theme/Color';
 
 const Styles = StyleSheet.create({
   root: {
@@ -8,7 +9,11 @@ const Styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    // backgroundColor: Color.BACKGROUND,
+    backgroundColor: Color.BACKGROUND,
+  },
+
+  paddingHorizontal: {
+    paddingHorizontal: getSize.s(20),
   },
 
   centerNoFlex: {

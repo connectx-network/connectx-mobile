@@ -1,7 +1,7 @@
 export default {
-  font_regular_100: 'Lexend-Thin',
-  font_regular_200: 'Lexend-Light',
-  font_regular_300: 'Lexend-ExtraLight',
+  font_thin_100: 'Lexend-Thin',
+  font_light_200: 'Lexend-Light',
+  font_extra_light_300: 'Lexend-ExtraLight',
   font_regular_400: 'Lexend-Regular',
   font_medium_500: 'Lexend-Medium',
   font_semi_bold_600: 'Lexend-SemiBold',

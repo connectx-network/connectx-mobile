@@ -36,6 +36,10 @@
     {
       "path": "src/assets/fonts/Lexend-Thin.ttf",
       "sha1": "5dcb13ee675752bc73ea62d79aac58da8424c1d8"
+    },
+    {
+      "path": "src/assets/fonts/icomoon.ttf",
+      "sha1": "5da0a3758919a127e495daded780f6273d96b8de"
     }
   ]
 }

@@ -82,6 +82,10 @@ project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
 ]
 
+project.ext.vectoricons = [
+    iconFontNames: [ 'Ionicons.ttf', 'icomoon.ttf' ] // Specify font files
+]
+
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
@@ -301,6 +305,8 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.implementation
     into 'libs'
 }
+
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
