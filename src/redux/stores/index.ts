@@ -8,6 +8,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import typeVehicleSlice, {
   ITypeVehicleState,
 } from '@redux/slices/typeVehicleSlice';
+import userSlice, {UserState} from '@redux/slices/userSlice';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from './rootSagas';
 
@@ -15,17 +16,19 @@ setAutoFreeze(false);
 
 export interface IRootState {
   typeVehicle: ITypeVehicleState;
+  user: UserState;
 }
 
 const reducers = combineReducers({
   typeVehicle: typeVehicleSlice,
+  user: userSlice,
 });
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   timeout: 10000,
-  whitelist: ['typeVehicle'],
+  whitelist: ['typeVehicle', 'user'],
   blacklist: [],
 };
 

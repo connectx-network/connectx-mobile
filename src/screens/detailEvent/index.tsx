@@ -1,5 +1,5 @@
 import Color from '@theme/Color';
-import {memo, useCallback} from 'react';
+import {FC, memo, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Header from './components/Header';
@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Block, ButtonGradient, Image, Text} from '@components';
 import {HEIGHT_COVER} from './layout';
-import {getSize} from '@base/common/responsive';
+import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
 import UserJoined from '@screens/home/components/UserJoined';
 import Font from '@theme/Font';
 import Styles from '@base/common/styles';
@@ -18,11 +18,21 @@ import LocationIcon from '@assets/icons/detailEvent/LocationIcon';
 import Images from '@assets/images';
 import Footer from './components/Footer';
 import {navigate} from '@navigation/navigationService';
-import {PROFILE_OWNER_EVENT_SCREEN} from '@navigation/routes';
+import {
+  DetailEventScreenRouteProp,
+  PROFILE_OWNER_EVENT_SCREEN,
+} from '@navigation/routes';
+import {useDetailEvent} from './hooks';
+import moment from 'moment';
 
-const DetailEventScreen = () => {
+interface IProps {
+  route: DetailEventScreenRouteProp;
+}
+
+const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const scrollY = useSharedValue<number>(0);
+  const {data} = useDetailEvent(params.id);
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -36,7 +46,12 @@ const DetailEventScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-      <Header top={top} scrollY={scrollY} />
+      <Header
+        banner={data?.eventAssets?.[0]?.url}
+        top={top}
+        scrollY={scrollY}
+        title={data?.name || params.name}
+      />
       <Animated.ScrollView
         onScroll={onScroll}
         contentContainerStyle={styles.contentContainerStyle}>
@@ -51,14 +66,18 @@ const DetailEventScreen = () => {
           </ButtonGradient>
         </Block>
         <Block style={Styles.paddingHorizontal}>
-          <Text style={styles.title}>Acoustic Night - Tweendee</Text>
+          <Text style={styles.title}>
+            {data?.name || params.name || 'Acoustic Night - Tweendee'}
+          </Text>
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
               <CalendarIcon />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
-                20/10/2024
+                {moment(data?.eventDate || params.eventDate).format(
+                  'DD/MM/YYYY',
+                )}
               </Text>
               <Text numberOfLines={1} style={styles.textSubInfo}>
                 Tuesday, 4:00PM - 9:00PM
@@ -74,7 +93,7 @@ const DetailEventScreen = () => {
                 Location
               </Text>
               <Text numberOfLines={1} style={styles.textSubInfo}>
-                Sub Location
+                {data?.location || params.location || 'Sub Location'}
               </Text>
             </Block>
           </Block>
@@ -87,7 +106,7 @@ const DetailEventScreen = () => {
               <Block row flex alignCenter>
                 <Block flex>
                   <Text numberOfLines={1} style={styles.textTitleInfo}>
-                    Location
+                    {data?.eventHosts?.[0]?.title || 'Location'}
                   </Text>
                   <Text numberOfLines={1} style={styles.textSubInfo}>
                     Sub Location
@@ -101,7 +120,9 @@ const DetailEventScreen = () => {
           </Block>
           <Text style={styles.textAboutEvent}>About Event</Text>
           <Text style={styles.textDescription}>
-            You can use the KeyboardAwareScrollView, KeyboardAwareSectionList or
+            {data?.description ||
+              params.description ||
+              `You can use the KeyboardAwareScrollView, KeyboardAwareSectionList or
             the KeyboardAwareFlatList components. They accept ScrollView,
             SectionList and FlatList default props respectively and implement a
             custom high order component called KeyboardAwareHOC to handle
@@ -113,7 +134,7 @@ const DetailEventScreen = () => {
             Support with the following steps: Make sure you are using
             react-native 0.46 or above. Set windowSoftInputMode to adjustPan in
             AndroidManifest.xml. Set enableOnAndroid property to true. Android
-            Support is not perfect, here is the supported list:
+            Support is not perfect, here is the supported list:`}
           </Text>
         </Block>
       </Animated.ScrollView>
@@ -129,7 +150,7 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingTop: HEIGHT_COVER - getSize.m(30),
-    paddingBottom: getSize.v(120),
+    paddingBottom: HEIGHT_SCREEN * 0.25,
   },
   boxInvite: {
     backgroundColor: '#29313E',

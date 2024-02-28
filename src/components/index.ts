@@ -6,6 +6,8 @@ import LayoutAuth from './LayoutAuth';
 import InputField from './InputField';
 import ButtonGradient from './ButtonGradient';
 import TabBar from './TabBar';
+import Switcher from './Switcher';
+import ToastNotify from './ToastNotify';
 
 export {
   Block,
@@ -16,4 +18,6 @@ export {
   InputField,
   ButtonGradient,
   TabBar,
+  Switcher,
+  ToastNotify,
 };

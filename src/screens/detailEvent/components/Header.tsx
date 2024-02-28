@@ -21,9 +21,11 @@ import {HEIGHT_COVER} from '../layout';
 interface IProps {
   top: number;
   scrollY: SharedValue<number>;
+  title: string;
+  banner?: string;
 }
 
-const Header: FC<IProps> = ({top, scrollY}) => {
+const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const onLayoutTabBar = useCallback(
     ({nativeEvent: {layout}}: LayoutChangeEvent) => {
@@ -74,7 +76,10 @@ const Header: FC<IProps> = ({top, scrollY}) => {
             {height: heightTabBar * 1.5},
           ])}
         />
-        <Image source={Images.BANNER_DEFAULT} style={styles.imageCover} />
+        <Image
+          source={banner ? {uri: banner} : Images.BANNER_DEFAULT}
+          style={styles.imageCover}
+        />
       </Animated.View>
       <Animated.View
         onLayout={onLayoutTabBar}
@@ -91,7 +96,7 @@ const Header: FC<IProps> = ({top, scrollY}) => {
             />
           </TouchableOpacity>
           <Text numberOfLines={1} style={styles.title}>
-            Event Name
+            {title || 'Event Name'}
           </Text>
         </Block>
         <TouchableOpacity activeOpacity={0.5} style={styles.btnSave}>

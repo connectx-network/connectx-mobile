@@ -1,16 +1,83 @@
-import {getSize} from '@base/common/responsive';
+import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
-import {Block, ButtonGradient, LayoutAuth, Text} from '@components';
-import {goBack} from '@navigation/navigationService';
+import {ButtonGradient, LayoutAuth, Text} from '@components';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {goBack, navigate, reset} from '@navigation/navigationService';
+import {
+  LOGIN_SCREEN,
+  RESET_PASSWORD_SCREEN,
+  VerifyOTPScreenRouteProp,
+} from '@navigation/routes';
+import {
+  ResendOtpSignUpService,
+  VerifyOtpSignUpService,
+  VerifyResetPasswordService,
+} from '@services/auth.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {FC, useCallback, useState} from 'react';
+import {Keyboard, StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import OTPTextView from 'react-native-otp-textinput';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ResendCode from './components/ResendCode';
 
-const VerifyOtpScreen = () => {
+interface IProps {
+  route: VerifyOTPScreenRouteProp;
+}
+
+const VerifyOtpScreen: FC<IProps> = ({route: {params}}) => {
+  const {email, isResetPassword} = params;
+  const {showWarningTop, showSuccessTop} = useToastMessage();
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [verifyCode, setVerifyCode] = useState<string>('');
+
+  const handleTextChange = useCallback((value: string) => {
+    setVerifyCode(value);
+    if (value.length === 6) {
+      Keyboard.dismiss();
+    }
+  }, []);
+
+  const handleVerify = useCallback(async () => {
+    try {
+      setLoading(true);
+      await (isResetPassword
+        ? VerifyResetPasswordService({
+            email: email.toLowerCase(),
+            verifyCode,
+          })
+        : VerifyOtpSignUpService({
+            email: email.toLowerCase(),
+            verifyCode,
+          }));
+
+      if (isResetPassword) {
+        navigate(RESET_PASSWORD_SCREEN, {email, otp: verifyCode});
+      } else {
+        showSuccessTop('Register account successfully!');
+        reset(LOGIN_SCREEN);
+      }
+    } catch (error: any) {
+      showWarningTop(
+        (typeof error === 'string' ? error : null) || 'OTP is not correct!',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [verifyCode, isResetPassword]);
+
+  const handleSendCode = useCallback(async () => {
+    try {
+      await ResendOtpSignUpService({email});
+      showSuccessTop('Resend code successfully');
+    } catch (error) {
+      showWarningTop(
+        (typeof error === 'string' ? error : null) || 'Resend code failed!',
+      );
+    }
+  }, [email, showWarningTop]);
+
   return (
     <LayoutAuth>
       <TouchableOpacity
@@ -34,14 +101,17 @@ const VerifyOtpScreen = () => {
           tintColor={'#5669FF'}
           offTintColor={Color.WHITE}
           autoFocus
+          inputCount={6}
+          handleTextChange={handleTextChange}
         />
-        <ButtonGradient style={styles.btnContinue}>
+        <ButtonGradient
+          disabled={!(!isLoading && verifyCode.length === 6)}
+          isLoading={isLoading}
+          style={styles.btnContinue}
+          onPress={handleVerify}>
           <Text style={styles.textBtnContinue}>Continue</Text>
         </ButtonGradient>
-        <Block alignCenter row justifyCenter>
-          <Text style={styles.textReSend}>Re-send code in</Text>
-          <Text style={styles.textTime}>0:20</Text>
-        </Block>
+        <ResendCode handleSendCode={handleSendCode} />
       </KeyboardAwareScrollView>
     </LayoutAuth>
   );
@@ -73,11 +143,11 @@ const styles = StyleSheet.create({
   roundedTextInput: {
     borderRadius: getSize.m(12),
     borderWidth: getSize.m(2),
-    width: getSize.m(54),
-    height: getSize.m(54),
+    width: (WIDTH_SCREEN - getSize.s(40)) / 6 - getSize.m(12),
+    height: (WIDTH_SCREEN - getSize.s(40)) / 6 - getSize.m(12),
     borderBottomWidth: getSize.m(2),
     color: Color.WHITE,
-    fontSize: getSize.m(24, 0.3),
+    fontSize: getSize.m(20, 0.3),
     fontFamily: Font.font_medium_500,
   },
   btnContinue: {
@@ -88,16 +158,6 @@ const styles = StyleSheet.create({
     color: '#1F1212',
     fontFamily: Font.font_medium_500,
     fontSize: getSize.m(16),
-  },
-  textReSend: {
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_thin_100,
-    marginRight: getSize.m(6),
-  },
-  textTime: {
-    color: '#5669FF',
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_extra_light_300,
   },
 });
 

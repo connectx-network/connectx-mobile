@@ -1,37 +1,134 @@
+import {Icon} from '@assets/icons';
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, ButtonGradient, Image, TabBar, Text} from '@components';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import InputForm from './components/InputForm';
-import Font from '@theme/Font';
-import {Icon} from '@assets/icons';
+import {UserState, actionUpdateUser} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
 import Color from '@theme/Color';
+import Font from '@theme/Font';
+import {useFormik} from 'formik';
+import {FC, useCallback, useMemo, useState} from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import CountryPicker, {
   Country,
   CountryCode,
 } from 'react-native-country-picker-modal';
-import {useCallback, useState} from 'react';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDispatch, useSelector} from 'react-redux';
+import InputForm from './components/InputForm';
+import * as Yup from 'yup';
+import {FetchInfoUser, UpdateInfoUser} from '@services/user.service';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {EditProfileScreenRouteProp} from '@navigation/routes';
+import DropdownComponent, {ItemDropbox} from './components/DropdownComponent';
 
-const EditProfileScreen = () => {
+interface IProps {
+  route: EditProfileScreenRouteProp;
+}
+
+const validationSchema = Yup.object({
+  fullName: Yup.string()
+    .required('Full name is required')
+    .min(5, 'Full name must be at least 5 characters'),
+});
+
+const genders = [
+  {label: 'Male', value: 'MALE'},
+  {label: 'Female', value: 'FEMALE'},
+];
+
+const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
+  const {
+    fullName,
+    nickname,
+    email,
+    country,
+    address,
+    gender,
+    userInterests,
+    id,
+  } = useSelector<IRootState, UserState>(uStateUser);
   const [countryCode, setCountryCode] = useState<CountryCode>('VN');
-  const [country, setCountry] = useState<Country | null>(null);
   const [showCountry, setShowCountry] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const {showWarningTop, showSuccessTop} = useToastMessage();
+  const dispatch = useDispatch();
+
+  const initialValues = useMemo(
+    () => ({
+      fullName,
+      nickname: nickname || '',
+      country,
+      address: address || '',
+      gender,
+      interests: userInterests,
+    }),
+    [nickname, fullName, country, address, userInterests, gender],
+  );
+
+  const handleUpdateInfo = useCallback(
+    async (values: typeof initialValues) => {
+      try {
+        setLoading(true);
+        await UpdateInfoUser(values);
+        const {data} = await FetchInfoUser(id);
+        dispatch(actionUpdateUser(data));
+        showSuccessTop('Update profile successfully!');
+        params?.refetch?.();
+      } catch (error) {
+        showWarningTop('Update profile failed!');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [id, params?.refetch],
+  );
+
+  const {
+    values,
+    errors,
+    handleChange,
+    setFieldError,
+    setFieldValue,
+    submitForm,
+  } = useFormik({
+    initialValues,
+    validateOnBlur: false,
+    validateOnChange: false,
+    validationSchema,
+    onSubmit: handleUpdateInfo,
+  });
 
   const handleCountry = useCallback(() => {
     setShowCountry(true);
   }, []);
 
-  const onSelect = useCallback((country: Country) => {
-    setCountryCode(country.cca2);
-    setCountry(country);
-  }, []);
+  const onSelect = useCallback(
+    (country: Country) => {
+      setCountryCode(country.cca2);
+      setFieldValue('country', country.name);
+    },
+    [setFieldValue],
+  );
 
   const handleCloseCountryPicker = useCallback(() => {
     setShowCountry(false);
   }, []);
+
+  const handleChangeValue = (name: string) => (text: string) => {
+    handleChange(name)(text);
+    setFieldError(name, '');
+  };
+
+  const handleChangeSex = useCallback(
+    (item: ItemDropbox<any>) => {
+      setFieldValue('gender', item.value);
+    },
+    [setFieldValue],
+  );
 
   return (
     <SafeAreaView edges={['top']} style={Styles.container}>
@@ -40,9 +137,26 @@ const EditProfileScreen = () => {
         <TouchableOpacity activeOpacity={0.5} style={styles.btnAvatar}>
           <Image style={styles.avatar} source={Images.AVATAR} />
         </TouchableOpacity>
-        <InputForm label="Full name" placeholder="..." />
-        <InputForm label="Nick name" placeholder="..." />
-        <InputForm label="Email" placeholder="..." />
+        <InputForm
+          value={values.fullName}
+          onChangeText={handleChangeValue('fullName')}
+          error={errors.fullName}
+          label="Full name"
+          placeholder="..."
+        />
+        <InputForm
+          value={values.nickname}
+          onChangeText={handleChangeValue('nickname')}
+          error={errors.nickname}
+          label="Nick name"
+          placeholder="..."
+        />
+        <InputForm
+          value={email}
+          label="Email"
+          placeholder="..."
+          editable={false}
+        />
         <InputForm label="Phone number" placeholder="..." />
         <Block row alignCenter>
           <TouchableOpacity
@@ -51,7 +165,9 @@ const EditProfileScreen = () => {
             activeOpacity={0.5}>
             <Block style={styles.contentCountry}>
               <Text style={styles.textCountry}>Country</Text>
-              <Text style={styles.country}>{country?.region || '...'}</Text>
+              <Text numberOfLines={1} style={styles.country}>
+                {values.country || '...'}
+              </Text>
             </Block>
             <Icon
               name={'caret-down-outline'}
@@ -59,23 +175,27 @@ const EditProfileScreen = () => {
               size={getSize.m(14)}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnCountry} activeOpacity={0.5}>
-            <Block style={styles.contentCountry}>
-              <Text>Country</Text>
-              <Text>{country?.region || '...'}</Text>
-            </Block>
-            <Icon
-              name={'caret-down-outline'}
-              color={Color.WHITE}
-              size={getSize.m(14)}
-            />
-          </TouchableOpacity>
+          <DropdownComponent
+            placeholder={'...'}
+            value={values.gender}
+            data={genders}
+            onChange={handleChangeSex}
+          />
         </Block>
         <Text style={styles.textError}></Text>
-        <InputForm label="Address" placeholder="..." />
+        <InputForm
+          value={values.address}
+          onChangeText={handleChangeValue('address')}
+          error={errors.address}
+          label="Address"
+          placeholder="..."
+        />
         <ButtonGradient
+          onPress={submitForm}
+          disabled={isLoading}
           styleContainer={styles.containerSave}
-          isRightIcon={false}
+          isRightIcon={isLoading}
+          isLoading={isLoading}
           style={styles.btnSave}>
           <Text style={styles.textSave}>SAVE</Text>
         </ButtonGradient>
@@ -146,6 +266,7 @@ const styles = StyleSheet.create({
   contentCountry: {
     height: '100%',
     justifyContent: 'space-between',
+    flex: 1,
   },
   textCountry: {
     fontSize: getSize.m(11, 0.3),

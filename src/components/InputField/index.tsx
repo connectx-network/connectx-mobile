@@ -2,9 +2,10 @@ import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
 import Block from '@components/Block';
 import Text from '@components/Text';
+import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import React, {FC, ReactNode, memo} from 'react';
+import React, {FC, ReactNode, memo, useCallback, useState} from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -27,6 +28,12 @@ interface IProps extends TextInputProps {
 }
 
 const InputField: FC<IProps> = props => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const handleShowPassword = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
+
   return (
     <Block style={[styles.container, props.styleContainer]}>
       {props.label && (
@@ -42,15 +49,16 @@ const InputField: FC<IProps> = props => {
         <TextInput
           placeholderTextColor={props.placeholderTextColor || Color.TEXT_PL}
           style={[styles.input, props.style]}
+          secureTextEntry={!showPassword && props.isPassword}
           {...props}
         />
         {props.isPassword && (
           <TouchableOpacity
-            onPress={props.handleShowPass}
+            onPress={handleShowPassword}
             style={styles.eyePassword}
             activeOpacity={0.5}>
             <Icon
-              name={props.secureTextEntry ? 'eye-off-outline' : 'eye-outline'}
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
               size={getSize.m(20)}
               color={Color.WHITE}
             />

@@ -21,7 +21,7 @@ import React, {
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SvgProps} from 'react-native-svg';
-import NavigationService from './navigationService';
+import NavigationService, {reset} from './navigationService';
 import {
   CHAT_STACK,
   COMMUNITY_STACK,
@@ -31,6 +31,7 @@ import {
   EVENT_STACK,
   HOME_SCREEN,
   HOME_STACK,
+  LOGIN_SCREEN,
   MAP_SCREEN,
   MAP_STACK,
   PROFILE_OWNER_EVENT_SCREEN,
@@ -39,6 +40,10 @@ import {
 } from './routes';
 import LogoutIcon from '@assets/icons/home/LogoutIcon';
 import ProfileIcon from '@assets/icons/home/ProfileIcon';
+import * as Keychain from 'react-native-keychain';
+import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
+import {useDispatch} from 'react-redux';
+import {actionLogoutUser} from '@redux/slices/userSlice';
 
 interface IProps extends DrawerContentComponentProps {}
 
@@ -96,6 +101,7 @@ const DrawerContent: FC<IProps> = ({}) => {
   const [currentRoute, setCurrentRoute] = useState<string | undefined>(
     NavigationService.getCurrentRoute()?.name,
   );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const nextRoute = NavigationService.getCurrentRoute();
@@ -130,9 +136,14 @@ const DrawerContent: FC<IProps> = ({}) => {
 
   const renderItem = useCallback(
     ({item}) => {
-      const _handleMenu = () => {
+      const _handleMenu = async () => {
         if (item.screen) {
           NavigationService.navigate(item.screen);
+        } else {
+          reset(LOGIN_SCREEN);
+          dispatch(actionLogoutUser());
+          await Keychain.resetInternetCredentials(JWT_KEY);
+          await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
         }
       };
       return (

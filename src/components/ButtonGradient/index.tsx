@@ -1,6 +1,8 @@
 import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
 import Block from '@components/Block';
+import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
+import Color from '@theme/Color';
 import {FC, PropsWithChildren, memo} from 'react';
 import {
   StyleProp,
@@ -9,6 +11,7 @@ import {
   TouchableOpacityProps,
   ViewStyle,
 } from 'react-native';
+import {MaterialIndicator} from 'react-native-indicators';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface IProps extends TouchableOpacityProps {
@@ -19,6 +22,7 @@ interface IProps extends TouchableOpacityProps {
   colorRightIcon?: string;
   isRightIcon?: boolean;
   colors?: string[];
+  isLoading?: boolean;
 }
 
 const ButtonGradient: FC<PropsWithChildren<IProps>> = ({
@@ -30,8 +34,10 @@ const ButtonGradient: FC<PropsWithChildren<IProps>> = ({
   isRightIcon = true,
   styleContainer = {},
   colors,
+  isLoading,
   ...props
 }) => {
+  const loadingButton = useDelayedValueWithLayoutAnimation(isLoading);
   return (
     <TouchableOpacity {...props} activeOpacity={0.5} style={styleContainer}>
       <LinearGradient
@@ -42,11 +48,18 @@ const ButtonGradient: FC<PropsWithChildren<IProps>> = ({
         {children}
         {isRightIcon && (
           <Block style={styles.iconRight}>
-            <IconApp
-              name={rightIcon || 'back-right'}
-              size={sizeRightIcon || getSize.m(36)}
-              color={colorRightIcon || '#1F1212'}
-            />
+            {loadingButton ? (
+              <MaterialIndicator
+                size={getSize.m(20)}
+                color={Color.BACKGROUND}
+              />
+            ) : (
+              <IconApp
+                name={rightIcon || 'back-right'}
+                size={sizeRightIcon || getSize.m(36)}
+                color={colorRightIcon || '#1F1212'}
+              />
+            )}
           </Block>
         )}
       </LinearGradient>

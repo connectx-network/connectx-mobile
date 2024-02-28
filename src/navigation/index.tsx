@@ -55,6 +55,7 @@ import {
   PROFILE_SCREEN,
   PROFILE_STACK,
   REGISTER_SCREEN,
+  RESET_PASSWORD_SCREEN,
   RootStackParamList,
   SEARCH_SCREEN,
   TAB_NAVIGATOR,
@@ -62,6 +63,11 @@ import {
 } from './routes';
 import EditProfileScreen from '@screens/profile/EditProfileScreen';
 import MapScreen from '@screens/map';
+import {useSelector} from 'react-redux';
+import {IRootState} from '@redux/stores';
+import {UserState} from '@redux/slices/userSlice';
+import {uStateUser} from '@redux/stores/selection';
+import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -272,6 +278,7 @@ const DrawerStack = memo(() => {
 const RootStack: FC<{}> = () => {
   const navigationRef = useRef<NavigationContainerRef<{}>>();
   const routeNameRef = useRef<string>();
+  const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
 
   // useLayoutEffect(() => {
   //   BootSplash.hide();
@@ -298,13 +305,17 @@ const RootStack: FC<{}> = () => {
           orientation: 'portrait',
           animation: 'slide_from_right',
         }}
-        initialRouteName={LOGIN_SCREEN}>
+        initialRouteName={isLogged ? DRAWER_STACK : LOGIN_SCREEN}>
         <Stack.Screen name={LOGIN_SCREEN} component={LoginScreen} />
         <Stack.Screen name={REGISTER_SCREEN} component={RegisterScreen} />
         <Stack.Screen name={VERIFY_OTP_SCREEN} component={VerifyOtpScreen} />
         <Stack.Screen
           name={FORGOT_PASSWORD_SCREEN}
           component={ForgotPasswordScreen}
+        />
+        <Stack.Screen
+          name={RESET_PASSWORD_SCREEN}
+          component={ResetPasswordScreen}
         />
         <Stack.Screen name={DRAWER_STACK} component={DrawerStack} />
       </Stack.Navigator>

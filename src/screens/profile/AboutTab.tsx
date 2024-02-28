@@ -1,12 +1,15 @@
 import PenIcon from '@assets/icons/profile/PenIcon';
 import {getSize} from '@base/common/responsive';
 import {Block, Text} from '@components';
+import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FC, memo} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {
   isMe: boolean;
+  userInterests?: any[];
+  description?: string | null;
 }
 
 const interests = [
@@ -18,14 +21,26 @@ const interests = [
   'Others',
 ];
 
-const AboutTab: FC<IProps> = ({isMe}) => {
+const AboutTab: FC<IProps> = ({isMe, description, userInterests}) => {
+  console.log('userInterests>>', userInterests);
+
   return (
     <Block style={styles.container}>
-      <Text style={styles.textAbout}>
-        Enjoy your favorite dishe and a lovely your friends and family and have
-        a great time. Food from local food trucks will be available for
-        purchase.
-      </Text>
+      {description ? (
+        <Text style={styles.textAbout}>{description}</Text>
+      ) : (
+        <Block row alignStart space="between" marginBottom={30}>
+          <Text style={styles.textEmptyProfile}>
+            {isMe ? 'Update biography about you' : 'No biography yet'}
+          </Text>
+          {isMe && (
+            <TouchableOpacity activeOpacity={0.5} style={styles.btnChange}>
+              <PenIcon />
+              <Text style={styles.textChange}>CHANGE</Text>
+            </TouchableOpacity>
+          )}
+        </Block>
+      )}
       <Block row alignCenter space="between">
         <Text style={styles.textInterest}>Interest</Text>
         {isMe && (
@@ -86,6 +101,12 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_medium_500,
     color: '#5669FF',
     marginLeft: getSize.m(4),
+  },
+  textEmptyProfile: {
+    fontSize: getSize.m(16, 0.3),
+    fontFamily: Font.font_regular_400,
+    flex: 1,
+    marginRight: getSize.m(8),
   },
 });
 

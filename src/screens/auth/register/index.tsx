@@ -10,15 +10,77 @@ import {goBack, navigate} from '@navigation/navigationService';
 import {VERIFY_OTP_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo, useCallback} from 'react';
+import {memo, useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {FormikHelpers, useFormik} from 'formik';
+import {SignUpParams} from '@model/auth';
+import * as Yup from 'yup';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {ResendOtpSignUpService, SignUpService} from '@services/auth.service';
+
+const initialValues: SignUpParams = {
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  userRole: 'USER',
+};
+
+const validationSchema = Yup.object({
+  fullName: Yup.string().required('Full name is required'),
+  email: Yup.string().required('Email is required').email('Email is not valid'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters'),
+  confirmPassword: Yup.string()
+    .trim()
+    .required('Confirm password is required')
+    .oneOf([Yup.ref('password')], 'Confirm password does not match password'),
+});
 
 const RegisterScreen = () => {
-  const handleSignIn = useCallback(() => {
-    navigate(VERIFY_OTP_SCREEN);
-  }, []);
+  const {showWarningTop} = useToastMessage();
+  const [isLoading, setLoading] = useState<boolean>(false);
+
+  const handleSignIn = useCallback(
+    async (values: SignUpParams, {resetForm}: FormikHelpers<SignUpParams>) => {
+      try {
+        setLoading(true);
+        await SignUpService({...values, email: values.email.toLowerCase()});
+        navigate(VERIFY_OTP_SCREEN, {email: values.email});
+      } catch (error: any) {
+        if (error === 'User has not activated yet!') {
+          await ResendOtpSignUpService({email: values.email});
+          resetForm();
+          navigate(VERIFY_OTP_SCREEN, {email: values.email});
+        } else {
+          showWarningTop(
+            (typeof error === 'string' ? error : null) ||
+              'Account registration failed',
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [showWarningTop],
+  );
+
+  const {values, handleChange, submitForm, errors, setFieldError} =
+    useFormik<SignUpParams>({
+      initialValues,
+      validateOnBlur: false,
+      validateOnChange: false,
+      validationSchema,
+      onSubmit: handleSignIn,
+    });
+
+  const handleChangeValue = (name: string) => (text: string) => {
+    handleChange(name)(text);
+    setFieldError(name, '');
+  };
 
   return (
     <LayoutAuth edges={['top', 'bottom']}>
@@ -34,19 +96,41 @@ const RegisterScreen = () => {
       </TouchableOpacity>
       <Text style={styles.textSignIn}>Sign in</Text>
       <KeyboardAwareScrollView style={Styles.paddingHorizontal}>
-        <InputField leftIcon={<PersonIcon />} placeholder="Full name" />
-        <InputField leftIcon={<MailIcon />} placeholder="abc@email.com" />
+        <InputField
+          value={values.fullName}
+          onChangeText={handleChangeValue('fullName')}
+          leftIcon={<PersonIcon />}
+          placeholder="Full name"
+          error={errors.fullName}
+        />
+        <InputField
+          value={values.email}
+          onChangeText={handleChangeValue('email')}
+          leftIcon={<MailIcon />}
+          placeholder="abc@email.com"
+          error={errors.email}
+        />
         <InputField
           isPassword
+          value={values.password}
+          onChangeText={handleChangeValue('password')}
           leftIcon={<LockIcon />}
           placeholder="Your password"
+          error={errors.password}
         />
         <InputField
           isPassword
+          value={values.confirmPassword}
+          onChangeText={handleChangeValue('confirmPassword')}
           leftIcon={<LockIcon />}
           placeholder="Confirm password"
+          error={errors.confirmPassword}
         />
-        <ButtonGradient onPress={handleSignIn} style={styles.btnSignUP}>
+        <ButtonGradient
+          disabled={isLoading}
+          onPress={submitForm}
+          isLoading={isLoading}
+          style={styles.btnSignUP}>
           <Text style={styles.textBtnSignUp}>Sign up</Text>
         </ButtonGradient>
         <Text style={styles.textOr}>OR</Text>

@@ -2,25 +2,43 @@ import {getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
-import {useCallback} from 'react';
-import {FlatList, StyleSheet} from 'react-native';
+import {useCallback, useEffect} from 'react';
+import {FlatList, RefreshControl, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from './components/Header';
+import {useFetchEvents} from './hooks';
+import {Event} from '@model/event';
+import {IS_IOS} from '@base/common/constants';
 
 const EventsScreen = () => {
-  const renderItem = useCallback(() => {
-    return <ItemEventNear />;
+  const {data, isLoading, onEndReached, onRefresh} = useFetchEvents({
+    page: 1,
+    size: 10,
+  });
+
+  const renderItem = useCallback(({item}: {item: Event}) => {
+    return <ItemEventNear {...item} />;
   }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Header />
       <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={onRefresh}
+            tintColor={Color.WHITE}
+            titleColor={Color.WHITE}
+            size={IS_IOS ? getSize.m(22) : undefined}
+          />
+        }
+        data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         windowSize={8}
         contentContainerStyle={styles.contentContainerStyle}
+        onEndReached={onEndReached}
       />
     </SafeAreaView>
   );

@@ -1,7 +1,7 @@
 import Styles from '@base/common/styles';
 import {TabBar} from '@components';
 import Color from '@theme/Color';
-import {useCallback} from 'react';
+import {FC, useCallback, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {TabBarProps, Tabs} from 'react-native-collapsible-tab-view';
 import {TabName} from 'react-native-collapsible-tab-view/lib/typescript/src/types';
@@ -14,14 +14,48 @@ import TabBarCustom from './components/TabBarCustom';
 import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
 import {goBack, openDrawer} from '@navigation/navigationService';
+import {useQuery} from '@tanstack/react-query';
+import {ProfileScreenRouteProp} from '@navigation/routes';
+import {useSelector} from 'react-redux';
+import {IRootState} from '@redux/stores';
+import {UserState} from '@redux/slices/userSlice';
+import {uStateUser} from '@redux/stores/selection';
+import {FetchInfoUser} from '@services/user.service';
+import {UserInfo} from '@model/user';
+import {AxiosResponse} from 'axios';
 
-const ProfileScreen = () => {
+interface IProps {
+  route: ProfileScreenRouteProp;
+}
+
+const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
-  const isMe = true;
+  const infoUser = useSelector<IRootState, UserState>(uStateUser);
+  const idUser = params?.id || infoUser.id;
+
+  const {data, refetch} = useQuery<AxiosResponse<UserInfo>, Error>({
+    queryKey: ['fetchInfoUser', {idUser}],
+    queryFn: () => FetchInfoUser(idUser),
+  });
 
   const renderHeader = useCallback(() => {
-    return <InfoUser isMe={isMe} />;
-  }, []);
+    return (
+      <InfoUser
+        fullName={data?.data?.fullName}
+        avatarUrl={data?.data?.avatarUrl}
+        isMe={!params?.id}
+        followers={data?.data?.followers}
+        following={data?.data?.following}
+        refetch={refetch}
+      />
+    );
+  }, [
+    data?.data?.fullName,
+    data?.data?.avatarUrl,
+    params?.id,
+    data?.data?.following,
+    data?.data?.followers,
+  ]);
 
   const renderTabBar = useCallback((props: TabBarProps<TabName>) => {
     return <TabBarCustom {...props} />;
@@ -32,11 +66,11 @@ const ProfileScreen = () => {
       <TabBar
         title=""
         leftIcon={
-          isMe ? (
+          !params?.id ? (
             <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
           ) : null
         }
-        handleLeftIcon={isMe ? openDrawer : goBack}
+        handleLeftIcon={!params?.id ? openDrawer : goBack}
         styleContainer={StyleSheet.flatten([styles.tabBar, {paddingTop: top}])}
       />
       <Tabs.Container
@@ -45,15 +79,19 @@ const ProfileScreen = () => {
         renderTabBar={renderTabBar}>
         <Tabs.Tab name="ABOUT">
           {/*// @ts-ignore */}
-          <Tabs.ScrollView>
-            <AboutTab isMe={isMe} />
+          <Tabs.ScrollView scrollEnabled={!!data}>
+            <AboutTab
+              isMe={!params?.id}
+              description={data?.data?.description}
+              userInterests={data?.data?.userInterests}
+            />
           </Tabs.ScrollView>
         </Tabs.Tab>
         <Tabs.Tab name="EVENT">
-          <EventTab />
+          <EventTab scrollEnabled={!!data} />
         </Tabs.Tab>
         <Tabs.Tab name="REVIEWS">
-          <ReviewsTab />
+          <ReviewsTab scrollEnabled={!!data} />
         </Tabs.Tab>
       </Tabs.Container>
     </SafeAreaView>

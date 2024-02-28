@@ -13,26 +13,41 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {
   isMe: boolean;
+  fullName?: string;
+  avatarUrl?: string | null;
+  followers?: number;
+  following?: number;
+  refetch?: () => void;
 }
 
-const InfoUser: FC<IProps> = ({isMe}) => {
+const InfoUser: FC<IProps> = ({
+  isMe,
+  fullName,
+  avatarUrl,
+  followers,
+  following,
+  refetch,
+}) => {
   const handleEditProfile = useCallback(() => {
-    navigate(EDIT_PROFILE_SCREEN);
+    navigate(EDIT_PROFILE_SCREEN, {refetch});
   }, []);
 
   return (
     <Block style={styles.container}>
       <Block alignCenter>
-        <Image style={styles.avatar} source={Images.AVATAR} />
-        <Text style={styles.nameUser}>Jonny Deep B</Text>
+        <Image
+          style={styles.avatar}
+          source={avatarUrl ? {uri: avatarUrl} : Images.AVATAR}
+        />
+        <Text style={styles.nameUser}>{fullName}</Text>
         <Block row alignCenter justifyCenter>
           <Block alignCenter>
-            <Text style={styles.numberFollow}>234</Text>
+            <Text style={styles.numberFollow}>{following}</Text>
             <Text style={styles.textFollow}>Following</Text>
           </Block>
           <Block style={styles.wall} />
           <Block alignCenter>
-            <Text style={styles.numberFollow}>521</Text>
+            <Text style={styles.numberFollow}>{followers}</Text>
             <Text style={styles.textFollow}>Followers</Text>
           </Block>
         </Block>

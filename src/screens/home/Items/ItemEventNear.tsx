@@ -3,25 +3,49 @@ import SavedActiveIcon from '@assets/icons/home/SavedActiveIcon';
 import Images from '@assets/images';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
+import {Event} from '@model/event';
+import {navigate} from '@navigation/navigationService';
+import {DETAIL_EVENT_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import moment from 'moment';
+import {FC, memo} from 'react';
+import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
+import lodash from 'lodash';
+interface IProps extends Event {
+  style?: StyleProp<ViewStyle>;
+}
 
-const ItemEventNear = () => {
+const ItemEventNear: FC<IProps> = ({style, ...props}) => {
+  const handleItem = () => {
+    navigate(DETAIL_EVENT_SCREEN, props);
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.5} style={styles.container}>
-      <Image style={styles.image} source={Images.EVENT_NEAR} />
+    <TouchableOpacity
+      onPress={handleItem}
+      activeOpacity={0.5}
+      style={[styles.container, style]}>
+      <Image
+        style={styles.image}
+        source={
+          lodash.head(props.eventAssets)?.url
+            ? {uri: lodash.head(props.eventAssets)?.url}
+            : Images.EVENT_NEAR
+        }
+      />
       <Block style={styles.content}>
         <Block>
           <Block row alignCenter space="between">
-            <Text style={styles.textDate}>hh/dd/mm/yy</Text>
+            <Text style={styles.textDate}>
+              {moment(props.eventDate).format('hh:mm - DD/MM/YYYY')}
+            </Text>
             <TouchableOpacity activeOpacity={0.5} style={styles.btnSave}>
               <SavedActiveIcon />
             </TouchableOpacity>
           </Block>
           <Text numberOfLines={2} style={styles.textName}>
-            Name of Event
+            {props.name || 'Name of Event'}
           </Text>
         </Block>
         <Block marginTop={12} row alignCenter marginBottom={8}>
@@ -30,7 +54,9 @@ const ItemEventNear = () => {
             color={Color.WHITE}
             size={getSize.m(20)}
           />
-          <Text style={styles.textLocation}>Location</Text>
+          <Text numberOfLines={1} style={styles.textLocation}>
+            {props.location || 'Location'}
+          </Text>
         </Block>
       </Block>
     </TouchableOpacity>
@@ -56,6 +82,7 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(13, 0.3),
     fontFamily: Font.font_regular_400,
     marginLeft: getSize.m(4),
+    flex: 1,
   },
   content: {
     marginLeft: getSize.s(12),

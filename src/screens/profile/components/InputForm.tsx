@@ -7,6 +7,7 @@ import {StyleSheet, TextInput, TextInputProps} from 'react-native';
 
 interface IProps extends TextInputProps {
   label: string;
+  error?: string;
 }
 
 const InputForm: FC<IProps> = ({label, ...props}) => {
@@ -20,7 +21,7 @@ const InputForm: FC<IProps> = ({label, ...props}) => {
           {...props}
         />
       </Block>
-      <Text style={styles.textError}></Text>
+      <Text style={styles.textError}>{props.error || ''}</Text>
     </Block>
   );
 };

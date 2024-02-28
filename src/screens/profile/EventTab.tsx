@@ -1,17 +1,22 @@
 import {getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
-import {memo, useCallback} from 'react';
+import {FC, memo, useCallback} from 'react';
 import {StyleSheet} from 'react-native';
 import {Tabs} from 'react-native-collapsible-tab-view';
 
-const EventTab = () => {
+interface IProps {
+  scrollEnabled: boolean;
+}
+
+const EventTab: FC<IProps> = ({scrollEnabled}) => {
   const renderItem = useCallback(() => {
     return <ItemEventNear />;
   }, []);
 
   return (
     <Tabs.FlatList
+      scrollEnabled={scrollEnabled}
       data={Array.from(Array(20).keys())}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
