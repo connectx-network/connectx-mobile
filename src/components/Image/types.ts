@@ -21,4 +21,5 @@ export type TImage = {
   resizeMode?;
   tintColor?;
   rest?;
+  onLoadEnd?;
 };

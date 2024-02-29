@@ -14,4 +14,5 @@ export enum EventRouteEnum {
 
 export enum UserRouteEnum {
   User = '/user',
+  AuthSelf = '/auth/self',
 }

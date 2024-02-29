@@ -8,6 +8,7 @@ import {memo, useCallback, useMemo, useState} from 'react';
 import {
   FlatList,
   LayoutChangeEvent,
+  StatusBar,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
@@ -21,12 +22,14 @@ import ItemEvent from './Items/ItemEvent';
 import ItemEventNear from './Items/ItemEventNear';
 import Banner from './components/Banner';
 import Header from './components/Header';
+import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
 
 const HomeScreen = () => {
   const {top} = useSafeAreaInsets();
   const scrollY = useSharedValue<number>(0);
   const scrollView = useAnimatedRef<Animated.ScrollView>();
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
+  const {position} = useGetLocationCurrent();
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -67,11 +70,17 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView edges={[]} style={styles.container}>
+      <StatusBar
+        translucent
+        barStyle={'light-content'}
+        backgroundColor={'transparent'}
+      />
       <Header
         paddingTop={top}
         scrollY={scrollY}
         onLayoutTabBar={onLayoutTabBar}
         heightTabBar={heightTabBar}
+        address={position?.formattedAddress}
       />
       <Animated.ScrollView
         ref={scrollView}

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#29313E',
     paddingBottom: getSize.v(15),
     paddingTop: getSize.m(15),
-    paddingHorizontal: getSize.s(20),
+    paddingHorizontal: getSize.s(8),
   },
   itemTab: {
     alignItems: 'center',

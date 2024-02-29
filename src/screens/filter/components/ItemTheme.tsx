@@ -17,7 +17,7 @@ const ItemTheme: FC<IProps> = ({name, icon}) => {
       <ButtonGradient
         style={StyleSheet.flatten([styles.icon, styles.iconInActive])}
         isRightIcon={false}
-        colors={[Color.TRANSPARENT]}>
+        colors={[Color.TRANSPARENT, Color.TRANSPARENT]}>
         {icon({color: Color.WHITE})}
       </ButtonGradient>
       <Text style={styles.name}>{name}</Text>

@@ -2,6 +2,7 @@
   package="com.checkin">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
       android:name=".MainApplication"
@@ -9,7 +10,7 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
-      android:theme="@style/AppTheme">
+      android:theme="@style/SplashScreenTheme">
        <meta-data
      android:name="com.google.android.geo.API_KEY"
      android:value="AIzaSyAeX--9sLa-_Bl9vxnj6uBOHOBllS6hmUQ"/>

@@ -144,7 +144,7 @@ const BSFilter = forwardRef(({}: IProps, ref) => {
         <Block style={styles.optionTime}>
           <ButtonGradient
             isRightIcon={false}
-            colors={[Color.TRANSPARENT]}
+            colors={[Color.TRANSPARENT,Color.TRANSPARENT]}
             style={StyleSheet.flatten([
               styles.btnTime,
               styles.btnTimeInaction,
@@ -153,7 +153,7 @@ const BSFilter = forwardRef(({}: IProps, ref) => {
           </ButtonGradient>
           <ButtonGradient
             isRightIcon={false}
-            colors={[Color.TRANSPARENT]}
+            colors={[Color.TRANSPARENT, Color.TRANSPARENT, Color.TRANSPARENT]}
             style={StyleSheet.flatten([
               styles.btnTime,
               styles.btnTimeInaction,
@@ -162,7 +162,7 @@ const BSFilter = forwardRef(({}: IProps, ref) => {
           </ButtonGradient>
           <ButtonGradient
             isRightIcon={false}
-            colors={[Color.TRANSPARENT]}
+            colors={[Color.TRANSPARENT, Color.TRANSPARENT]}
             style={StyleSheet.flatten([
               styles.btnTime,
               styles.btnTimeInaction,
@@ -171,7 +171,7 @@ const BSFilter = forwardRef(({}: IProps, ref) => {
           </ButtonGradient>
           <ButtonGradient
             isRightIcon={false}
-            colors={[Color.TRANSPARENT]}
+            colors={[Color.TRANSPARENT, Color.TRANSPARENT]}
             style={StyleSheet.flatten([
               styles.btnTime,
               styles.btnTimeInaction,

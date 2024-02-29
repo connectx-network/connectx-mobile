@@ -29,7 +29,7 @@ import SearchScreen from '@screens/home/SearchScreen';
 import NotificationScreen from '@screens/notification';
 import ProfileScreen from '@screens/profile';
 import Color from '@theme/Color';
-import React, {FC, memo, useCallback, useRef} from 'react';
+import React, {FC, memo, useCallback, useLayoutEffect, useRef} from 'react';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
 import BottomTabCustom from './BottomTabsCustom';
@@ -68,6 +68,7 @@ import {IRootState} from '@redux/stores';
 import {UserState} from '@redux/slices/userSlice';
 import {uStateUser} from '@redux/stores/selection';
 import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -267,6 +268,7 @@ const DrawerStack = memo(() => {
         drawerStyle: {
           width: WIDTH_SCREEN * 0.6,
         },
+        drawerType: 'slide',
       }}
       initialRouteName={MAIN_STACK}>
       <Drawer.Screen name={MAIN_STACK} component={MainStack} />
@@ -280,9 +282,9 @@ const RootStack: FC<{}> = () => {
   const routeNameRef = useRef<string>();
   const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
 
-  // useLayoutEffect(() => {
-  //   BootSplash.hide();
-  // }, []);
+  useLayoutEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   const ref = useCallback((refNavigation: any) => {
     navigationRef.current = refNavigation;

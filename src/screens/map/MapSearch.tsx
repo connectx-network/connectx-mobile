@@ -2,7 +2,7 @@ import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
 import {Block} from '@components';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
-import {Fragment, useCallback} from 'react';
+import {Fragment, memo, useCallback} from 'react';
 import {FlatList, StyleSheet} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {HEIGHT_SEARCH_MAP} from './components/SearchBar';
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MapSearch;
+export default memo(MapSearch);

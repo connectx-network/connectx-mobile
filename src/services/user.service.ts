@@ -14,3 +14,7 @@ export async function UpdateInfoUser(body): Promise<AxiosResponse<any>> {
     method: 'PUT',
   });
 }
+
+export async function FetchInfoMe(): Promise<AxiosResponse<UserInfo>> {
+  return api(UserRouteEnum.AuthSelf, null, {method: 'GET'});
+}

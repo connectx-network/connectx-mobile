@@ -1,14 +1,14 @@
+import AutoCurrentIcon from '@assets/icons/map/AutoCurrentIcon';
+import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
+import {keyExtractor} from '@base/utils/Utils';
+import {Block} from '@components';
+import ItemEventNear from '@screens/home/Items/ItemEventNear';
+import Color from '@theme/Color';
 import {FC, Fragment, useCallback} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import MarkerCustom from './components/MarkerCustom';
-import {Block} from '@components';
-import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
-import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
-import Color from '@theme/Color';
-import {keyExtractor} from '@base/utils/Utils';
-import ItemEventNear from '@screens/home/Items/ItemEventNear';
-import AutoCurrentIcon from '@assets/icons/map/AutoCurrentIcon';
 
 interface IProps {
   region: Region;
@@ -60,7 +60,12 @@ const MapHome: FC<IProps> = ({region, onRegionChange}) => {
       <MapView
         provider={PROVIDER_GOOGLE}
         style={Styles.root}
-        initialRegion={region}
+        initialRegion={{
+          latitude: 21.027518812382848,
+          longitude: 105.78320091585685,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
         onRegionChange={onRegionChange}>
         {MARKER.map((item, index) => {
           return <MarkerCustom {...item} key={index} />;

@@ -19,6 +19,7 @@ const LayoutAuth: FC<PropsWithChildren<IProps>> = ({
   backgroundColor,
   translucent,
   edges,
+  ...props
 }) => {
   return (
     <SafeAreaView style={Styles.root} edges={edges || ['top']}>
@@ -26,6 +27,7 @@ const LayoutAuth: FC<PropsWithChildren<IProps>> = ({
         translucent={translucent !== undefined ? translucent : true}
         barStyle={barStyle || 'light-content'}
         backgroundColor={backgroundColor || 'transparent'}
+        {...props}
       />
       <BgImage />
       {children}

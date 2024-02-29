@@ -18,11 +18,19 @@ import {ToastProps} from 'react-native-toast-notifications/lib/typescript/toast'
 import {Icon} from '@assets/icons';
 import Color from '@theme/Color';
 import {getSize} from '@base/common/responsive';
+import Geolocation from '@react-native-community/geolocation';
 import ToastNotify from '@components/ToastNotify';
 
 function onAppStateChange(status: AppStateStatus) {
   focusManager.setFocused(status === 'active');
 }
+
+Geolocation.setRNConfiguration({
+  skipPermissionRequests: false,
+  authorizationLevel: 'whenInUse',
+  locationProvider: 'auto',
+  enableBackgroundLocationUpdates: true
+});
 
 const App = () => {
   useOnlineManager();

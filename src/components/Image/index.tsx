@@ -28,6 +28,7 @@ const Image = ({
   style,
   resizeMode = 'cover',
   tintColor,
+  onLoadEnd,
   ...rest
 }: TImage) => {
   const imageStyle = StyleSheet.flatten([
@@ -58,6 +59,7 @@ const Image = ({
       style={imageStyle}
       resizeMode={FastImage.resizeMode[resizeMode]}
       tintColor={tintColor}
+      onLoadEnd={onLoadEnd}
     />
   );
 };

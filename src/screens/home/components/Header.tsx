@@ -13,9 +13,7 @@ import {
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -30,6 +28,7 @@ interface IProps {
   scrollY: SharedValue<number>;
   onLayoutTabBar: (event: LayoutChangeEvent) => void;
   heightTabBar: number;
+  address?: string;
 }
 
 const Header: FC<IProps> = ({
@@ -37,6 +36,7 @@ const Header: FC<IProps> = ({
   scrollY,
   onLayoutTabBar,
   heightTabBar,
+  address,
 }) => {
   const [heightSearch, setHeightSearch] = useState<number>(0);
 
@@ -105,7 +105,7 @@ const Header: FC<IProps> = ({
         <TouchableOpacity activeOpacity={0.5} onPress={openDrawer}>
           <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(22)} />
         </TouchableOpacity>
-        <Block alignCenter>
+        <Block style={styles.content}>
           <Block row alignCenter>
             <Text style={styles.textTitleLocation}>Current Location</Text>
             <Icon
@@ -114,7 +114,9 @@ const Header: FC<IProps> = ({
               size={getSize.m(16)}
             />
           </Block>
-          <Text style={styles.textLocation}>New Yourk, USA</Text>
+          <Text numberOfLines={1} style={styles.textLocation}>
+            {address || 'Location not determined'}
+          </Text>
         </Block>
         <TouchableOpacity
           activeOpacity={0.5}
@@ -177,6 +179,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: getSize.m(20),
     zIndex: 100,
+  },
+  content: {
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: getSize.s(20),
+    marginLeft: getSize.m(14),
   },
   iconNotify: {
     width: getSize.m(36),

@@ -31,7 +31,7 @@ import {useDispatch} from 'react-redux';
 import * as Yup from 'yup';
 import * as Keychain from 'react-native-keychain';
 import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
-import {FetchInfoUser} from '@services/user.service';
+import {FetchInfoMe, FetchInfoUser} from '@services/user.service';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
@@ -43,8 +43,8 @@ const LoginScreen = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const initialValues: LoginParams = {
-    email: '',
-    password: '',
+    email: __DEV__ ? 'ducphamvan0711@gmail.com' : '',
+    password: __DEV__? '123456aA@@' : '',
   };
 
   const handleSignIn = useCallback(
@@ -65,8 +65,7 @@ const LoginScreen = () => {
           JWT_REFRESH_KEY,
           data.refreshToken,
         );
-
-        const {data: dataInfo} = await FetchInfoUser(data.user.id);
+        const {data: dataInfo} = await FetchInfoMe();
         dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
         reset(DRAWER_STACK);
       } catch (error) {
