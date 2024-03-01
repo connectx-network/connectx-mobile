@@ -20,3 +20,9 @@ export async function FetchDetailEvent(
     method: 'GET',
   });
 }
+
+export async function JoinEvent(
+  id: string,
+): Promise<AxiosResponse<{success: boolean}>> {
+  return api(`${EventRouteEnum.JoinEvent}/${id}`, null);
+}

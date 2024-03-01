@@ -23,6 +23,8 @@ import ItemEventNear from './Items/ItemEventNear';
 import Banner from './components/Banner';
 import Header from './components/Header';
 import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
+import {useFetchEvents} from '@screens/events/hooks';
+import {Event} from '@model/event';
 
 const HomeScreen = () => {
   const {top} = useSafeAreaInsets();
@@ -30,6 +32,7 @@ const HomeScreen = () => {
   const scrollView = useAnimatedRef<Animated.ScrollView>();
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const {position} = useGetLocationCurrent();
+  const {data} = useFetchEvents({page: 1, size: 10});
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -37,13 +40,15 @@ const HomeScreen = () => {
     },
   });
 
-  const renderItemEvent = useCallback(() => {
-    return <ItemEvent />;
+  const renderItemEvent = useCallback(({item}: {item: Event}) => {
+    return <ItemEvent {...item} />;
   }, []);
 
   const renderItemEventNear = useMemo(() => {
-    return [1, 2, 3, 4, 5].map((_, index) => <ItemEventNear key={index} />);
-  }, []);
+    return data.map((item: Event, index) => (
+      <ItemEventNear {...item} key={index} />
+    ));
+  }, [data]);
 
   const onLayoutTabBar = useCallback(
     ({nativeEvent: {layout}}: LayoutChangeEvent) => {
@@ -91,27 +96,29 @@ const HomeScreen = () => {
         }}>
         <Block style={styles.label}>
           <Text style={styles.textLabel}>Upcoming Events</Text>
-          <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
-            <Text style={styles.textSeeAll}>See All</Text>
-            <Icon
-              name={'caret-forward-outline'}
-              color={Color.WHITE}
-              size={getSize.m(14)}
-            />
-          </TouchableOpacity>
+          {__DEV__ && (
+            <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
+              <Text style={styles.textSeeAll}>See All</Text>
+              <Icon
+                name={'caret-forward-outline'}
+                color={Color.WHITE}
+                size={getSize.m(14)}
+              />
+            </TouchableOpacity>
+          )}
         </Block>
 
         <FlatList
           horizontal
-          data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+          data={data}
           keyExtractor={keyExtractor}
           showsHorizontalScrollIndicator={false}
           renderItem={renderItemEvent}
           contentContainerStyle={styles.contentContainerStyle}
           decelerationRate={'fast'}
-          snapToOffsets={[1, 2, 3, 4, 5, 6, 7, 8, 9].map(
-            (item, index) =>
-              item * (WIDTH_SCREEN * 0.65) +
+          snapToOffsets={data.map(
+            (_, index) =>
+              (index + 1) * (WIDTH_SCREEN * 0.65) +
               index * getSize.s(12) +
               getSize.s(20),
           )}
@@ -121,14 +128,16 @@ const HomeScreen = () => {
 
         <Block style={styles.label}>
           <Text style={styles.textLabel}>Nearby You</Text>
-          <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
-            <Text style={styles.textSeeAll}>See All</Text>
-            <Icon
-              name={'caret-forward-outline'}
-              color={Color.WHITE}
-              size={getSize.m(14)}
-            />
-          </TouchableOpacity>
+          {__DEV__ && (
+            <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
+              <Text style={styles.textSeeAll}>See All</Text>
+              <Icon
+                name={'caret-forward-outline'}
+                color={Color.WHITE}
+                size={getSize.m(14)}
+              />
+            </TouchableOpacity>
+          )}
         </Block>
         {renderItemEventNear}
       </Animated.ScrollView>

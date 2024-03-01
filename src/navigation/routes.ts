@@ -23,6 +23,7 @@ export const SEARCH_SCREEN = 'Search';
 
 //Chat stack
 export const CHAT_STACK = 'ChatStack';
+export const CHAT_SCREEN = 'Chat';
 
 //Event stack
 export const EVENT_STACK = 'EventStack';

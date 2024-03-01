@@ -140,17 +140,19 @@ const Header: FC<IProps> = ({
           </Text>
         </Pressable>
 
-        <TouchableOpacity
-          onPress={handleFilter}
-          activeOpacity={0.5}
-          style={styles.btnFilter}>
-          <IconApp
-            color={'#A29EF0'}
-            name={'Group-18240'}
-            size={getSize.m(24)}
-          />
-          <Text style={styles.textFilter}>Filters</Text>
-        </TouchableOpacity>
+        {__DEV__ && (
+          <TouchableOpacity
+            onPress={handleFilter}
+            activeOpacity={0.5}
+            style={styles.btnFilter}>
+            <IconApp
+              color={'#A29EF0'}
+              name={'Group-18240'}
+              size={getSize.m(24)}
+            />
+            <Text style={styles.textFilter}>Filters</Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </Block>
   );

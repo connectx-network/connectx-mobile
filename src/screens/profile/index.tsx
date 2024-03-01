@@ -55,6 +55,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     params?.id,
     data?.data?.following,
     data?.data?.followers,
+    refetch,
   ]);
 
   const renderTabBar = useCallback((props: TabBarProps<TabName>) => {
@@ -70,6 +71,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
             <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
           ) : null
         }
+        hideRightIcon
         handleLeftIcon={!params?.id ? openDrawer : goBack}
         styleContainer={StyleSheet.flatten([styles.tabBar, {paddingTop: top}])}
       />
@@ -84,6 +86,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
               isMe={!params?.id}
               description={data?.data?.description}
               userInterests={data?.data?.userInterests}
+              refetch={refetch}
             />
           </Tabs.ScrollView>
         </Tabs.Tab>

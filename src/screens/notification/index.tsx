@@ -6,8 +6,11 @@ import {FlatList} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemNotify from './Items/ItemNotify';
 import NotifyEmpty from './components/NotifyEmpty';
+import {useFetchNotification} from './hooks';
 
 const NotificationScreen = () => {
+  const {data} = useFetchNotification({page: 1, size: 10});
+
   const renderItem = useCallback(() => {
     return <ItemNotify />;
   }, []);
@@ -16,7 +19,7 @@ const NotificationScreen = () => {
     <SafeAreaView edges={['top']} style={Styles.container}>
       <TabBar title="Notification" />
       <FlatList
-        data={Array.from(Array(10).keys())}
+        data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ListEmptyComponent={<NotifyEmpty />}

@@ -3,9 +3,12 @@ import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {keyExtractor} from '@base/utils/Utils';
 import {Block} from '@components';
+import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
+import {Event} from '@model/event';
+import {useFetchEvents} from '@screens/events/hooks';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
-import {FC, Fragment, useCallback} from 'react';
+import {FC, Fragment, useCallback, useRef} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import MarkerCustom from './components/MarkerCustom';
@@ -32,32 +35,33 @@ const MARKER = [
       longitude: 105.78542389264247,
     },
   },
-  {
-    title: 'event3',
-    description: 'test',
-    coordinate: {
-      latitude: 21.025476615914478,
-      longitude: 105.78557599106522,
-    },
-  },
-  {
-    title: 'event4',
-    description: 'test',
-    coordinate: {
-      latitude: 21.028726859155988,
-      longitude: 105.78178616379164,
-    },
-  },
 ];
 
 const MapHome: FC<IProps> = ({region, onRegionChange}) => {
-  const renderItem = useCallback(() => {
-    return <ItemEventNear style={styles.itemEvent} />;
+  const {data} = useFetchEvents({page: 1, size: 10});
+  const refMap = useRef<MapView>(null);
+  const {coord} = useGetLocationCurrent();
+
+  const renderItem = useCallback(({item}: {item: Event}) => {
+    return <ItemEventNear {...item} style={styles.itemEvent} />;
   }, []);
+
+  const handleCurrentLocation = useCallback(() => {
+    if (coord?.latitude && coord?.longitude) {
+      const region: Region = {
+        latitudeDelta: 0,
+        longitudeDelta: 0,
+        latitude: coord.latitude,
+        longitude: coord.longitude,
+      };
+      refMap.current?.animateToRegion(region, 1000);
+    }
+  }, [coord?.latitude, coord?.longitude]);
 
   return (
     <Fragment>
       <MapView
+        ref={refMap}
         provider={PROVIDER_GOOGLE}
         style={Styles.root}
         initialRegion={{
@@ -72,19 +76,24 @@ const MapHome: FC<IProps> = ({region, onRegionChange}) => {
         })}
       </MapView>
       <Block style={styles.content}>
-        <TouchableOpacity style={styles.btnAutoCurrent} activeOpacity={0.5}>
-          <AutoCurrentIcon />
-        </TouchableOpacity>
+        {!!coord && (
+          <TouchableOpacity
+            onPress={handleCurrentLocation}
+            style={styles.btnAutoCurrent}
+            activeOpacity={0.5}>
+            <AutoCurrentIcon />
+          </TouchableOpacity>
+        )}
         <FlatList
-          data={Array.from(Array(10).keys())}
+          data={data}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.contentContainerStyle}
-          snapToOffsets={Array.from(Array(10).keys()).map(
-            (item, index) =>
-              item * (WIDTH_SCREEN - getSize.s(40)) + index * getSize.s(6),
+          snapToOffsets={data.map(
+            (_, index) =>
+              index * (WIDTH_SCREEN - getSize.s(40)) + index * getSize.s(6),
           )}
           decelerationRate={'fast'}
         />

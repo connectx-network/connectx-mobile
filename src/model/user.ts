@@ -11,7 +11,12 @@ export interface UserInfo {
   isPrivate: boolean;
   nickname: null | string;
   userRole: string;
-  userInterests: Array<any>;
+  userInterests: Interest[];
   followers: number;
   following: number;
+}
+
+export interface Interest {
+  id?: string;
+  name: string;
 }

@@ -69,6 +69,7 @@ import {UserState} from '@redux/slices/userSlice';
 import {uStateUser} from '@redux/stores/selection';
 import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
 import SplashScreen from 'react-native-splash-screen';
+import ChatScreen from '@screens/chat';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -177,7 +178,7 @@ const TabsNavigator = memo(() => {
       }}>
       <Tab.Screen
         name={CHAT_STACK}
-        component={LoginScreen}
+        component={ChatScreen}
         initialParams={{
           name: 'Chat',
         }}
@@ -205,9 +206,9 @@ const TabsNavigator = memo(() => {
       />
       <Tab.Screen
         name={COMMUNITY_STACK}
-        component={ForgotPasswordScreen}
+        component={ProfileStack}
         initialParams={{
-          name: 'Community',
+          name: 'Profile',
         }}
       />
     </Tab.Navigator>

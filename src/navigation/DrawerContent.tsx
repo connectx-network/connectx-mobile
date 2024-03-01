@@ -6,7 +6,7 @@ import CommunityIcon from '@assets/icons/home/CommnunityIcon';
 import MapIcon from '@assets/icons/home/MapIcon';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
-import {Block, Text} from '@components';
+import {Block, Image, Text} from '@components';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
@@ -23,6 +23,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SvgProps} from 'react-native-svg';
 import NavigationService, {reset} from './navigationService';
 import {
+  CHAT_SCREEN,
   CHAT_STACK,
   COMMUNITY_STACK,
   DETAIL_EVENT_SCREEN,
@@ -42,8 +43,11 @@ import LogoutIcon from '@assets/icons/home/LogoutIcon';
 import ProfileIcon from '@assets/icons/home/ProfileIcon';
 import * as Keychain from 'react-native-keychain';
 import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
-import {useDispatch} from 'react-redux';
-import {actionLogoutUser} from '@redux/slices/userSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {UserState, actionLogoutUser} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {UserInfo} from '@model/user';
+import {uStateUser} from '@redux/stores/selection';
 
 interface IProps extends DrawerContentComponentProps {}
 
@@ -61,14 +65,8 @@ export const LIST_MENU = [
     ),
   },
   {
-    name: 'My Profile',
-    screens: [PROFILE_SCREEN, EDIT_PROFILE_SCREEN],
-    screen: PROFILE_STACK,
-    icon: (props?: SvgProps) => <ProfileIcon {...props} />,
-  },
-  {
     name: 'Message',
-    screens: [CHAT_STACK],
+    screens: [CHAT_SCREEN],
     screen: CHAT_STACK,
     icon: (props?: SvgProps) => <ChatIcon {...props} />,
   },
@@ -85,11 +83,17 @@ export const LIST_MENU = [
     icon: (props?: SvgProps) => <MapIcon {...props} />,
   },
   {
-    name: 'Community',
-    screens: [COMMUNITY_STACK],
-    screen: COMMUNITY_STACK,
-    icon: (props?: SvgProps) => <CommunityIcon {...props} />,
+    name: 'My Profile',
+    screens: [PROFILE_SCREEN, EDIT_PROFILE_SCREEN],
+    screen: PROFILE_STACK,
+    icon: (props?: SvgProps) => <ProfileIcon {...props} />,
   },
+  // {
+  //   name: 'Community',
+  //   screens: [COMMUNITY_STACK],
+  //   screen: COMMUNITY_STACK,
+  //   icon: (props?: SvgProps) => <CommunityIcon {...props} />,
+  // },
   {
     name: 'Sign Out',
     icon: (props?: SvgProps) => <LogoutIcon {...props} />,
@@ -101,6 +105,7 @@ const DrawerContent: FC<IProps> = ({}) => {
   const [currentRoute, setCurrentRoute] = useState<string | undefined>(
     NavigationService.getCurrentRoute()?.name,
   );
+  const {avatarUrl, fullName} = useSelector<IRootState, UserState>(uStateUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -160,9 +165,13 @@ const DrawerContent: FC<IProps> = ({}) => {
   return (
     <Block style={[styles.container, {paddingTop: top || getSize.m(10)}]}>
       <Block style={styles.avatarDefault}>
-        <AvatarIcon />
+        {avatarUrl ? (
+          <Image style={styles.avatar} source={{uri: avatarUrl}} />
+        ) : (
+          <AvatarIcon />
+        )}
       </Block>
-      <Text style={styles.username}>Jonny Deep</Text>
+      <Text style={styles.username}>{fullName}</Text>
       <FlatList
         data={LIST_MENU}
         keyExtractor={keyExtractor}
@@ -183,10 +192,15 @@ const styles = StyleSheet.create({
   avatarDefault: {
     width: getSize.m(60),
     height: getSize.m(60),
-    borderRadius: getSize.m(60),
+    borderRadius: getSize.m(30),
     backgroundColor: '#BCD4F8',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatar: {
+    width: getSize.m(60),
+    height: getSize.m(60),
+    borderRadius: getSize.m(30),
   },
   username: {
     fontSize: getSize.m(19, 0.3),

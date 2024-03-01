@@ -19,19 +19,23 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemEventNear from './Items/ItemEventNear';
+import {useFetchEvents} from '@screens/events/hooks';
+import {Event} from '@model/event';
 
 interface IProps {
   route: SearchScreenRouteProp;
 }
 
 const SearchScreen: FC<IProps> = ({route: {params}}) => {
+  const {data} = useFetchEvents({page: 1, size: 10});
+
   const handleFilter = useCallback(() => {
     Keyboard.dismiss();
     BSFilterControl.show();
   }, []);
 
-  const renderItem = useCallback(() => {
-    return <ItemEventNear />;
+  const renderItem = useCallback(({item}: {item: Event}) => {
+    return <ItemEventNear {...item} />;
   }, []);
 
   return (
@@ -52,24 +56,26 @@ const SearchScreen: FC<IProps> = ({route: {params}}) => {
           placeholder="Search..."
           autoFocus
         />
-        <ButtonGradient
-          isRightIcon={false}
-          onPress={handleFilter}
-          activeOpacity={0.5}
-          style={styles.btnFilter}>
-          <IconApp
-            color={Color.WHITE}
-            name={'Group-18240'}
-            size={getSize.m(24)}
-          />
-          <Text style={styles.textFilter}>Filters</Text>
-        </ButtonGradient>
+        {__DEV__ && (
+          <ButtonGradient
+            isRightIcon={false}
+            onPress={handleFilter}
+            activeOpacity={0.5}
+            style={styles.btnFilter}>
+            <IconApp
+              color={Color.WHITE}
+              name={'Group-18240'}
+              size={getSize.m(24)}
+            />
+            <Text style={styles.textFilter}>Filters</Text>
+          </ButtonGradient>
+        )}
       </Block>
       <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+        data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        windowSize={8}
+        windowSize={10}
         contentContainerStyle={styles.contentContainerStyle}
       />
     </SafeAreaView>
@@ -92,6 +98,7 @@ const styles = StyleSheet.create({
     marginHorizontal: getSize.m(12),
     fontSize: getSize.m(20, 0.3),
     fontFamily: Font.font_regular_400,
+    color: Color.WHITE,
   },
   btnFilter: {
     height: getSize.m(32),

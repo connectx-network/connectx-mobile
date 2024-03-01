@@ -6,17 +6,25 @@ import {FC, memo} from 'react';
 import {StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-interface IProps {}
+interface IProps {
+  isLoading: boolean;
+  handleJoinEvent: () => void;
+}
 
-const Footer: FC<IProps> = () => {
+const Footer: FC<IProps> = ({handleJoinEvent, isLoading}) => {
   return (
     <LinearGradient
       colors={[Color.BLACK, Color.TRANSPARENT]}
       start={{x: 0, y: 0.7}}
       end={{x: 0, y: 0}}
       style={styles.container}>
-      <ButtonGradient style={styles.btnBuy} colorRightIcon={Color.WHITE}>
-        <Text style={styles.textBuy}>Buy Ticket $72</Text>
+      <ButtonGradient
+        disabled={isLoading}
+        isLoading={isLoading}
+        onPress={handleJoinEvent}
+        style={styles.btnBuy}
+        colorRightIcon={Color.WHITE}>
+        <Text style={styles.textBuy}>Join Event</Text>
       </ButtonGradient>
     </LinearGradient>
   );

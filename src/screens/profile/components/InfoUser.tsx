@@ -3,7 +3,7 @@ import MessageIcon from '@assets/icons/profile/MessageIcon';
 import UserPlusIcon from '@assets/icons/profile/UserPlusIcon';
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
-import {Block, ButtonGradient, Image, Text} from '@components';
+import {Block, ButtonGradient, Text, Image} from '@components';
 import {navigate} from '@navigation/navigationService';
 import {EDIT_PROFILE_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
@@ -28,16 +28,22 @@ const InfoUser: FC<IProps> = ({
   following,
   refetch,
 }) => {
-  const handleEditProfile = useCallback(() => {
+  const handleEditProfile = () => {
     navigate(EDIT_PROFILE_SCREEN, {refetch});
-  }, []);
+  };
 
   return (
     <Block style={styles.container}>
       <Block alignCenter>
         <Image
+          source={
+            avatarUrl
+              ? {
+                  uri: avatarUrl,
+                }
+              : Images.AVATAR
+          }
           style={styles.avatar}
-          source={avatarUrl ? {uri: avatarUrl} : Images.AVATAR}
         />
         <Text style={styles.nameUser}>{fullName}</Text>
         <Block row alignCenter justifyCenter>
@@ -93,6 +99,7 @@ const styles = StyleSheet.create({
     height: getSize.s(96),
     borderRadius: getSize.s(48),
     marginTop: getSize.v(12),
+    backgroundColor: '#29313E',
   },
   nameUser: {
     fontSize: getSize.m(24, 0.3),

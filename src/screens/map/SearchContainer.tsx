@@ -6,6 +6,7 @@ import {
   useCallback,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
 import {Keyboard, TextInput} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -28,6 +29,7 @@ const SearchContainer = (
 ) => {
   const {top} = useSafeAreaInsets();
   const searchInputRef = useRef<TextInput>();
+  const [search, setSearch] = useState<string>('');
 
   const onBlur = useCallback(() => {
     Keyboard.dismiss();
@@ -48,6 +50,10 @@ const SearchContainer = (
     setShowSearch(false);
   }, []);
 
+  const handleClearText = useCallback(() => {
+    setSearch('');
+  }, []);
+
   return (
     <SafeAreaView style={Styles.container} edges={[]}>
       <SearchBar
@@ -56,6 +62,9 @@ const SearchContainer = (
         onFocus={onTapSearch}
         showSearch={showSearch}
         handleBack={handleBack}
+        value={search}
+        onChangeText={setSearch}
+        handleClearText={handleClearText}
       />
       {children}
     </SafeAreaView>

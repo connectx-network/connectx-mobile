@@ -5,9 +5,12 @@ import {Block, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {FC} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
-const Header = () => {
+interface IProps {}
+
+const Header: FC<IProps> = () => {
   return (
     <Block style={styles.tabBar}>
       <Block row alignCenter flex>

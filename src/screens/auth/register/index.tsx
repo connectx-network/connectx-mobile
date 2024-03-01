@@ -100,14 +100,14 @@ const RegisterScreen = () => {
           value={values.fullName}
           onChangeText={handleChangeValue('fullName')}
           leftIcon={<PersonIcon />}
-          placeholder="Full name"
+          placeholder="Full name *"
           error={errors.fullName}
         />
         <InputField
           value={values.email}
           onChangeText={handleChangeValue('email')}
           leftIcon={<MailIcon />}
-          placeholder="abc@email.com"
+          placeholder="Your email *"
           error={errors.email}
         />
         <InputField
@@ -115,7 +115,7 @@ const RegisterScreen = () => {
           value={values.password}
           onChangeText={handleChangeValue('password')}
           leftIcon={<LockIcon />}
-          placeholder="Your password"
+          placeholder="Your password *"
           error={errors.password}
         />
         <InputField
@@ -123,7 +123,7 @@ const RegisterScreen = () => {
           value={values.confirmPassword}
           onChangeText={handleChangeValue('confirmPassword')}
           leftIcon={<LockIcon />}
-          placeholder="Confirm password"
+          placeholder="Confirm password *"
           error={errors.confirmPassword}
         />
         <ButtonGradient

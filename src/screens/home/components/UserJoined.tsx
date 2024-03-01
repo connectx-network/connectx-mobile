@@ -11,6 +11,8 @@ interface IProps {
   styleText?: StyleProp<TextStyle>;
 }
 
+const image = [Images.AVATAR, Images.USER_TEST];
+
 const UserJoined: FC<IProps> = ({style, translateX, styleText}) => {
   return (
     <Block row alignCenter>
@@ -28,11 +30,13 @@ const UserJoined: FC<IProps> = ({style, translateX, styleText}) => {
               style,
             ]}
             key={index}
-            source={Images.USER_TEST}
+            source={image[Math.floor(Math.random() * 2)]}
           />
         ))}
       </Block>
-      <Text style={[styles.numberJoined, styleText]}>+20 Going</Text>
+      <Text style={[styles.numberJoined, styleText]}>
+        +{Math.floor(Math.random() * 20) + 1} Going
+      </Text>
     </Block>
   );
 };

@@ -23,9 +23,10 @@ interface IProps {
   scrollY: SharedValue<number>;
   title: string;
   banner?: string;
+  handleShare: () => void;
 }
 
-const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
+const Header: FC<IProps> = ({top, scrollY, title, banner, handleShare}) => {
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const onLayoutTabBar = useCallback(
     ({nativeEvent: {layout}}: LayoutChangeEvent) => {
@@ -99,7 +100,10 @@ const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
             {title || 'Event Name'}
           </Text>
         </Block>
-        <TouchableOpacity activeOpacity={0.5} style={styles.btnSave}>
+        <TouchableOpacity
+          onPress={handleShare}
+          activeOpacity={0.5}
+          style={styles.btnSave}>
           <SavedActiveIcon />
         </TouchableOpacity>
       </Animated.View>

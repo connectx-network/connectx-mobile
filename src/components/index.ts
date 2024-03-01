@@ -8,6 +8,7 @@ import ButtonGradient from './ButtonGradient';
 import TabBar from './TabBar';
 import Switcher from './Switcher';
 import ToastNotify from './ToastNotify';
+import ModalBox from './ModalBox';
 
 export {
   Block,
@@ -20,4 +21,5 @@ export {
   TabBar,
   Switcher,
   ToastNotify,
+  ModalBox,
 };

@@ -3,9 +3,16 @@ import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, ButtonGradient, Image, TabBar, Text} from '@components';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {EditProfileScreenRouteProp} from '@navigation/routes';
 import {UserState, actionUpdateUser} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
+import {
+  FetchInfoUser,
+  UpdateInfoUser,
+  UploadAvatar,
+} from '@services/user.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {useFormik} from 'formik';
@@ -15,15 +22,15 @@ import CountryPicker, {
   Country,
   CountryCode,
 } from 'react-native-country-picker-modal';
+import {Asset} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import InputForm from './components/InputForm';
 import * as Yup from 'yup';
-import {FetchInfoUser, UpdateInfoUser} from '@services/user.service';
-import {useToastMessage} from '@hooks/useToastMessage';
-import {EditProfileScreenRouteProp} from '@navigation/routes';
 import DropdownComponent, {ItemDropbox} from './components/DropdownComponent';
+import InputForm from './components/InputForm';
+import ModalPickImage from './components/ModalPickImage';
+import {goBack} from '@navigation/navigationService';
 
 interface IProps {
   route: EditProfileScreenRouteProp;
@@ -50,10 +57,13 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
     gender,
     userInterests,
     id,
+    avatarUrl,
   } = useSelector<IRootState, UserState>(uStateUser);
   const [countryCode, setCountryCode] = useState<CountryCode>('VN');
   const [showCountry, setShowCountry] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [avatar, setAvatar] = useState<Asset | null>(null);
   const {showWarningTop, showSuccessTop} = useToastMessage();
   const dispatch = useDispatch();
 
@@ -75,16 +85,28 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
         setLoading(true);
         await UpdateInfoUser(values);
         const {data} = await FetchInfoUser(id);
-        dispatch(actionUpdateUser(data));
+        if (avatar) {
+          const {data: dataImage} = await UploadAvatar({
+            uri: avatar.uri || '',
+            name: avatar.uri || '',
+            type: avatar.uri || '',
+          });
+          setTimeout(() => {
+            dispatch(actionUpdateUser({...data, avatarUrl: dataImage.url}));
+            params?.refetch?.();
+          }, 2000);
+        } else {
+          dispatch(actionUpdateUser(data));
+          params?.refetch?.();
+        }
         showSuccessTop('Update profile successfully!');
-        params?.refetch?.();
       } catch (error) {
         showWarningTop('Update profile failed!');
       } finally {
         setLoading(false);
       }
     },
-    [id, params?.refetch],
+    [id, params?.refetch, avatar],
   );
 
   const {
@@ -130,12 +152,42 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
     [setFieldValue],
   );
 
+  const handlePickImage = useCallback(() => {
+    setShowModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+  }, []);
+
+  const handleChangeAvatar = useCallback((image?: Asset) => {
+    image && setAvatar(image);
+    setShowModal(false);
+  }, []);
+
   return (
     <SafeAreaView edges={['top']} style={Styles.container}>
       <TabBar title="Edit Profile" hideRightIcon />
       <KeyboardAwareScrollView style={styles.content}>
-        <TouchableOpacity activeOpacity={0.5} style={styles.btnAvatar}>
-          <Image style={styles.avatar} source={Images.AVATAR} />
+        <TouchableOpacity
+          onPress={handlePickImage}
+          activeOpacity={0.5}
+          style={styles.btnAvatar}>
+          <Image
+            style={styles.avatar}
+            source={
+              avatar
+                ? {uri: avatar.uri}
+                : avatarUrl
+                ? {uri: avatarUrl}
+                : Images.AVATAR
+            }
+          />
+          <Block style={styles.bgAvatar}>
+            <Block style={styles.iconCamera}>
+              <Icon name={'camera'} color={Color.WHITE} size={getSize.m(18)} />
+            </Block>
+          </Block>
         </TouchableOpacity>
         <InputForm
           value={values.fullName}
@@ -211,6 +263,11 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           onClose={handleCloseCountryPicker}
         />
       </Block>
+      <ModalPickImage
+        isVisible={showModal}
+        onBackdropPress={handleCloseModal}
+        handleImage={handleChangeAvatar}
+      />
     </SafeAreaView>
   );
 };
@@ -227,6 +284,19 @@ const styles = StyleSheet.create({
     width: getSize.s(96),
     height: getSize.s(96),
     borderRadius: getSize.s(48),
+  },
+  bgAvatar: {
+    width: getSize.s(96),
+    height: getSize.s(96),
+    borderRadius: getSize.s(48),
+    position: 'absolute',
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+  },
+  iconCamera: {
+    backgroundColor: `${Color.BLACK}80`,
+    alignItems: 'center',
+    paddingVertical: getSize.m(2),
   },
   containerSave: {
     marginBottom: getSize.v(40),

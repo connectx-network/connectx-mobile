@@ -9,22 +9,30 @@ import {Icon, IconApp} from '@assets/icons';
 import Color from '@theme/Color';
 import {navigate} from '@navigation/navigationService';
 import {DETAIL_EVENT_SCREEN} from '@navigation/routes';
+import {Event} from '@model/event';
 
-interface IProps {}
+interface IProps extends Event {}
 
-const ItemEvent: FC<IProps> = () => {
-  const handleEvent = useCallback(() => {
-    navigate(DETAIL_EVENT_SCREEN);
-  }, []);
+const ItemEvent: FC<IProps> = props => {
+  const handleEvent = () => {
+    navigate(DETAIL_EVENT_SCREEN, props);
+  };
   return (
     <TouchableOpacity
       onPress={handleEvent}
       activeOpacity={0.5}
       style={styles.container}>
-      <Image source={Images.EVENT_IMG} style={styles.image} />
+      <Image
+        source={
+          props.eventAssets?.[0]?.url
+            ? {uri: props.eventAssets?.[0]?.url}
+            : Images.EVENT_IMG
+        }
+        style={styles.image}
+      />
       <Block paddingHorizontal={20} marginBottom={20}>
         <Text numberOfLines={1} style={styles.nameEvent}>
-          Name of Event
+          {props.name || 'Name of Event'}
         </Text>
         <UserJoined />
         <Block marginTop={12} row alignCenter>
@@ -33,7 +41,9 @@ const ItemEvent: FC<IProps> = () => {
             color={`${Color.WHITE}80`}
             size={getSize.m(20)}
           />
-          <Text style={styles.textLocation}>Location</Text>
+          <Text style={styles.textLocation}>
+            {props.location || 'Location'}
+          </Text>
         </Block>
       </Block>
     </TouchableOpacity>

@@ -55,13 +55,15 @@ const SearchBar: FC<IProps> = ({
           ref={searchInputRef}
           {...props}
         />
-        <TouchableOpacity onPress={handleClearText} activeOpacity={0.5}>
-          <Icon
-            name={'close-circle'}
-            size={getSize.m(22)}
-            color={`${Color.BACKGROUND}30`}
-          />
-        </TouchableOpacity>
+        {props.value && (
+          <TouchableOpacity onPress={handleClearText} activeOpacity={0.5}>
+            <Icon
+              name={'close-circle'}
+              size={getSize.m(22)}
+              color={Color.GRAY}
+            />
+          </TouchableOpacity>
+        )}
       </Block>
     </Block>
   );

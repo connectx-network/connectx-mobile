@@ -1,6 +1,6 @@
 import Color from '@theme/Color';
-import {FC, memo, useCallback} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {FC, memo, useCallback, useState} from 'react';
+import {Share, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Header from './components/Header';
 import Animated, {
@@ -24,6 +24,8 @@ import {
 } from '@navigation/routes';
 import {useDetailEvent} from './hooks';
 import moment from 'moment';
+import {JoinEvent} from '@services/event.service';
+import {useToastMessage} from '@hooks/useToastMessage';
 
 interface IProps {
   route: DetailEventScreenRouteProp;
@@ -31,8 +33,10 @@ interface IProps {
 
 const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
+  const {showSuccessTop, showWarningTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
   const {data} = useDetailEvent(params.id);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -41,12 +45,37 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   });
 
   const handleProfileOwner = useCallback(() => {
-    navigate(PROFILE_OWNER_EVENT_SCREEN);
+    navigate(PROFILE_OWNER_EVENT_SCREEN, {id: data?.eventHosts?.[0]?.id});
+  }, [data?.eventHosts?.[0]?.id]);
+
+  const handleShare = useCallback(() => {
+    Share.share({
+      title: `https://connect-x-app.netlify.app/event/${data?.id}`,
+      message: `https://connect-x-app.netlify.app/event/${data?.id}`,
+    });
   }, []);
+
+  const handleJoinEvent = useCallback(async () => {
+    try {
+      setLoading(true);
+      const {data: dataEvent} = await JoinEvent(data?.id || params.id);
+      console.log('dataEvent>>', dataEvent);
+      showSuccessTop('Join event successfully!');
+    } catch (error) {
+      showWarningTop(
+        typeof error === 'string'
+          ? error
+          : 'Join event failed, please try again!',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [data?.id || params.id]);
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       <Header
+        handleShare={handleShare}
         banner={data?.eventAssets?.[0]?.url}
         top={top}
         scrollY={scrollY}
@@ -80,7 +109,9 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
                 )}
               </Text>
               <Text numberOfLines={1} style={styles.textSubInfo}>
-                Tuesday, 4:00PM - 9:00PM
+                {moment(data?.eventDate || params.eventDate).format(
+                  'dddd, h:mm A',
+                )}
               </Text>
             </Block>
           </Block>
@@ -97,48 +128,36 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               </Text>
             </Block>
           </Block>
-          <Block row alignCenter marginBottom={30}>
-            <TouchableOpacity
-              onPress={handleProfileOwner}
-              activeOpacity={0.5}
-              style={styles.contentUser}>
-              <Image source={Images.AVATAR} style={styles.boxIcon} />
-              <Block row flex alignCenter>
-                <Block flex>
-                  <Text numberOfLines={1} style={styles.textTitleInfo}>
-                    {data?.eventHosts?.[0]?.title || 'Location'}
-                  </Text>
-                  <Text numberOfLines={1} style={styles.textSubInfo}>
-                    Sub Location
-                  </Text>
+          {__DEV__ && (
+            <Block row alignCenter marginBottom={30}>
+              <TouchableOpacity
+                onPress={handleProfileOwner}
+                activeOpacity={0.5}
+                style={styles.contentUser}>
+                <Image source={Images.AVATAR} style={styles.boxIcon} />
+                <Block row flex alignCenter>
+                  <Block flex>
+                    <Text numberOfLines={1} style={styles.textTitleInfo}>
+                      {data?.eventHosts?.[0]?.title || 'Location'}
+                    </Text>
+                    <Text numberOfLines={1} style={styles.textSubInfo}>
+                      Sub Location
+                    </Text>
+                  </Block>
                 </Block>
-              </Block>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnFollow} activeOpacity={0.5}>
-              <Text style={styles.textFollow}>Follow</Text>
-            </TouchableOpacity>
-          </Block>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.btnFollow} activeOpacity={0.5}>
+                <Text style={styles.textFollow}>Follow</Text>
+              </TouchableOpacity>
+            </Block>
+          )}
           <Text style={styles.textAboutEvent}>About Event</Text>
           <Text style={styles.textDescription}>
-            {data?.description ||
-              params.description ||
-              `You can use the KeyboardAwareScrollView, KeyboardAwareSectionList or
-            the KeyboardAwareFlatList components. They accept ScrollView,
-            SectionList and FlatList default props respectively and implement a
-            custom high order component called KeyboardAwareHOC to handle
-            keyboard appearance. The high order component is also available if
-            you want to use it in any other component. First, Android natively
-            has this feature, you can easily enable it by setting
-            windowSoftInputMode in AndroidManifest.xml. Check here. But if you
-            want to use feature like extraHeight, you need to enable Android
-            Support with the following steps: Make sure you are using
-            react-native 0.46 or above. Set windowSoftInputMode to adjustPan in
-            AndroidManifest.xml. Set enableOnAndroid property to true. Android
-            Support is not perfect, here is the supported list:`}
+            {data?.description || params.description}
           </Text>
         </Block>
       </Animated.ScrollView>
-      <Footer />
+      <Footer isLoading={isLoading} handleJoinEvent={handleJoinEvent} />
     </SafeAreaView>
   );
 };

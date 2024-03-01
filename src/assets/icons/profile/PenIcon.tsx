@@ -4,7 +4,7 @@ import {memo} from 'react';
 const SvgComponent = (props: SvgProps) => (
   <Svg width={14} height={14} fill="none" {...props}>
     <Path
-      stroke="#5669FF"
+      stroke={props.color || '#5669FF'}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}
