@@ -1,6 +1,7 @@
 export interface GetEventParams {
   page: number;
   size: number;
+  userId?: string;
 }
 
 export interface EventCategory {
@@ -12,6 +13,13 @@ export interface EventAsset {
   id: string;
   url: string;
   type: string;
+  eventId: string;
+}
+
+export interface LocationDetail {
+  id: string;
+  latitude: string;
+  longitude: string;
   eventId: string;
 }
 
@@ -29,6 +37,7 @@ export interface Event {
   description: string;
   eventAssets: EventAsset[];
   eventHosts: EventHost[];
+  eventLocationDetail: LocationDetail;
 }
 
 export interface EventHost {
@@ -40,4 +49,11 @@ export interface EventHost {
 
 export interface IDetailEvent extends Event {
   eventCategory: EventCategory;
+}
+
+export interface ParamsFetchJoinEvent {
+  page: number;
+  size: number;
+  eventId: string;
+  userId: string;
 }

@@ -133,15 +133,19 @@ const RegisterScreen = () => {
           style={styles.btnSignUP}>
           <Text style={styles.textBtnSignUp}>Sign up</Text>
         </ButtonGradient>
-        <Text style={styles.textOr}>OR</Text>
-        <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-          <GoogleIcon />
-          <Text style={styles.textBtnSocial}>Login with Google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-          <FacebookIcon />
-          <Text style={styles.textBtnSocial}>Login with Google</Text>
-        </TouchableOpacity>
+        {false && <Text style={styles.textOr}>OR</Text>}
+        {false && (
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
+            <GoogleIcon />
+            <Text style={styles.textBtnSocial}>Login with Google</Text>
+          </TouchableOpacity>
+        )}
+        {false && (
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
+            <FacebookIcon />
+            <Text style={styles.textBtnSocial}>Login with Google</Text>
+          </TouchableOpacity>
+        )}
       </KeyboardAwareScrollView>
       <Block style={styles.footer}>
         <Text style={styles.textHaveAccount}>Already have an account?</Text>

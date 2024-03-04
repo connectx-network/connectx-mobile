@@ -11,12 +11,15 @@ export enum AuthRouteEnum {
 export enum EventRouteEnum {
   GetEvent = '/event',
   JoinEvent = '/event/join',
+  CheckJoinEvent = '/event/check-join',
+  ListJoinUserEvent = '/event/joined-user',
 }
 
 export enum UserRouteEnum {
   User = '/user',
   AuthSelf = '/auth/self',
   UploadAvatar = '/user/avatar',
+  DeleteAccount = '/auth'
 }
 
 export enum NotifyRouteEnum {

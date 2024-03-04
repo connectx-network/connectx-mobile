@@ -1,4 +1,4 @@
-package com.checkin.newarchitecture;
+package com.twendee.connectx.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.checkin.BuildConfig;
-import com.checkin.newarchitecture.components.MainComponentsRegistry;
-import com.checkin.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.twendee.connectx.BuildConfig;
+import com.twendee.connectx.newarchitecture.components.MainComponentsRegistry;
+import com.twendee.connectx.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -21,18 +21,20 @@ const Header: FC<IProps> = () => {
           Events
         </Text>
       </Block>
-      <Block row alignCenter>
-        <TouchableOpacity style={styles.btnAction} activeOpacity={0.5}>
-          <SearchIcon color={Color.WHITE} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnAction} activeOpacity={0.5}>
-          <Icon
-            name={'ellipsis-vertical'}
-            color={Color.WHITE}
-            size={getSize.m(22)}
-          />
-        </TouchableOpacity>
-      </Block>
+      {false && (
+        <Block row alignCenter>
+          <TouchableOpacity style={styles.btnAction} activeOpacity={0.5}>
+            <SearchIcon color={Color.WHITE} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btnAction} activeOpacity={0.5}>
+            <Icon
+              name={'ellipsis-vertical'}
+              color={Color.WHITE}
+              size={getSize.m(22)}
+            />
+          </TouchableOpacity>
+        </Block>
+      )}
     </Block>
   );
 };

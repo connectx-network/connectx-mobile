@@ -74,18 +74,18 @@ const Header: FC<IProps> = ({
     return {transform: [{translateY}], opacity};
   }, [heightSearch]);
 
-  const styleTabBar = useAnimatedStyle(() => {
-    if (!heightSearch) {
-      return {};
-    }
-    const translateY = interpolate(
-      scrollY.value,
-      [0, 80],
-      [0, -heightSearch],
-      Extrapolation.CLAMP,
-    );
-    return {transform: [{translateY: translateY}]};
-  }, [heightSearch]);
+  // const styleTabBar = useAnimatedStyle(() => {
+  //   if (!heightSearch) {
+  //     return {};
+  //   }
+  //   const translateY = interpolate(
+  //     scrollY.value,
+  //     [0, 80],
+  //     [0, -heightSearch],
+  //     Extrapolation.CLAMP,
+  //   );
+  //   return {transform: [{translateY: translateY}]};
+  // }, [heightSearch]);
 
   const handleSearch = useCallback(() => {
     navigate(SEARCH_SCREEN, {heightSearch, heightTabBar});
@@ -93,7 +93,11 @@ const Header: FC<IProps> = ({
 
   return (
     <Block onLayout={onLayoutTabBar} style={[styles.root, {paddingTop}]}>
-      <Animated.View style={[styles.contentLiner, styleTabBar]}>
+      <Animated.View
+        style={[
+          styles.contentLiner,
+          // styleTabBar
+        ]}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 0, y: 1}}
@@ -125,35 +129,37 @@ const Header: FC<IProps> = ({
           <NotifyIcon />
         </TouchableOpacity>
       </Block>
-      <Animated.View
-        onLayout={handleLayoutSearch}
-        style={[styles.actionBar, styleSearch]}>
-        <Pressable style={styles.btnSearch} onPress={handleSearch}>
-          <SearchIcon />
-          <Text
-            style={styles.inputSearch}
-            // placeholderTextColor={`${Color.BACKGROUND}60`}
-            // placeholder="Search..."
-            // onFocus={handleSearch}
-          >
-            Search...
-          </Text>
-        </Pressable>
+      {false && (
+        <Animated.View
+          onLayout={handleLayoutSearch}
+          style={[styles.actionBar, styleSearch]}>
+          <Pressable style={styles.btnSearch} onPress={handleSearch}>
+            <SearchIcon />
+            <Text
+              style={styles.inputSearch}
+              // placeholderTextColor={`${Color.BACKGROUND}60`}
+              // placeholder="Search..."
+              // onFocus={handleSearch}
+            >
+              Search...
+            </Text>
+          </Pressable>
 
-        {__DEV__ && (
-          <TouchableOpacity
-            onPress={handleFilter}
-            activeOpacity={0.5}
-            style={styles.btnFilter}>
-            <IconApp
-              color={'#A29EF0'}
-              name={'Group-18240'}
-              size={getSize.m(24)}
-            />
-            <Text style={styles.textFilter}>Filters</Text>
-          </TouchableOpacity>
-        )}
-      </Animated.View>
+          {false && (
+            <TouchableOpacity
+              onPress={handleFilter}
+              activeOpacity={0.5}
+              style={styles.btnFilter}>
+              <IconApp
+                color={'#A29EF0'}
+                name={'Group-18240'}
+                size={getSize.m(24)}
+              />
+              <Text style={styles.textFilter}>Filters</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+      )}
     </Block>
   );
 };

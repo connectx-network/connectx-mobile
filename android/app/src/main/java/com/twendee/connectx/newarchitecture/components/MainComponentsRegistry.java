@@ -1,4 +1,4 @@
-package com.checkin.newarchitecture.components;
+package com.twendee.connectx.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

@@ -44,7 +44,7 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const initialValues: LoginParams = {
     email: __DEV__ ? 'ducphamvan0711@gmail.com' : '',
-    password: __DEV__? '123456aA@@' : '',
+    password: __DEV__ ? '123456aA@@' : '',
   };
 
   const handleSignIn = useCallback(
@@ -138,15 +138,19 @@ const LoginScreen = () => {
           onPress={submitForm}>
           <Text style={styles.textBtnSignIn}>Sign in</Text>
         </ButtonGradient>
-        <Text style={styles.textOr}>OR</Text>
-        <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-          <GoogleIcon />
-          <Text style={styles.textBtnSocial}>Login with Google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-          <FacebookIcon />
-          <Text style={styles.textBtnSocial}>Login with Google</Text>
-        </TouchableOpacity>
+        {false && <Text style={styles.textOr}>OR</Text>}
+        {false && (
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
+            <GoogleIcon />
+            <Text style={styles.textBtnSocial}>Login with Google</Text>
+          </TouchableOpacity>
+        )}
+        {false && (
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
+            <FacebookIcon />
+            <Text style={styles.textBtnSocial}>Login with Google</Text>
+          </TouchableOpacity>
+        )}
       </KeyboardAwareScrollView>
       <Block style={styles.footer}>
         <Text style={styles.textNotAccount}>Don’t have an account?</Text>

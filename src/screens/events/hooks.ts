@@ -5,7 +5,7 @@ import {useMutation} from '@tanstack/react-query';
 import {AxiosResponse} from 'axios';
 import {useCallback, useEffect, useState} from 'react';
 
-export function useFetchEvents({page, size = 10}: GetEventParams) {
+export function useFetchEvents({page, size = 10, userId}: GetEventParams) {
   const [data, setData] = useState<Event[]>([]);
   const [paging, setPaging] = useState<Paging>({
     page,
@@ -31,14 +31,17 @@ export function useFetchEvents({page, size = 10}: GetEventParams) {
     Error,
     GetEventParams
   >({
-    mutationKey: ['fetchEvents', {page: paging.page, size: paging.size}],
+    mutationKey: [
+      'fetchEvents',
+      {page: paging.page, size: paging.size, userId},
+    ],
     mutationFn: FetchEvents,
     onSuccess: onSuccess,
   });
 
   useEffect(() => {
-    mutate({page: paging.page, size: paging.size});
-  }, [paging.page, paging.size]);
+    mutate({page: paging.page, size: paging.size, userId});
+  }, [paging.page, paging.size, userId]);
 
   const onEndReached = useCallback(() => {
     if (paging.page < paging.totalPages) {

@@ -33,6 +33,11 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     userInterests || [],
   );
   const [contentAdd, setContentAdd] = useState<string>('');
+  const [editAbout, setEditAbout] = useState<boolean>(false);
+  const isEditAbout = useDelayedValueWithLayoutAnimation(editAbout);
+  const [textDescription, setTextDescription] = useState<string>(
+    description || '',
+  );
   const {showWarningTop, showSuccessTop} = useToastMessage();
   const dispatch = useDispatch();
 
@@ -53,6 +58,7 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
           address: address || '',
           gender,
           interests,
+          description: description || '',
         });
         showSuccessTop('Update interest successfully!');
         setChangeInterest(false);
@@ -78,26 +84,85 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     }
   }, [contentAdd]);
 
+  const handleEditAbout = async () => {
+    if (!editAbout) {
+      setEditAbout(true);
+    } else {
+      try {
+        await UpdateInfoUser({
+          fullName,
+          nickname: nickname || '',
+          country,
+          address: address || '',
+          gender,
+          interests: userInterests,
+          description: textDescription,
+        });
+        showSuccessTop('Update description successfully!');
+        setEditAbout(false);
+        dispatch(actionUpdateUser({description: textDescription}));
+        refetch();
+      } catch (error) {
+        showWarningTop('Update description failed, please try again!');
+      }
+    }
+  };
+
   return (
     <Block style={styles.container}>
-      {description ? (
-        <Text style={styles.textAbout}>{description}</Text>
+      {description && !editAbout ? (
+        <>
+          {isMe && (
+            <Block row space="between">
+              <Text style={styles.textInterest}>Update biography</Text>
+              <TouchableOpacity
+                onPress={handleEditAbout}
+                activeOpacity={0.5}
+                style={styles.btnChange}>
+                <PenIcon color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'} />
+                <Text
+                  color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'}
+                  style={styles.textChange}>
+                  {isEditAbout ? 'SAVE' : 'CHANGE'}
+                </Text>
+              </TouchableOpacity>
+            </Block>
+          )}
+          <Text style={styles.textAbout}>{description}</Text>
+        </>
       ) : (
-        <Block row alignStart space="between" marginBottom={30}>
+        <Block row alignStart space="between">
           <Text style={styles.textEmptyProfile}>
-            {isMe ? 'Update biography about you' : 'No biography yet'}
+            {isMe ? 'Update biography' : 'No biography yet'}
           </Text>
           {isMe && (
-            <TouchableOpacity activeOpacity={0.5} style={styles.btnChange}>
-              <PenIcon />
-              <Text color="#5669FF" style={styles.textChange}>
-                CHANGE
+            <TouchableOpacity
+              onPress={handleEditAbout}
+              activeOpacity={0.5}
+              style={styles.btnChange}>
+              <PenIcon color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'} />
+              <Text
+                color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'}
+                style={styles.textChange}>
+                {isEditAbout ? 'SAVE' : 'CHANGE'}
               </Text>
             </TouchableOpacity>
           )}
         </Block>
       )}
-      <Block row alignCenter space="between">
+      {isEditAbout && (
+        <Block style={styles.boxInputAbout}>
+          <TextInput
+            multiline
+            style={styles.inputAbout}
+            placeholder="Enter biography...."
+            placeholderTextColor={`${Color.WHITE}40`}
+            value={textDescription}
+            onChangeText={setTextDescription}
+          />
+        </Block>
+      )}
+      <Block row alignCenter space="between" marginTop={12}>
         <Text style={styles.textInterest}>Interest</Text>
         {isMe && (
           <TouchableOpacity
@@ -159,7 +224,7 @@ const styles = StyleSheet.create({
   },
   textAbout: {
     fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_regular_400,
+    fontFamily: Font.font_extra_light_300,
     lineHeight: getSize.m(26),
     marginBottom: getSize.m(24),
   },
@@ -221,6 +286,20 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_medium_500,
     color: Color.BACKGROUND,
     minWidth: getSize.m(30),
+  },
+  boxInputAbout: {
+    backgroundColor: '#29313E',
+    marginVertical: getSize.v(12),
+    paddingHorizontal: getSize.s(12),
+    borderRadius: getSize.m(12),
+    paddingVertical: getSize.m(8),
+  },
+  inputAbout: {
+    textAlignVertical: 'top',
+    color: Color.WHITE,
+    minHeight: getSize.v(100),
+    fontSize: getSize.m(13, 0.3),
+    fontFamily: Font.font_regular_400,
   },
 });
 

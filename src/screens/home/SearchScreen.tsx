@@ -56,7 +56,7 @@ const SearchScreen: FC<IProps> = ({route: {params}}) => {
           placeholder="Search..."
           autoFocus
         />
-        {__DEV__ && (
+        {false && (
           <ButtonGradient
             isRightIcon={false}
             onPress={handleFilter}

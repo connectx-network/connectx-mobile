@@ -4,11 +4,16 @@ import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, ButtonGradient, Image, TabBar, Text} from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
-import {EditProfileScreenRouteProp} from '@navigation/routes';
-import {UserState, actionUpdateUser} from '@redux/slices/userSlice';
+import {EditProfileScreenRouteProp, LOGIN_SCREEN} from '@navigation/routes';
+import {
+  UserState,
+  actionLogoutUser,
+  actionUpdateUser,
+} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
 import {
+  DeleteAccount,
   FetchInfoUser,
   UpdateInfoUser,
   UploadAvatar,
@@ -17,7 +22,7 @@ import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {useFormik} from 'formik';
 import {FC, useCallback, useMemo, useState} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Alert, StyleSheet, TouchableOpacity} from 'react-native';
 import CountryPicker, {
   Country,
   CountryCode,
@@ -30,16 +35,24 @@ import * as Yup from 'yup';
 import DropdownComponent, {ItemDropbox} from './components/DropdownComponent';
 import InputForm from './components/InputForm';
 import ModalPickImage from './components/ModalPickImage';
-import {goBack} from '@navigation/navigationService';
+import {goBack, reset} from '@navigation/navigationService';
+import * as Keychain from 'react-native-keychain';
+import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 
 interface IProps {
   route: EditProfileScreenRouteProp;
 }
 
+const regexNumber = /^[0-9]*$/;
+
 const validationSchema = Yup.object({
   fullName: Yup.string()
     .required('Full name is required')
     .min(5, 'Full name must be at least 5 characters'),
+  phoneNumber: Yup.string()
+    .matches(regexNumber, 'Invalid phone number')
+    .max(10, 'Phone number should be 9 to 10-digit number.')
+    .min(9, 'Phone number should be 9 to 10-digit number.'),
 });
 
 const genders = [
@@ -58,6 +71,7 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
     userInterests,
     id,
     avatarUrl,
+    phoneNumber,
   } = useSelector<IRootState, UserState>(uStateUser);
   const [countryCode, setCountryCode] = useState<CountryCode>('VN');
   const [showCountry, setShowCountry] = useState<boolean>(false);
@@ -75,6 +89,7 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
       address: address || '',
       gender,
       interests: userInterests,
+      phoneNumber: phoneNumber || '',
     }),
     [nickname, fullName, country, address, userInterests, gender],
   );
@@ -165,6 +180,36 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
     setShowModal(false);
   }, []);
 
+  const handleDelete = useCallback(async () => {
+    try {
+      await DeleteAccount();
+      reset(LOGIN_SCREEN);
+      dispatch(actionLogoutUser());
+      await Keychain.resetInternetCredentials(JWT_KEY);
+      await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
+      showSuccessTop('Delete account successfully!');
+    } catch (error) {
+      showWarningTop('Delete account failed!');
+    }
+  }, []);
+
+  const handleDeleteAccount = useCallback(() => {
+    Alert.alert(
+      'Delete account',
+      'Are you sure you want to delete your account?',
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'Ok',
+          style: 'destructive',
+          onPress: handleDelete,
+        },
+      ],
+    );
+  }, [handleDelete]);
+
   return (
     <SafeAreaView edges={['top']} style={Styles.container}>
       <TabBar title="Edit Profile" hideRightIcon />
@@ -209,7 +254,13 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           placeholder="..."
           editable={false}
         />
-        <InputForm label="Phone number" placeholder="..." />
+        <InputForm
+          error={errors.phoneNumber}
+          value={values.phoneNumber}
+          onChangeText={handleChangeValue('phoneNumber')}
+          label="Phone number"
+          placeholder="..."
+        />
         <Block row alignCenter>
           <TouchableOpacity
             onPress={handleCountry}
@@ -251,6 +302,12 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           style={styles.btnSave}>
           <Text style={styles.textSave}>SAVE</Text>
         </ButtonGradient>
+        <TouchableOpacity
+          onPress={handleDeleteAccount}
+          style={styles.btnDelete}
+          activeOpacity={0.5}>
+          <Text style={styles.textDelete}>Delete account</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
       <Block style={styles.countryPicker}>
         <CountryPicker
@@ -299,11 +356,23 @@ const styles = StyleSheet.create({
     paddingVertical: getSize.m(2),
   },
   containerSave: {
-    marginBottom: getSize.v(40),
+    marginBottom: getSize.v(30),
     marginTop: getSize.v(12),
   },
   btnSave: {
     height: getSize.m(50),
+  },
+  btnDelete: {
+    marginBottom: getSize.v(40),
+    alignSelf: 'center',
+    paddingHorizontal: getSize.s(12),
+    paddingVertical: getSize.m(6),
+  },
+  textDelete: {
+    color: Color.RED_HOLDER,
+    fontFamily: Font.font_medium_500,
+    fontSize: getSize.m(14, 0.3),
+    textDecorationLine: 'underline',
   },
   textSave: {
     fontSize: getSize.m(16, 0.3),

@@ -17,7 +17,7 @@ const NotificationScreen = () => {
 
   return (
     <SafeAreaView edges={['top']} style={Styles.container}>
-      <TabBar title="Notification" />
+      <TabBar title="Notification" hideRightIcon />
       <FlatList
         data={data}
         keyExtractor={keyExtractor}

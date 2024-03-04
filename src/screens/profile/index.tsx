@@ -91,11 +91,14 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
           </Tabs.ScrollView>
         </Tabs.Tab>
         <Tabs.Tab name="EVENT">
-          <EventTab scrollEnabled={!!data} />
+          <EventTab
+            scrollEnabled={!!data}
+            userId={data?.data?.id || params?.id}
+          />
         </Tabs.Tab>
-        <Tabs.Tab name="REVIEWS">
+        {/* <Tabs.Tab name="REVIEWS">
           <ReviewsTab scrollEnabled={!!data} />
-        </Tabs.Tab>
+        </Tabs.Tab> */}
       </Tabs.Container>
     </SafeAreaView>
   );

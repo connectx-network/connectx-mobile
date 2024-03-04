@@ -16,28 +16,41 @@ export const refSearchMap = createRef<any>();
 
 export const searchMapControl = {
   onBlur: () => refSearchMap.current?.onBlur(),
+  hideSearch: () => refSearchMap.current?.hideSearch(),
 };
 
 interface IProps {
   showSearch: boolean;
   setShowSearch: (value: boolean) => void;
+  setTextSearch: (text: string) => void;
+  textSearch: string;
 }
 
 const SearchContainer = (
-  {children, setShowSearch, showSearch}: PropsWithChildren<IProps>,
+  {
+    children,
+    setShowSearch,
+    showSearch,
+    textSearch,
+    setTextSearch,
+  }: PropsWithChildren<IProps>,
   ref,
 ) => {
   const {top} = useSafeAreaInsets();
   const searchInputRef = useRef<TextInput>();
-  const [search, setSearch] = useState<string>('');
 
   const onBlur = useCallback(() => {
     Keyboard.dismiss();
     searchInputRef.current?.blur();
   }, []);
+  const hideSearch = useCallback(() => {
+    Keyboard.dismiss();
+    searchInputRef.current?.blur();
+    setShowSearch(false);
+  }, []);
 
   useImperativeHandle(ref, () => {
-    return {onBlur};
+    return {onBlur, hideSearch};
   });
 
   const onTapSearch = useCallback(() => {
@@ -51,7 +64,7 @@ const SearchContainer = (
   }, []);
 
   const handleClearText = useCallback(() => {
-    setSearch('');
+    setTextSearch('');
   }, []);
 
   return (
@@ -62,8 +75,8 @@ const SearchContainer = (
         onFocus={onTapSearch}
         showSearch={showSearch}
         handleBack={handleBack}
-        value={search}
-        onChangeText={setSearch}
+        value={textSearch}
+        onChangeText={setTextSearch}
         handleClearText={handleClearText}
       />
       {children}

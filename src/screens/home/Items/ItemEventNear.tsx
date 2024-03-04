@@ -14,6 +14,7 @@ import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
 import lodash from 'lodash';
 interface IProps extends Event {
   style?: StyleProp<ViewStyle>;
+  handleItem?: () => void;
 }
 
 const ItemEventNear: FC<IProps> = ({style, ...props}) => {
@@ -23,7 +24,7 @@ const ItemEventNear: FC<IProps> = ({style, ...props}) => {
 
   return (
     <TouchableOpacity
-      onPress={handleItem}
+      onPress={props.handleItem || handleItem}
       activeOpacity={0.5}
       style={[styles.container, style]}>
       <Image
@@ -38,10 +39,10 @@ const ItemEventNear: FC<IProps> = ({style, ...props}) => {
         <Block>
           <Block row alignCenter space="between">
             <Text style={styles.textDate}>
-              {moment(props.eventDate).format('hh:mm - DD/MM/YYYY')}
+              {moment(props.eventDate).format('hh:mm A - DD/MM/YYYY')}
             </Text>
             <TouchableOpacity activeOpacity={0.5} style={styles.btnSave}>
-              <SavedActiveIcon />
+              {/* <SavedActiveIcon /> */}
             </TouchableOpacity>
           </Block>
           <Text numberOfLines={2} style={styles.textName}>

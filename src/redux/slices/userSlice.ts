@@ -23,6 +23,7 @@ const initialState: UserState = {
   userInterests: [],
   followers: 0,
   following: 0,
+  phoneNumber: '',
 };
 
 export const userSlice = createSlice({

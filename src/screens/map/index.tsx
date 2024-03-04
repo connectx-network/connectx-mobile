@@ -1,30 +1,29 @@
 import {Switcher} from '@components';
-import {useCallback, useState} from 'react';
-import MapHome from './MapHome';
+import {useCallback, useMemo, useState} from 'react';
+import MapHome, {refMap} from './MapHome';
 import MapSearch from './MapSearch';
 import SearchContainer, {refSearchMap} from './SearchContainer';
+import {useFetchEvents} from '@screens/events/hooks';
 
 const MapScreen = () => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  const [region, setRegion] = useState({
-    latitude: 21.027518812382848,
-    longitude: 105.78320091585685,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  const [textSearch, setTextSearch] = useState<string>('');
+  const {data} = useFetchEvents({page: 1, size: 10});
 
-  const onRegionChange = useCallback(region => {
-    setRegion(region);
-  }, []);
+  const dataSearch = useMemo(() => {
+    return data.filter(item => item.name.includes(textSearch));
+  }, [data, textSearch]);
 
   return (
     <SearchContainer
       ref={refSearchMap}
       showSearch={showSearch}
-      setShowSearch={setShowSearch}>
+      setShowSearch={setShowSearch}
+      textSearch={textSearch}
+      setTextSearch={setTextSearch}>
       <Switcher showSearch={showSearch}>
-        <MapSearch />
-        <MapHome region={region} onRegionChange={onRegionChange} />
+        <MapSearch data={dataSearch} />
+        <MapHome data={dataSearch} ref={refMap} />
       </Switcher>
     </SearchContainer>
   );

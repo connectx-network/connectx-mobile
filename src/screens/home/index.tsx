@@ -57,21 +57,21 @@ const HomeScreen = () => {
     [],
   );
 
-  const onScrollEndDrag = useCallback(() => {
-    if (scrollY.value > 40 && scrollY.value < 80) {
-      scrollView.current?.scrollTo({
-        y: 80,
-        animated: true,
-      });
-    } else {
-      if (scrollY.value < 40 && scrollY.value > 0) {
-        scrollView.current?.scrollTo({
-          y: 0,
-          animated: true,
-        });
-      }
-    }
-  }, []);
+  // const onScrollEndDrag = useCallback(() => {
+  //   if (scrollY.value > 40 && scrollY.value < 80) {
+  //     scrollView.current?.scrollTo({
+  //       y: 80,
+  //       animated: true,
+  //     });
+  //   } else {
+  //     if (scrollY.value < 40 && scrollY.value > 0) {
+  //       scrollView.current?.scrollTo({
+  //         y: 0,
+  //         animated: true,
+  //       });
+  //     }
+  //   }
+  // }, []);
 
   return (
     <SafeAreaView edges={[]} style={styles.container}>
@@ -90,13 +90,13 @@ const HomeScreen = () => {
       <Animated.ScrollView
         ref={scrollView}
         onScroll={onScroll}
-        onScrollEndDrag={onScrollEndDrag}
+        // onScrollEndDrag={onScrollEndDrag}
         contentContainerStyle={{
           paddingTop: heightTabBar,
         }}>
         <Block style={styles.label}>
           <Text style={styles.textLabel}>Upcoming Events</Text>
-          {__DEV__ && (
+          {false && (
             <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
               <Text style={styles.textSeeAll}>See All</Text>
               <Icon
@@ -128,7 +128,7 @@ const HomeScreen = () => {
 
         <Block style={styles.label}>
           <Text style={styles.textLabel}>Nearby You</Text>
-          {__DEV__ && (
+          {false && (
             <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
               <Text style={styles.textSeeAll}>See All</Text>
               <Icon

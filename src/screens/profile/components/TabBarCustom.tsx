@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     paddingHorizontal: getSize.s(20),
   },
   item: {
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: getSize.s(10),
     paddingVertical: getSize.v(8),
+    marginRight: getSize.s(30)
   },
   label: {
     fontSize: getSize.m(16, 0.3),

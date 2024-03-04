@@ -1,15 +1,17 @@
 import Images from '@assets/images';
 import {IS_IOS} from '@base/common/constants';
 import {getSize} from '@base/common/responsive';
-import {Block, Image} from '@components';
+import {Block, Image, Text} from '@components';
 import Color from '@theme/Color';
-import {FC, memo, useRef, useState} from 'react';
+import {FC, memo, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {Marker, MapMarkerProps} from 'react-native-maps';
+import {MapMarkerProps, Marker} from 'react-native-maps';
 
-interface IProps extends MapMarkerProps {}
+interface IProps extends MapMarkerProps {
+  banner: string;
+}
 
-const MarkerCustom: FC<IProps> = ({coordinate}) => {
+const MarkerCustom: FC<IProps> = ({coordinate, banner}) => {
   const [reView, setReview] = useState<boolean>(true);
   const doRedraw = () => {
     setReview(false);
@@ -22,7 +24,7 @@ const MarkerCustom: FC<IProps> = ({coordinate}) => {
           <Image
             onLoadEnd={doRedraw}
             style={styles.image}
-            source={Images.AVATAR}
+            source={banner ? {uri: banner} : Images.AVATAR}
           />
         </Block>
       </Block>

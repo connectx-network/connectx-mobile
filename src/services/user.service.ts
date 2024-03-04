@@ -32,3 +32,9 @@ export async function UploadAvatar(
     },
   });
 }
+
+export async function DeleteAccount(): Promise<any> {
+  return api(UserRouteEnum.DeleteAccount, null, {
+    method: 'DELETE',
+  });
+}

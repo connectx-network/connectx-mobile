@@ -1,6 +1,7 @@
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
+import {UserInfo} from '@model/user';
 import Font from '@theme/Font';
 import {FC, memo} from 'react';
 import {ImageStyle, StyleProp, StyleSheet, TextStyle} from 'react-native';
@@ -9,15 +10,23 @@ interface IProps {
   style?: StyleProp<ImageStyle>;
   translateX?: number;
   styleText?: StyleProp<TextStyle>;
+  totalUser?: number;
+  users?: Array<{user: UserInfo}>;
 }
 
 const image = [Images.AVATAR, Images.USER_TEST];
 
-const UserJoined: FC<IProps> = ({style, translateX, styleText}) => {
+const UserJoined: FC<IProps> = ({
+  style,
+  translateX,
+  styleText,
+  totalUser,
+  users,
+}) => {
   return (
     <Block row alignCenter>
       <Block row alignCenter>
-        {[1, 2, 3].map((_, index) => (
+        {(users?.slice(0, 3) || [1, 2, 3]).map((item, index) => (
           <Image
             style={[
               styles.image,
@@ -30,12 +39,28 @@ const UserJoined: FC<IProps> = ({style, translateX, styleText}) => {
               style,
             ]}
             key={index}
-            source={image[Math.floor(Math.random() * 2)]}
+            source={
+              item.user?.avatarUrl ? {uri: item.user?.avatarUrl} : Images.AVATAR
+            }
           />
         ))}
       </Block>
-      <Text style={[styles.numberJoined, styleText]}>
-        +{Math.floor(Math.random() * 20) + 1} Going
+      <Text
+        style={[
+          styles.numberJoined,
+          styleText,
+          {
+            transform: [
+              {
+                translateX:
+                  (users?.slice(0, 3) || [1, 2, 3]).length === 3
+                    ? -getSize.m(10)
+                    : 0,
+              },
+            ],
+          },
+        ]}>
+        +{totalUser || 1} Going
       </Text>
     </Block>
   );
@@ -57,7 +82,6 @@ const styles = StyleSheet.create({
     color: '#3F38DD',
     fontFamily: Font.font_medium_500,
     fontSize: getSize.m(12, 0.3),
-    transform: [{translateX: -getSize.m(10)}],
   },
 });
 

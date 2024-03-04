@@ -1,4 +1,4 @@
-package com.checkin.newarchitecture.modules;
+package com.twendee.connectx.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

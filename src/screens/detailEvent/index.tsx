@@ -1,6 +1,6 @@
 import Color from '@theme/Color';
-import {FC, memo, useCallback, useState} from 'react';
-import {Share, StyleSheet, TouchableOpacity} from 'react-native';
+import {FC, Fragment, memo, useCallback, useState} from 'react';
+import {Linking, Share, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Header from './components/Header';
 import Animated, {
@@ -22,10 +22,19 @@ import {
   DetailEventScreenRouteProp,
   PROFILE_OWNER_EVENT_SCREEN,
 } from '@navigation/routes';
-import {useDetailEvent} from './hooks';
+import {useDetailEvent, useFetchJoinEvent} from './hooks';
 import moment from 'moment';
-import {JoinEvent} from '@services/event.service';
+import {CheckJoinEvent, JoinEvent} from '@services/event.service';
 import {useToastMessage} from '@hooks/useToastMessage';
+import PreviewMap from './components/PreviewMap';
+import ModalJoinSuccess from './components/ModalJoinSuccess';
+import {useQuery} from '@tanstack/react-query';
+import {AxiosResponse} from 'axios';
+import {useSelector} from 'react-redux';
+import {IRootState} from '@redux/stores';
+import {UserState} from '@redux/slices/userSlice';
+import {uStateUser} from '@redux/stores/selection';
+import {Icon} from '@assets/icons';
 
 interface IProps {
   route: DetailEventScreenRouteProp;
@@ -33,10 +42,30 @@ interface IProps {
 
 const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
-  const {showSuccessTop, showWarningTop} = useToastMessage();
+  const {showWarningTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
   const {data} = useDetailEvent(params.id);
+  const {id} = useSelector<IRootState, UserState>(uStateUser);
+  const {
+    data: dataJoinEvent,
+    totalElement,
+    onRefresh,
+  } = useFetchJoinEvent({
+    page: 1,
+    size: 10,
+    userId: id,
+    eventId: params.id,
+  });
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
+
+  const {data: dataCheckJoinEvent, refetch} = useQuery<
+    AxiosResponse<{joined: boolean}>,
+    Error
+  >({
+    queryKey: ['checkJoinEvent', {id: params.id}],
+    queryFn: () => CheckJoinEvent(params.id),
+  });
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -48,19 +77,13 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     navigate(PROFILE_OWNER_EVENT_SCREEN, {id: data?.eventHosts?.[0]?.id});
   }, [data?.eventHosts?.[0]?.id]);
 
-  const handleShare = useCallback(() => {
-    Share.share({
-      title: `https://connect-x-app.netlify.app/event/${data?.id}`,
-      message: `https://connect-x-app.netlify.app/event/${data?.id}`,
-    });
-  }, []);
-
   const handleJoinEvent = useCallback(async () => {
     try {
       setLoading(true);
-      const {data: dataEvent} = await JoinEvent(data?.id || params.id);
-      console.log('dataEvent>>', dataEvent);
-      showSuccessTop('Join event successfully!');
+      await JoinEvent(data?.id || params.id);
+      refetch();
+      onRefresh();
+      setShowModalSuccess(true);
     } catch (error) {
       showWarningTop(
         typeof error === 'string'
@@ -70,12 +93,15 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     } finally {
       setLoading(false);
     }
-  }, [data?.id || params.id]);
+  }, [data?.id || params.id, refetch, onRefresh]);
+
+  const handleCloseModalJoin = useCallback(() => {
+    setShowModalSuccess(false);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       <Header
-        handleShare={handleShare}
         banner={data?.eventAssets?.[0]?.url}
         top={top}
         scrollY={scrollY}
@@ -89,15 +115,29 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
             styleText={styles.textGoing}
             style={styles.imageUser}
             translateX={getSize.m(14)}
+            totalUser={totalElement}
+            users={dataJoinEvent}
           />
-          <ButtonGradient isRightIcon={false} style={styles.btnInvite}>
+          {/* <ButtonGradient isRightIcon={false} style={styles.btnInvite}>
             <Text>Invite</Text>
-          </ButtonGradient>
+          </ButtonGradient> */}
         </Block>
         <Block style={Styles.paddingHorizontal}>
-          <Text style={styles.title}>
-            {data?.name || params.name || 'Acoustic Night - Tweendee'}
-          </Text>
+          <Text style={styles.title}>{data?.name || params.name}</Text>
+          <Block row alignCenter marginBottom={30} marginTop={8}>
+            {dataCheckJoinEvent?.data?.joined && (
+              <Fragment>
+                <Icon
+                  name={'checkmark-circle-outline'}
+                  color={Color.GREEN_HOLDER}
+                  size={getSize.m(20)}
+                />
+                <Text style={styles.textJoinEvent}>
+                  You have joined the event
+                </Text>
+              </Fragment>
+            )}
+          </Block>
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
               <CalendarIcon />
@@ -128,7 +168,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               </Text>
             </Block>
           </Block>
-          {__DEV__ && (
+          {false && (
             <Block row alignCenter marginBottom={30}>
               <TouchableOpacity
                 onPress={handleProfileOwner}
@@ -151,13 +191,46 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               </TouchableOpacity>
             </Block>
           )}
+          <PreviewMap
+            latitude={Number(
+              data?.eventLocationDetail?.latitude ||
+                params.eventLocationDetail?.latitude,
+            )}
+            longitude={Number(
+              Number(
+                data?.eventLocationDetail?.longitude ||
+                  params.eventLocationDetail?.longitude,
+              ),
+            )}
+            location={data?.location || params?.location}
+          />
           <Text style={styles.textAboutEvent}>About Event</Text>
           <Text style={styles.textDescription}>
             {data?.description || params.description}
           </Text>
+          <Text style={styles.textAboutEvent}>Host</Text>
+          <Block row alignCenter wrap>
+            {data?.eventHosts?.map((item, index) => {
+              const handleLink = () => {
+                item.url && Linking.openURL(item.url);
+              };
+              return (
+                <Text onPress={handleLink} style={styles.textHost} key={index}>
+                  <Text style={styles.textHost}>{index === 0 ? '' : ', '}</Text>
+                  {item.title?.trim()}
+                </Text>
+              );
+            })}
+          </Block>
         </Block>
       </Animated.ScrollView>
-      <Footer isLoading={isLoading} handleJoinEvent={handleJoinEvent} />
+      {!dataCheckJoinEvent?.data?.joined && (
+        <Footer isLoading={isLoading} handleJoinEvent={handleJoinEvent} />
+      )}
+      <ModalJoinSuccess
+        isVisible={showModalSuccess}
+        onBackdropPress={handleCloseModalJoin}
+      />
     </SafeAreaView>
   );
 };
@@ -180,6 +253,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: getSize.s(12),
     justifyContent: 'space-between',
+    alignSelf: 'center',
   },
   imageUser: {
     width: getSize.m(34),
@@ -201,7 +275,6 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(24, 0.3),
     fontFamily: Font.font_regular_400,
     marginTop: getSize.m(20),
-    marginBottom: getSize.m(40),
   },
   boxIcon: {
     width: getSize.m(48),
@@ -240,11 +313,23 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(16, 0.3),
     fontFamily: Font.font_thin_100,
     lineHeight: getSize.m(24),
+    marginBottom: getSize.v(12),
   },
   contentUser: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  textHost: {
+    fontSize: getSize.m(15, 0.3),
+    fontFamily: Font.font_medium_500,
+    color: '#5669FF',
+  },
+  textJoinEvent: {
+    fontSize: getSize.m(13, 0.3),
+    fontFamily: Font.font_regular_400,
+    marginLeft: getSize.m(6),
+    color: Color.GREEN_HOLDER,
   },
 });
 

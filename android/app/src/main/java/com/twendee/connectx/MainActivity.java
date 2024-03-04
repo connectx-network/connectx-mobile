@@ -1,4 +1,4 @@
-package com.checkin;
+package com.twendee.connectx;
 
 import android.os.Bundle;
 import org.devio.rn.splashscreen.SplashScreen;

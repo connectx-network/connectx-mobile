@@ -14,6 +14,7 @@ export interface UserInfo {
   userInterests: Interest[];
   followers: number;
   following: number;
+  phoneNumber: string;
 }
 
 export interface Interest {

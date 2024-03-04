@@ -8,49 +8,64 @@ import {Event} from '@model/event';
 import {useFetchEvents} from '@screens/events/hooks';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
-import {FC, Fragment, useCallback, useRef} from 'react';
+import {
+  FC,
+  Fragment,
+  createRef,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Region} from 'react-native-maps';
 import MarkerCustom from './components/MarkerCustom';
+import MarkerSelf from './components/MarkerSelf';
+
+export const refMap = createRef<any>();
+
+export const mapControlRef = {
+  navigator: (region: Region) => refMap.current?.navigator(region),
+};
 
 interface IProps {
-  region: Region;
-  onRegionChange: (region: Region) => void;
+  data: Event[];
 }
 
-const MARKER = [
-  {
-    title: 'event1',
-    description: 'test',
-    coordinate: {
-      latitude: 21.027518812382848,
-      longitude: 105.78320091585685,
-    },
-  },
-  {
-    title: 'event2',
-    description: 'test',
-    coordinate: {
-      latitude: 21.028872980713523,
-      longitude: 105.78542389264247,
-    },
-  },
-];
-
-const MapHome: FC<IProps> = ({region, onRegionChange}) => {
-  const {data} = useFetchEvents({page: 1, size: 10});
+const MapHome = forwardRef(({data}: IProps, ref) => {
   const refMap = useRef<MapView>(null);
   const {coord} = useGetLocationCurrent();
 
+  const navigator = useCallback((region: Region) => {
+    refMap.current?.animateToRegion(region, 1000);
+  }, []);
+
+  useImperativeHandle(ref, () => ({navigator}));
+
   const renderItem = useCallback(({item}: {item: Event}) => {
-    return <ItemEventNear {...item} style={styles.itemEvent} />;
+    const handleItem = () => {
+      const region: Region = {
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.004,
+        latitude: Number(item.eventLocationDetail.latitude),
+        longitude: Number(item.eventLocationDetail.longitude),
+      };
+      refMap.current?.animateToRegion(region, 1000);
+    };
+    return (
+      <ItemEventNear
+        handleItem={handleItem}
+        {...item}
+        style={styles.itemEvent}
+      />
+    );
   }, []);
 
   const handleCurrentLocation = useCallback(() => {
     if (coord?.latitude && coord?.longitude) {
       const region: Region = {
-        latitudeDelta: 0,
-        longitudeDelta: 0,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.004,
         latitude: coord.latitude,
         longitude: coord.longitude,
       };
@@ -69,10 +84,21 @@ const MapHome: FC<IProps> = ({region, onRegionChange}) => {
           longitude: 105.78320091585685,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
-        }}
-        onRegionChange={onRegionChange}>
-        {MARKER.map((item, index) => {
-          return <MarkerCustom {...item} key={index} />;
+        }}>
+        {coord && (
+          <MarkerSelf latitude={coord.latitude} longitude={coord.longitude} />
+        )}
+        {data.map((item, index) => {
+          return (
+            <MarkerCustom
+              coordinate={{
+                latitude: Number(item.eventLocationDetail.latitude),
+                longitude: Number(item.eventLocationDetail.longitude),
+              }}
+              banner={item.eventAssets?.[0]?.url}
+              key={index}
+            />
+          );
         })}
       </MapView>
       <Block style={styles.content}>
@@ -100,7 +126,7 @@ const MapHome: FC<IProps> = ({region, onRegionChange}) => {
       </Block>
     </Fragment>
   );
-};
+});
 
 const styles = StyleSheet.create({
   content: {

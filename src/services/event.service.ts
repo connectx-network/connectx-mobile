@@ -1,8 +1,14 @@
-import {Event, GetEventParams, IDetailEvent} from '@model/event';
+import {
+  Event,
+  GetEventParams,
+  IDetailEvent,
+  ParamsFetchJoinEvent,
+} from '@model/event';
 import {AxiosResponse} from 'axios';
 import api from './api';
 import {EventRouteEnum} from './routeApi';
 import {DataList} from '@model';
+import {UserInfo} from '@model/user';
 
 export async function FetchEvents(
   params: GetEventParams,
@@ -25,4 +31,19 @@ export async function JoinEvent(
   id: string,
 ): Promise<AxiosResponse<{success: boolean}>> {
   return api(`${EventRouteEnum.JoinEvent}/${id}`, null);
+}
+
+export async function CheckJoinEvent(
+  id: string,
+): Promise<AxiosResponse<{joined: boolean}>> {
+  return api(`${EventRouteEnum.CheckJoinEvent}/${id}`, null, {method: 'GET'});
+}
+
+export async function FetchListJoinEvent(
+  params: ParamsFetchJoinEvent,
+): Promise<AxiosResponse<DataList<Array<{user: UserInfo}>>>> {
+  return api(EventRouteEnum.ListJoinUserEvent, null, {
+    method: 'GET',
+    params,
+  });
 }

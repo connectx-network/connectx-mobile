@@ -205,7 +205,7 @@ const TabsNavigator = memo(() => {
         }}
       />
       <Tab.Screen
-        name={COMMUNITY_STACK}
+        name={PROFILE_STACK}
         component={ProfileStack}
         initialParams={{
           name: 'Profile',
@@ -220,8 +220,13 @@ const MainStack = memo(() => {
 
   const stylesDrawer = useAnimatedStyle(() => {
     const scale = interpolate(progress.value, [0, 1], [1, 0.8]);
+    const translateX = interpolate(
+      progress.value,
+      [0, 1],
+      [0, WIDTH_SCREEN * 0.6],
+    );
     return {
-      transform: [{scale}],
+      transform: [{scale}, {translateX}],
     };
   }, []);
 
@@ -231,6 +236,7 @@ const MainStack = memo(() => {
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
+            contentStyle: {backgroundColor: Color.BACKGROUND},
           }}
           initialRouteName={TAB_NAVIGATOR}>
           <Stack.Screen name={TAB_NAVIGATOR} component={TabsNavigator} />
@@ -268,12 +274,12 @@ const DrawerStack = memo(() => {
         overlayColor: Color.TRANSPARENT,
         drawerStyle: {
           width: WIDTH_SCREEN * 0.6,
+          backgroundColor: Color.BACKGROUND,
         },
-        drawerType: 'slide',
+        drawerType: 'front',
       }}
       initialRouteName={MAIN_STACK}>
       <Drawer.Screen name={MAIN_STACK} component={MainStack} />
-      <Drawer.Screen name={PROFILE_STACK} component={ProfileStack} />
     </Drawer.Navigator>
   );
 });
