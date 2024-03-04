@@ -10,7 +10,7 @@ export interface UserInfo {
   id: string;
   isPrivate: boolean;
   nickname: null | string;
-  userRole: string;
+  userRole: 'USER' | 'ADMIN';
   userInterests: Interest[];
   followers: number;
   following: number;

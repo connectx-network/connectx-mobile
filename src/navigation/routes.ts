@@ -28,6 +28,7 @@ export const CHAT_SCREEN = 'Chat';
 //Event stack
 export const EVENT_STACK = 'EventStack';
 export const EVENTS_SCREEN = 'Events';
+export const SCAN_QR_SCREEN = 'ScanQr';
 
 //Map stack
 export const MAP_STACK = 'MapStack';

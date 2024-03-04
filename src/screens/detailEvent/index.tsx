@@ -1,40 +1,44 @@
+import {Icon} from '@assets/icons';
+import CalendarIcon from '@assets/icons/detailEvent/CalendarIcon';
+import LocationIcon from '@assets/icons/detailEvent/LocationIcon';
+import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
+import Styles from '@base/common/styles';
+import {getDateEvent, getTimeEvent} from '@base/utils/Utils';
+import {Block, ButtonGradient, Text} from '@components';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {DetailEventScreenRouteProp, SCAN_QR_SCREEN} from '@navigation/routes';
+import {UserState} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
+import UserJoined from '@screens/home/components/UserJoined';
+import {CheckJoinEvent, JoinEvent} from '@services/event.service';
+import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
-import {FC, Fragment, memo, useCallback, useState} from 'react';
-import {Linking, Share, StyleSheet, TouchableOpacity} from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import Header from './components/Header';
+import Font from '@theme/Font';
+import {AxiosResponse} from 'axios';
+import {FC, Fragment, useCallback, useState} from 'react';
+import {Linking, StyleSheet, TouchableOpacity} from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import {Block, ButtonGradient, Image, Text} from '@components';
-import {HEIGHT_COVER} from './layout';
-import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
-import UserJoined from '@screens/home/components/UserJoined';
-import Font from '@theme/Font';
-import Styles from '@base/common/styles';
-import CalendarIcon from '@assets/icons/detailEvent/CalendarIcon';
-import LocationIcon from '@assets/icons/detailEvent/LocationIcon';
-import Images from '@assets/images';
-import Footer from './components/Footer';
-import {navigate} from '@navigation/navigationService';
-import {
-  DetailEventScreenRouteProp,
-  PROFILE_OWNER_EVENT_SCREEN,
-} from '@navigation/routes';
-import {useDetailEvent, useFetchJoinEvent} from './hooks';
-import moment from 'moment';
-import {CheckJoinEvent, JoinEvent} from '@services/event.service';
-import {useToastMessage} from '@hooks/useToastMessage';
-import PreviewMap from './components/PreviewMap';
-import ModalJoinSuccess from './components/ModalJoinSuccess';
-import {useQuery} from '@tanstack/react-query';
-import {AxiosResponse} from 'axios';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
-import {UserState} from '@redux/slices/userSlice';
-import {uStateUser} from '@redux/stores/selection';
-import {Icon} from '@assets/icons';
+import Footer from './components/Footer';
+import Header from './components/Header';
+import ModalJoinSuccess from './components/ModalJoinSuccess';
+import ModalQrCode, {
+  modalQrControl,
+  refModalQr,
+} from './components/ModalQrCode';
+import PreviewMap from './components/PreviewMap';
+import {useDetailEvent, useFetchJoinEvent} from './hooks';
+import {HEIGHT_COVER} from './layout';
+import BSListJoinEvent, {
+  listJoinEventControl,
+  listJoinEventRef,
+} from './BSListJoinEvent';
+import {navigate} from '@navigation/navigationService';
 
 interface IProps {
   route: DetailEventScreenRouteProp;
@@ -44,18 +48,8 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const {showWarningTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
-  const {data} = useDetailEvent(params.id);
-  const {id} = useSelector<IRootState, UserState>(uStateUser);
-  const {
-    data: dataJoinEvent,
-    totalElement,
-    onRefresh,
-  } = useFetchJoinEvent({
-    page: 1,
-    size: 10,
-    userId: id,
-    eventId: params.id,
-  });
+  const {data, onRefresh} = useDetailEvent(params.id);
+  const {id, userRole} = useSelector<IRootState, UserState>(uStateUser);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
 
@@ -73,11 +67,14 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     },
   });
 
-  const handleProfileOwner = useCallback(() => {
-    navigate(PROFILE_OWNER_EVENT_SCREEN, {id: data?.eventHosts?.[0]?.id});
-  }, [data?.eventHosts?.[0]?.id]);
+  // const handleProfileOwner = useCallback(() => {
+  //   navigate(PROFILE_OWNER_EVENT_SCREEN, {id: data?.eventHosts?.[0]?.id});
+  // }, [data?.eventHosts?.[0]?.id]);
 
   const handleJoinEvent = useCallback(async () => {
+    if (userRole === 'ADMIN') {
+      return navigate(SCAN_QR_SCREEN);
+    }
     try {
       setLoading(true);
       await JoinEvent(data?.id || params.id);
@@ -93,10 +90,18 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     } finally {
       setLoading(false);
     }
-  }, [data?.id || params.id, refetch, onRefresh]);
+  }, [data?.id || params.id, refetch, onRefresh, userRole]);
 
   const handleCloseModalJoin = useCallback(() => {
     setShowModalSuccess(false);
+  }, []);
+
+  const handleShowQrCode = useCallback(() => {
+    modalQrControl.show(`${params.id};${id}`); //eventId;userId
+  }, [id, params.id]);
+
+  const handleShowListJoinEvent = useCallback(() => {
+    listJoinEventControl.show();
   }, []);
 
   return (
@@ -110,19 +115,26 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
       <Animated.ScrollView
         onScroll={onScroll}
         contentContainerStyle={styles.contentContainerStyle}>
-        <Block style={styles.boxInvite}>
-          <UserJoined
-            styleText={styles.textGoing}
-            style={styles.imageUser}
-            translateX={getSize.m(14)}
-            totalUser={totalElement}
-            users={dataJoinEvent}
-          />
-          {/* <ButtonGradient isRightIcon={false} style={styles.btnInvite}>
-            <Text>Invite</Text>
-          </ButtonGradient> */}
-        </Block>
-        <Block style={Styles.paddingHorizontal}>
+        {!!data?.joinedEventUsers?.length && (
+          <Block style={styles.boxInvite}>
+            <UserJoined
+              styleText={styles.textGoing}
+              style={styles.imageUser}
+              translateX={getSize.m(14)}
+              totalUser={data?._count?.joinedEventUsers}
+              users={data?.joinedEventUsers}
+            />
+            <ButtonGradient
+              onPress={handleShowListJoinEvent}
+              isRightIcon={false}
+              style={styles.btnInvite}>
+              <Text style={styles.seeMore}>See more</Text>
+            </ButtonGradient>
+          </Block>
+        )}
+        <Block
+          marginTop={!data?.joinedEventUsers?.length ? 30 : 0}
+          style={Styles.paddingHorizontal}>
           <Text style={styles.title}>{data?.name || params.name}</Text>
           <Block row alignCenter marginBottom={30} marginTop={8}>
             {dataCheckJoinEvent?.data?.joined && (
@@ -138,19 +150,22 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               </Fragment>
             )}
           </Block>
+
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
               <CalendarIcon />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
-                {moment(data?.eventDate || params.eventDate).format(
-                  'DD/MM/YYYY',
+                {getDateEvent(
+                  data?.eventDate || params.eventDate,
+                  data?.eventEndDate || params.eventEndDate,
                 )}
               </Text>
               <Text numberOfLines={1} style={styles.textSubInfo}>
-                {moment(data?.eventDate || params.eventDate).format(
-                  'dddd, h:mm A',
+                {getTimeEvent(
+                  data?.eventDate || params.eventDate,
+                  data?.eventEndDate || params.eventEndDate,
                 )}
               </Text>
             </Block>
@@ -164,11 +179,11 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
                 Location
               </Text>
               <Text numberOfLines={1} style={styles.textSubInfo}>
-                {data?.location || params.location || 'Sub Location'}
+                {data?.location || params.location}
               </Text>
             </Block>
           </Block>
-          {false && (
+          {/* {false && (
             <Block row alignCenter marginBottom={30}>
               <TouchableOpacity
                 onPress={handleProfileOwner}
@@ -190,6 +205,19 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
                 <Text style={styles.textFollow}>Follow</Text>
               </TouchableOpacity>
             </Block>
+          )} */}
+          {dataCheckJoinEvent?.data?.joined && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={handleShowQrCode}
+              style={styles.btnShowQr}>
+              <Icon
+                name={'qr-code-outline'}
+                color={Color.WHITE}
+                size={getSize.m(22)}
+              />
+              <Text style={styles.textShowQr}>Show Qr code event</Text>
+            </TouchableOpacity>
           )}
           <PreviewMap
             latitude={Number(
@@ -224,13 +252,19 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
         </Block>
       </Animated.ScrollView>
-      {!dataCheckJoinEvent?.data?.joined && (
-        <Footer isLoading={isLoading} handleJoinEvent={handleJoinEvent} />
+      {(!dataCheckJoinEvent?.data?.joined || userRole === 'ADMIN') && (
+        <Footer
+          isLoading={isLoading}
+          userRole={userRole}
+          handleJoinEvent={handleJoinEvent}
+        />
       )}
       <ModalJoinSuccess
         isVisible={showModalSuccess}
         onBackdropPress={handleCloseModalJoin}
       />
+      <ModalQrCode ref={refModalQr} />
+      <BSListJoinEvent ref={listJoinEventRef} eventId={data?.id || params.id} />
     </SafeAreaView>
   );
 };
@@ -253,7 +287,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: getSize.s(12),
     justifyContent: 'space-between',
-    alignSelf: 'center',
   },
   imageUser: {
     width: getSize.m(34),
@@ -264,11 +297,11 @@ const styles = StyleSheet.create({
     color: '#38BFDD',
     fontSize: getSize.m(15, 0.3),
     fontFamily: Font.font_medium_500,
-    transform: [{translateX: -getSize.m(22)}],
+    marginLeft: getSize.m(8),
   },
   btnInvite: {
     height: getSize.m(34),
-    paddingHorizontal: getSize.s(20),
+    paddingHorizontal: getSize.s(12),
     borderRadius: getSize.m(8),
   },
   title: {
@@ -330,6 +363,21 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_regular_400,
     marginLeft: getSize.m(6),
     color: Color.GREEN_HOLDER,
+  },
+  btnShowQr: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: getSize.m(20),
+    alignSelf: 'center',
+  },
+  textShowQr: {
+    marginLeft: getSize.m(8),
+    fontSize: getSize.m(13, 0.3),
+    fontFamily: Font.font_medium_500,
+  },
+  seeMore: {
+    fontSize: getSize.m(13, 0.3),
+    fontFamily: Font.font_regular_400,
   },
 });
 

@@ -1,7 +1,7 @@
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
-import {UserInfo} from '@model/user';
+import {JoinEventUser} from '@model/event';
 import Font from '@theme/Font';
 import {FC, memo} from 'react';
 import {ImageStyle, StyleProp, StyleSheet, TextStyle} from 'react-native';
@@ -11,10 +11,8 @@ interface IProps {
   translateX?: number;
   styleText?: StyleProp<TextStyle>;
   totalUser?: number;
-  users?: Array<{user: UserInfo}>;
+  users?: Array<JoinEventUser>;
 }
-
-const image = [Images.AVATAR, Images.USER_TEST];
 
 const UserJoined: FC<IProps> = ({
   style,
@@ -24,9 +22,9 @@ const UserJoined: FC<IProps> = ({
   users,
 }) => {
   return (
-    <Block row alignCenter>
+    <Block row alignCenter flex>
       <Block row alignCenter>
-        {(users?.slice(0, 3) || [1, 2, 3]).map((item, index) => (
+        {users?.map((item, index) => (
           <Image
             style={[
               styles.image,
@@ -40,7 +38,9 @@ const UserJoined: FC<IProps> = ({
             ]}
             key={index}
             source={
-              item.user?.avatarUrl ? {uri: item.user?.avatarUrl} : Images.AVATAR
+              item?.user?.avatarUrl
+                ? {uri: item?.user?.avatarUrl}
+                : Images.AVATAR
             }
           />
         ))}
@@ -53,9 +53,7 @@ const UserJoined: FC<IProps> = ({
             transform: [
               {
                 translateX:
-                  (users?.slice(0, 3) || [1, 2, 3]).length === 3
-                    ? -getSize.m(10)
-                    : 0,
+                  ((users?.length || 1) - 1) * -(translateX || getSize.m(10)),
               },
             ],
           },

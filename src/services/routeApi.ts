@@ -13,13 +13,14 @@ export enum EventRouteEnum {
   JoinEvent = '/event/join',
   CheckJoinEvent = '/event/check-join',
   ListJoinUserEvent = '/event/joined-user',
+  GetQREvent = '/event/user-event',
 }
 
 export enum UserRouteEnum {
   User = '/user',
   AuthSelf = '/auth/self',
   UploadAvatar = '/user/avatar',
-  DeleteAccount = '/auth'
+  DeleteAccount = '/auth',
 }
 
 export enum NotifyRouteEnum {

@@ -32,18 +32,19 @@ const ItemEvent: FC<IProps> = props => {
       />
       <Block paddingHorizontal={20} marginBottom={20}>
         <Text numberOfLines={1} style={styles.nameEvent}>
-          {props.name || 'Name of Event'}
+          {props.name}
         </Text>
-        <UserJoined />
+        <UserJoined
+          totalUser={props._count.joinedEventUsers}
+          users={props.joinedEventUsers}
+        />
         <Block marginTop={12} row alignCenter>
           <Icon
             name={'location-sharp'}
             color={`${Color.WHITE}80`}
             size={getSize.m(20)}
           />
-          <Text style={styles.textLocation}>
-            {props.location || 'Location'}
-          </Text>
+          <Text style={styles.textLocation}>{props.location}</Text>
         </Block>
       </Block>
     </TouchableOpacity>
@@ -70,10 +71,11 @@ const styles = StyleSheet.create({
     marginBottom: getSize.m(12),
   },
   textLocation: {
-    fontSize: getSize.m(13, 0.3),
+    fontSize: getSize.m(12, 0.3),
     fontFamily: Font.font_regular_400,
     color: `${Color.WHITE}80`,
     marginLeft: getSize.m(6),
+    flex: 1,
   },
 });
 

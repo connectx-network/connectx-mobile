@@ -38,6 +38,13 @@ export interface Event {
   eventAssets: EventAsset[];
   eventHosts: EventHost[];
   eventLocationDetail: LocationDetail;
+  eventEndDate: string;
+  joinedEventUsers: Array<JoinEventUser>;
+  _count: {
+    eventAssets: number;
+    eventHosts: number;
+    joinedEventUsers: number;
+  };
 }
 
 export interface EventHost {
@@ -47,6 +54,16 @@ export interface EventHost {
   eventId: string;
 }
 
+export interface JoinEventUser {
+  checkInDate: null | string;
+  checkedIn: boolean;
+  eventId: string;
+  id: string;
+  joinDate: string;
+  userId: string;
+  user: {avatarUrl: string};
+}
+
 export interface IDetailEvent extends Event {
   eventCategory: EventCategory;
 }
@@ -54,6 +71,11 @@ export interface IDetailEvent extends Event {
 export interface ParamsFetchJoinEvent {
   page: number;
   size: number;
+  eventId: string;
+  userId: string;
+}
+
+export interface GetQrCodeEventParams {
   eventId: string;
   userId: string;
 }

@@ -88,6 +88,9 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     if (!editAbout) {
       setEditAbout(true);
     } else {
+      if (!textDescription) {
+        return setEditAbout(false);
+      }
       try {
         await UpdateInfoUser({
           fullName,

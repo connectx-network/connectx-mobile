@@ -1,6 +1,7 @@
 import {
   Event,
   GetEventParams,
+  GetQrCodeEventParams,
   IDetailEvent,
   ParamsFetchJoinEvent,
 } from '@model/event';
@@ -43,6 +44,15 @@ export async function FetchListJoinEvent(
   params: ParamsFetchJoinEvent,
 ): Promise<AxiosResponse<DataList<Array<{user: UserInfo}>>>> {
   return api(EventRouteEnum.ListJoinUserEvent, null, {
+    method: 'GET',
+    params,
+  });
+}
+
+export async function GetQrCodeEvent(
+  params: GetQrCodeEventParams,
+): Promise<any> {
+  return api(EventRouteEnum.GetQREvent, null, {
     method: 'GET',
     params,
   });

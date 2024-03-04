@@ -19,7 +19,7 @@ const initialState: UserState = {
   id: '',
   isPrivate: false,
   nickname: null,
-  userRole: '',
+  userRole: 'USER',
   userInterests: [],
   followers: 0,
   following: 0,

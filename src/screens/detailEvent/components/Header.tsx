@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: getSize.s(15),
     paddingVertical: getSize.m(10),
     position: 'absolute',
-    zIndex: 100,
+    zIndex: 10,
   },
   title: {
     fontSize: getSize.m(24, 0.3),
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   gradientImage: {
     position: 'absolute',
     width: WIDTH_SCREEN,
-    zIndex: 100,
+    zIndex: 10,
   },
   btnSave: {
     width: getSize.m(36),

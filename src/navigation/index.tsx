@@ -57,6 +57,7 @@ import {
   REGISTER_SCREEN,
   RESET_PASSWORD_SCREEN,
   RootStackParamList,
+  SCAN_QR_SCREEN,
   SEARCH_SCREEN,
   TAB_NAVIGATOR,
   VERIFY_OTP_SCREEN,
@@ -70,6 +71,7 @@ import {uStateUser} from '@redux/stores/selection';
 import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
 import SplashScreen from 'react-native-splash-screen';
 import ChatScreen from '@screens/chat';
+import ScanQrAdminScreen from '@screens/scanQrAdmin';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -243,6 +245,11 @@ const MainStack = memo(() => {
           <Stack.Screen
             name={DETAIL_EVENT_SCREEN}
             component={DetailEventScreen}
+          />
+          <Stack.Screen
+            options={{animation: 'fade'}}
+            name={SCAN_QR_SCREEN}
+            component={ScanQrAdminScreen}
           />
           <Stack.Screen
             name={NOTIFICATION_SCREEN}

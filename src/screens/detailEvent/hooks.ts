@@ -13,7 +13,7 @@ export function useDetailEvent(id: string) {
     setData(data.data);
   }, []);
 
-  const {mutate, isPending} = useMutation<
+  const {mutate, isPending, reset} = useMutation<
     AxiosResponse<IDetailEvent>,
     Error,
     string
@@ -27,7 +27,12 @@ export function useDetailEvent(id: string) {
     mutate(id);
   }, [id]);
 
-  return {data, isLoading: isPending};
+  const onRefresh = useCallback(() => {
+    reset();
+    mutate(id);
+  }, [reset, id]);
+
+  return {data, isLoading: isPending, onRefresh};
 }
 
 export function useFetchJoinEvent({

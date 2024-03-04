@@ -9,9 +9,10 @@ import LinearGradient from 'react-native-linear-gradient';
 interface IProps {
   isLoading: boolean;
   handleJoinEvent: () => void;
+  userRole: 'USER' | 'ADMIN';
 }
 
-const Footer: FC<IProps> = ({handleJoinEvent, isLoading}) => {
+const Footer: FC<IProps> = ({handleJoinEvent, isLoading, userRole}) => {
   return (
     <LinearGradient
       colors={[Color.BLACK, Color.TRANSPARENT]}
@@ -24,7 +25,9 @@ const Footer: FC<IProps> = ({handleJoinEvent, isLoading}) => {
         onPress={handleJoinEvent}
         style={styles.btnBuy}
         colorRightIcon={Color.WHITE}>
-        <Text style={styles.textBuy}>Join Event</Text>
+        <Text style={styles.textBuy}>
+          {userRole === 'ADMIN' ? 'Scan QR code' : 'Join Event'}
+        </Text>
       </ButtonGradient>
     </LinearGradient>
   );
