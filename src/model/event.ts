@@ -1,3 +1,5 @@
+import {UserInfo} from './user';
+
 export interface GetEventParams {
   page: number;
   size: number;
@@ -78,4 +80,14 @@ export interface ParamsFetchJoinEvent {
 export interface GetQrCodeEventParams {
   eventId: string;
   userId: string;
+}
+
+export interface InfoQrEventResponse {
+  user: UserInfo;
+  joinDate: string;
+  eventId: string;
+  userId: string;
+  checkInDate: string;
+  checkedIn: boolean;
+  event: Event;
 }

@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
   itemInterest: {
     height: getSize.m(32),
     borderRadius: getSize.m(16),
-    paddingHorizontal: getSize.m(12),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: getSize.m(12),
@@ -59,6 +58,10 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_medium_500,
     color: Color.BACKGROUND,
     minWidth: getSize.m(30),
+    paddingHorizontal: getSize.m(12),
+    paddingBottom: 0,
+    paddingTop: 0,
+    textAlign: 'center',
   },
 });
 

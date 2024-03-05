@@ -13,7 +13,8 @@ export enum EventRouteEnum {
   JoinEvent = '/event/join',
   CheckJoinEvent = '/event/check-join',
   ListJoinUserEvent = '/event/joined-user',
-  GetQREvent = '/event/user-event',
+  GetInfoQREvent = '/event/user-event',
+  CheckInEvent = '/event/check-in',
 }
 
 export enum UserRouteEnum {

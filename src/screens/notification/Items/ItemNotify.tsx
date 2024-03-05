@@ -1,18 +1,35 @@
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import {Block, ButtonGradient, Image, Text} from '@components';
+import {ItemNotification} from '@model/notification';
+import {navigate} from '@navigation/navigationService';
+import {PROFILE_OWNER_EVENT_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo} from 'react';
+import moment from 'moment';
+import {FC, memo, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
-const ItemNotify = () => {
+interface IProps extends ItemNotification {}
+
+const ItemNotify: FC<IProps> = ({title, body, sender, createdAt}) => {
+  const handleItem = useCallback(() => {
+    sender?.id && navigate(PROFILE_OWNER_EVENT_SCREEN, {id: sender.id});
+  }, [sender?.id]);
+
   return (
-    <Block style={styles.container}>
-      <Image source={Images.AVATAR} style={styles.avatar} />
+    <TouchableOpacity
+      onPress={handleItem}
+      activeOpacity={0.5}
+      style={styles.container}>
+      <Image
+        source={sender?.avatarUrl ? {uri: sender.avatarUrl} : Images.AVATAR}
+        style={styles.avatar}
+      />
       <Block flex marginLeft={12}>
-        <Text style={styles.content}>Name Invite to Event Name</Text>
-        {true && (
+        <Text style={styles.content}>{title}</Text>
+        <Text style={styles.textBodyMessage}>{body}</Text>
+        {false && (
           <Block row alignCenter marginTop={12}>
             <TouchableOpacity style={styles.btnReject} activeOpacity={0.5}>
               <Text>Reject</Text>
@@ -23,8 +40,8 @@ const ItemNotify = () => {
           </Block>
         )}
       </Block>
-      <Text style={styles.textTime}>20 min ago</Text>
-    </Block>
+      <Text style={styles.textTime}>{moment(createdAt).fromNow()}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -42,7 +59,7 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: getSize.m(14, 0.3),
-    fontFamily: Font.font_regular_400,
+    fontFamily: Font.font_medium_500,
     marginTop: getSize.m(4),
   },
   textTime: {
@@ -64,6 +81,11 @@ const styles = StyleSheet.create({
     height: getSize.m(36),
     paddingHorizontal: getSize.s(20),
     borderRadius: getSize.m(8),
+  },
+  textBodyMessage: {
+    fontSize: getSize.m(12, 0.3),
+    fontFamily: Font.font_extra_light_300,
+    marginTop: getSize.m(6),
   },
 });
 

@@ -3,6 +3,7 @@ import {
   GetEventParams,
   GetQrCodeEventParams,
   IDetailEvent,
+  InfoQrEventResponse,
   ParamsFetchJoinEvent,
 } from '@model/event';
 import {AxiosResponse} from 'axios';
@@ -49,11 +50,17 @@ export async function FetchListJoinEvent(
   });
 }
 
-export async function GetQrCodeEvent(
+export async function GetInfoQrCodeEvent(
   params: GetQrCodeEventParams,
-): Promise<any> {
-  return api(EventRouteEnum.GetQREvent, null, {
+): Promise<AxiosResponse<InfoQrEventResponse>> {
+  return api(EventRouteEnum.GetInfoQREvent, null, {
     method: 'GET',
     params,
   });
+}
+
+export async function CheckIneEvent(
+  body: GetQrCodeEventParams,
+): Promise<AxiosResponse<any>> {
+  return api(EventRouteEnum.CheckInEvent, body, {method: 'PATCH'});
 }

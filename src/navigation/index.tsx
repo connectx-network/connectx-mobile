@@ -17,27 +17,38 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
+import {UserState} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
 import LoginScreen from '@screens/auth/login';
 import ForgotPasswordScreen from '@screens/auth/login/ForgotPasswordScreen';
+import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
 import RegisterScreen from '@screens/auth/register';
 import VerifyOtpScreen from '@screens/auth/register/VerifyOtpScreen';
+import ChatScreen from '@screens/chat';
 import DetailEventScreen from '@screens/detailEvent';
 import EventsScreen from '@screens/events';
 import BSFilter, {bottomSheetFilterRef} from '@screens/filter';
 import HomeScreen from '@screens/home';
 import SearchScreen from '@screens/home/SearchScreen';
+import MapScreen from '@screens/map';
 import NotificationScreen from '@screens/notification';
 import ProfileScreen from '@screens/profile';
+import EditProfileScreen from '@screens/profile/EditProfileScreen';
+import ScanQrAdminScreen from '@screens/scanQrAdmin';
+import ConfirmInfoUserScreen from '@screens/scanQrAdmin/ConfirmInfoUser';
 import Color from '@theme/Color';
 import React, {FC, memo, useCallback, useLayoutEffect, useRef} from 'react';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
+import SplashScreen from 'react-native-splash-screen';
 import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
+import {useSelector} from 'react-redux';
 import BottomTabCustom from './BottomTabsCustom';
 import DrawerContent from './DrawerContent';
 import NavigationService from './navigationService';
 import {
   CHAT_STACK,
-  COMMUNITY_STACK,
+  CONFIRM_INFO_USER_SCREEN,
   DETAIL_EVENT_SCREEN,
   DRAWER_STACK,
   EDIT_PROFILE_SCREEN,
@@ -62,16 +73,6 @@ import {
   TAB_NAVIGATOR,
   VERIFY_OTP_SCREEN,
 } from './routes';
-import EditProfileScreen from '@screens/profile/EditProfileScreen';
-import MapScreen from '@screens/map';
-import {useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
-import {UserState} from '@redux/slices/userSlice';
-import {uStateUser} from '@redux/stores/selection';
-import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
-import SplashScreen from 'react-native-splash-screen';
-import ChatScreen from '@screens/chat';
-import ScanQrAdminScreen from '@screens/scanQrAdmin';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -238,7 +239,6 @@ const MainStack = memo(() => {
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
-            contentStyle: {backgroundColor: Color.BACKGROUND},
           }}
           initialRouteName={TAB_NAVIGATOR}>
           <Stack.Screen name={TAB_NAVIGATOR} component={TabsNavigator} />
@@ -250,6 +250,11 @@ const MainStack = memo(() => {
             options={{animation: 'fade'}}
             name={SCAN_QR_SCREEN}
             component={ScanQrAdminScreen}
+          />
+          <Stack.Screen
+            options={{animation: 'fade'}}
+            name={CONFIRM_INFO_USER_SCREEN}
+            component={ConfirmInfoUserScreen}
           />
           <Stack.Screen
             name={NOTIFICATION_SCREEN}

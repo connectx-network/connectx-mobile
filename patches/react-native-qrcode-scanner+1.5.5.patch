@@ -1,0 +1,27 @@
+diff --git a/node_modules/react-native-qrcode-scanner/index.js b/node_modules/react-native-qrcode-scanner/index.js
+index b9bb661..dcb89f8 100644
+--- a/node_modules/react-native-qrcode-scanner/index.js
++++ b/node_modules/react-native-qrcode-scanner/index.js
+@@ -16,7 +16,6 @@ import {
+   PermissionsAndroid,
+ } from 'react-native';
+ 
+-import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+ import { RNCamera as Camera } from 'react-native-camera';
+ 
+ const CAMERA_FLASH_MODE = Camera.Constants.FlashMode;
+@@ -140,11 +139,9 @@ export default class QRCodeScanner extends Component {
+ 
+   componentDidMount() {
+     if (Platform.OS === 'ios') {
+-      request(PERMISSIONS.IOS.CAMERA).then(cameraStatus => {
+-        this.setState({
+-          isAuthorized: cameraStatus === RESULTS.GRANTED,
+-          isAuthorizationChecked: true,
+-        });
++      this.setState({
++        isAuthorized: true,
++        isAuthorizationChecked: true,
+       });
+     } else if (
+       Platform.OS === 'android' &&

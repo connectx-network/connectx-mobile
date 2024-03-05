@@ -48,6 +48,8 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(14, 0.3),
     color: Color.WHITE,
     flex: 1,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   textError: {
     fontSize: getSize.m(13, 0.3),

@@ -26,7 +26,7 @@ export const getColorByName = (name: string) => {
   return '#6B7AED';
 };
 
-export function getDateEvent(start: string, end: string) {
+export function getDateEvent(start?: string, end?: string) {
   const dateStart = moment(start).format('DD/MM/YYYY');
   const dateEnd = moment(end).format('DD/MM/YYYY');
   if (dateStart === dateEnd) {
@@ -35,7 +35,7 @@ export function getDateEvent(start: string, end: string) {
   return `${dateStart} - ${dateEnd}`;
 }
 
-export function getTimeEvent(start: string, end: string) {
+export function getTimeEvent(start?: string, end?: string) {
   const dateStart = moment(start).format('DD/MM/YYYY');
   const dateEnd = moment(end).format('DD/MM/YYYY');
   if (dateStart === dateEnd) {

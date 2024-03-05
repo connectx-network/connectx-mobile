@@ -29,6 +29,7 @@ export const CHAT_SCREEN = 'Chat';
 export const EVENT_STACK = 'EventStack';
 export const EVENTS_SCREEN = 'Events';
 export const SCAN_QR_SCREEN = 'ScanQr';
+export const CONFIRM_INFO_USER_SCREEN = 'ConfirmInfoUser';
 
 //Map stack
 export const MAP_STACK = 'MapStack';
@@ -59,6 +60,7 @@ export type RootStackParamList = {
   [PROFILE_SCREEN]: {id?: string};
   [PROFILE_OWNER_EVENT_SCREEN]: {id?: string};
   [EDIT_PROFILE_SCREEN]: {refetch?: () => void};
+  [CONFIRM_INFO_USER_SCREEN]: {eventId: string; userId: string};
 };
 
 export type SearchScreenRouteProp = RouteProp<RootStackParamList, 'Search'>;
@@ -82,4 +84,8 @@ export type ProfileScreenRouteProp = RouteProp<
 export type EditProfileScreenRouteProp = RouteProp<
   RootStackParamList,
   'EditProfile'
+>;
+export type ConfirmInfoUserScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'ConfirmInfoUser'
 >;

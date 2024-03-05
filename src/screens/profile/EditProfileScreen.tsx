@@ -72,6 +72,7 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
     id,
     avatarUrl,
     phoneNumber,
+    company,
   } = useSelector<IRootState, UserState>(uStateUser);
   const [countryCode, setCountryCode] = useState<CountryCode>('VN');
   const [showCountry, setShowCountry] = useState<boolean>(false);
@@ -90,8 +91,9 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
       gender,
       interests: userInterests,
       phoneNumber: phoneNumber || '',
+      company: company || '',
     }),
-    [nickname, fullName, country, address, userInterests, gender],
+    [nickname, fullName, country, address, userInterests, gender, company],
   );
 
   const handleUpdateInfo = useCallback(
@@ -246,6 +248,13 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           onChangeText={handleChangeValue('nickname')}
           error={errors.nickname}
           label="Nick name"
+          placeholder="..."
+        />
+        <InputForm
+          value={values.company}
+          onChangeText={handleChangeValue('company')}
+          error={errors.company}
+          label="Company"
           placeholder="..."
         />
         <InputForm

@@ -7,12 +7,13 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemNotify from './Items/ItemNotify';
 import NotifyEmpty from './components/NotifyEmpty';
 import {useFetchNotification} from './hooks';
+import {ItemNotification} from '@model/notification';
 
 const NotificationScreen = () => {
   const {data} = useFetchNotification({page: 1, size: 10});
 
-  const renderItem = useCallback(() => {
-    return <ItemNotify />;
+  const renderItem = useCallback(({item}: {item: ItemNotification}) => {
+    return <ItemNotify {...item} />;
   }, []);
 
   return (

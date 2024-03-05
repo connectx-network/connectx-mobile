@@ -93,7 +93,7 @@ const VerifyOtpScreen: FC<IProps> = ({route: {params}}) => {
       <Text style={styles.textSignIn}>Verification</Text>
       <KeyboardAwareScrollView style={Styles.paddingHorizontal}>
         <Text style={styles.textNote}>We’ve send you the verification</Text>
-        <Text style={styles.textNote}>code on +1 2620 0323 7631</Text>
+        <Text style={styles.textNote}>code on {email}</Text>
         <OTPTextView
           containerStyle={styles.textInputContainer}
           textInputStyle={styles.roundedTextInput}

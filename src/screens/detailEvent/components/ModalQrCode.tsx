@@ -46,7 +46,7 @@ const ModalQrCode = forwardRef(({}, ref) => {
         style={[
           styles.btnClose,
           {
-            marginBottom: bottom + bottom > 20 ? getSize.v(12) : 0,
+            marginBottom: bottom + getSize.v(6),
           },
         ]}
         activeOpacity={0.5}

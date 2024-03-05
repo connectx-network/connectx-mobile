@@ -15,6 +15,7 @@ export interface UserInfo {
   followers: number;
   following: number;
   phoneNumber: string;
+  company: string | null;
 }
 
 export interface Interest {

@@ -1,4 +1,5 @@
-import {Paging} from '@model';
+import {DataList, Paging} from '@model';
+import {ItemNotification} from '@model/notification';
 import {FetchNotification} from '@services/notification.service';
 import {useMutation} from '@tanstack/react-query';
 import {AxiosResponse} from 'axios';
@@ -8,7 +9,7 @@ export function useFetchNotification({
   page,
   size,
 }: Pick<Paging, 'page' | 'size'>) {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<ItemNotification[]>([]);
 
   const [paging, setPaging] = useState<Paging>({
     page,
@@ -30,7 +31,7 @@ export function useFetchNotification({
   );
 
   const {mutate, isPending} = useMutation<
-    AxiosResponse<any>,
+    AxiosResponse<DataList<ItemNotification[]>>,
     Error,
     Pick<Paging, 'page' | 'size'>
   >({
