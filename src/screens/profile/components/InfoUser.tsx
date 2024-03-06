@@ -1,3 +1,4 @@
+import {Icon} from '@assets/icons';
 import EditIcon from '@assets/icons/profile/EditIcon';
 import MessageIcon from '@assets/icons/profile/MessageIcon';
 import UserPlusIcon from '@assets/icons/profile/UserPlusIcon';
@@ -6,8 +7,15 @@ import {getSize} from '@base/common/responsive';
 import {Block, ButtonGradient, Text, Image} from '@components';
 import {navigate} from '@navigation/navigationService';
 import {EDIT_PROFILE_SCREEN} from '@navigation/routes';
+import {
+  CheckConnectUser,
+  ConnectUser,
+  UnConnectUser,
+} from '@services/user.service';
+import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {AxiosResponse} from 'axios';
 import {FC, Fragment, memo, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
@@ -18,6 +26,7 @@ interface IProps {
   followers?: number;
   following?: number;
   refetch?: () => void;
+  id?: string;
 }
 
 const InfoUser: FC<IProps> = ({
@@ -27,9 +36,31 @@ const InfoUser: FC<IProps> = ({
   followers,
   following,
   refetch,
+  id = '',
 }) => {
   const handleEditProfile = () => {
     navigate(EDIT_PROFILE_SCREEN, {refetch});
+  };
+
+  const {data, refetch: refetchCheckFollow} = useQuery<
+    AxiosResponse<'NO_CONNECTION' | 'FOLLOWING'>,
+    Error
+  >({
+    queryKey: ['checkFollow', {id}],
+    queryFn: () => CheckConnectUser(id),
+    enabled: !isMe,
+  });
+
+  const handleFollow = async () => {
+    try {
+      if (data?.data === 'NO_CONNECTION') {
+        await ConnectUser(id);
+      } else {
+        await UnConnectUser(id);
+      }
+      refetchCheckFollow();
+      refetch && refetch();
+    } catch (error) {}
   };
 
   return (
@@ -70,19 +101,36 @@ const InfoUser: FC<IProps> = ({
             </TouchableOpacity>
           </Block>
         ) : (
-          <Fragment>
+          <Block alignCenter flex>
             <ButtonGradient
+              onPress={handleFollow}
               styleContainer={styles.styleContainerFollow}
               style={styles.btnFollow}
               isRightIcon={false}>
-              <UserPlusIcon />
-              <Text style={styles.textBtnFollow}>Follow</Text>
+              {data?.data === 'NO_CONNECTION' ? (
+                <UserPlusIcon />
+              ) : (
+                <Icon
+                  name={'heart-outline'}
+                  color={Color.WHITE}
+                  size={getSize.m(22)}
+                />
+              )}
+              <Text
+                color={
+                  data?.data === 'NO_CONNECTION'
+                    ? Color.BACKGROUND
+                    : Color.WHITE
+                }
+                style={styles.textBtnFollow}>
+                {data?.data === 'NO_CONNECTION' ? 'Follow' : 'Followed'}
+              </Text>
             </ButtonGradient>
-            <TouchableOpacity activeOpacity={0.5} style={styles.btnMessage}>
+            {/* <TouchableOpacity activeOpacity={0.5} style={styles.btnMessage}>
               <MessageIcon />
               <Text style={styles.textBtnMessage}>Massages</Text>
-            </TouchableOpacity>
-          </Fragment>
+            </TouchableOpacity> */}
+          </Block>
         )}
       </Block>
     </Block>
@@ -122,11 +170,14 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_regular_400,
   },
   styleContainerFollow: {
-    flex: 1,
-    marginRight: getSize.s(20),
+    alignSelf: 'center',
+
+    // flex: 1,
+    // marginRight: getSize.s(20),
   },
   btnFollow: {
     height: getSize.m(50),
+    paddingHorizontal: getSize.s(30),
   },
   btnMessage: {
     flexDirection: 'row',
@@ -142,7 +193,6 @@ const styles = StyleSheet.create({
   textBtnFollow: {
     fontSize: getSize.m(16),
     fontFamily: Font.font_regular_400,
-    color: Color.BACKGROUND,
     marginLeft: getSize.m(8),
   },
   textBtnMessage: {

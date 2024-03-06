@@ -69,6 +69,7 @@ const BSListJoinEvent = forwardRef(({eventId}: IProps, ref) => {
       <ItemUserJoined
         name={item.user.fullName}
         avatarUrl={item.user.avatarUrl}
+        id={item.user.id}
       />
     );
   }, []);

@@ -1,10 +1,14 @@
 import {Icon} from '@assets/icons';
 import Images from '@assets/images';
+import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, ButtonGradient, Image, TabBar, Text} from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
+import {reset} from '@navigation/navigationService';
 import {EditProfileScreenRouteProp, LOGIN_SCREEN} from '@navigation/routes';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {
   UserState,
   actionLogoutUser,
@@ -29,15 +33,13 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 import {Asset} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import * as Keychain from 'react-native-keychain';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Yup from 'yup';
 import DropdownComponent, {ItemDropbox} from './components/DropdownComponent';
 import InputForm from './components/InputForm';
 import ModalPickImage from './components/ModalPickImage';
-import {goBack, reset} from '@navigation/navigationService';
-import * as Keychain from 'react-native-keychain';
-import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 
 interface IProps {
   route: EditProfileScreenRouteProp;
@@ -189,6 +191,8 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
       dispatch(actionLogoutUser());
       await Keychain.resetInternetCredentials(JWT_KEY);
       await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
+      await auth().signOut();
+      await GoogleSignin.revokeAccess();
       showSuccessTop('Delete account successfully!');
     } catch (error) {
       showWarningTop('Delete account failed!');

@@ -10,6 +10,7 @@ import {
   Image,
   InputField,
   LayoutAuth,
+  Spinner,
   Text,
 } from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
@@ -21,7 +22,7 @@ import {
   REGISTER_SCREEN,
 } from '@navigation/routes';
 import {actionUpdateUser} from '@redux/slices/userSlice';
-import {LoginService} from '@services/auth.service';
+import {AuthApple, AuthGoogle, LoginService} from '@services/auth.service';
 import Font from '@theme/Font';
 import {useFormik} from 'formik';
 import {useCallback, useState} from 'react';
@@ -30,8 +31,20 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch} from 'react-redux';
 import * as Yup from 'yup';
 import * as Keychain from 'react-native-keychain';
-import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
-import {FetchInfoMe, FetchInfoUser} from '@services/user.service';
+import {IS_IOS, JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
+import {FetchInfoMe, FetchInfoUser, UploadAvatar} from '@services/user.service';
+import PushController from '@base/common/pushNotification';
+import {
+  GoogleSignin,
+  statusCodes,
+  User,
+} from '@react-native-google-signin/google-signin';
+import appleAuth, {
+  appleAuthAndroid,
+} from '@invertase/react-native-apple-authentication';
+import {Icon} from '@assets/icons';
+import Color from '@theme/Color';
+import auth from '@react-native-firebase/auth';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
@@ -41,6 +54,7 @@ const validationSchema = Yup.object({
 const LoginScreen = () => {
   const {showWarningTop} = useToastMessage();
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLoadingSocial, setLoadingSocial] = useState<boolean>(false);
   const dispatch = useDispatch();
   const initialValues: LoginParams = {
     email: __DEV__ ? 'ducphamvan0711@gmail.com' : '',
@@ -54,6 +68,7 @@ const LoginScreen = () => {
         const {data} = await LoginService({
           email: values.email.toLowerCase(),
           password: values.password,
+          deviceToken: PushController.fcmToken || '',
         });
         await Keychain.setInternetCredentials(
           JWT_KEY,
@@ -99,6 +114,121 @@ const LoginScreen = () => {
     setFieldError(name, '');
   };
 
+  const handleLoginGoogle = useCallback(async () => {
+    try {
+      setLoadingSocial(true);
+      // await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      const userInfo = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+      );
+      await auth().signInWithCredential(googleCredential);
+      const token = await auth().currentUser?.getIdToken();
+      if (token) {
+        const {data} = await AuthGoogle({
+          token,
+          deviceToken: PushController.fcmToken || '',
+        });
+        await Keychain.setInternetCredentials(
+          JWT_KEY,
+          JWT_KEY,
+          data.accessToken,
+        );
+        await Keychain.setInternetCredentials(
+          JWT_REFRESH_KEY,
+          JWT_REFRESH_KEY,
+          data.refreshToken,
+        );
+        const {data: dataInfo} = await FetchInfoMe();
+        dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
+        reset(DRAWER_STACK);
+        if (userInfo.user?.photo && !dataInfo.avatarUrl) {
+          const {data: dataImage} = await UploadAvatar({
+            uri: userInfo.user?.photo,
+            name: 'unnamed.jpg',
+            type: 'image/jpg',
+          });
+          setTimeout(() => {
+            dispatch(actionUpdateUser({avatarUrl: dataImage.url}));
+          }, 2000);
+        }
+      }
+    } catch (error) {
+      typeof error === 'string' && showWarningTop(error);
+    } finally {
+      setLoadingSocial(false);
+    }
+  }, []);
+
+  const handleLoginApple = useCallback(async () => {
+    try {
+      setLoadingSocial(true);
+      let token: string | undefined = '';
+      if (IS_IOS) {
+        const appleAuthRequestResponse = await appleAuth.performRequest({
+          requestedOperation: appleAuth.Operation.LOGIN,
+          requestedScopes: [appleAuth.Scope.EMAIL],
+        });
+        if (!appleAuthRequestResponse.identityToken) {
+          throw 'Apple Sign-In failed - no identify token returned';
+        }
+        const {identityToken, nonce} = appleAuthRequestResponse;
+        const appleCredential = auth.AppleAuthProvider.credential(
+          identityToken,
+          nonce,
+        );
+        await auth().signInWithCredential(appleCredential);
+        const tokenSign = await auth().currentUser?.getIdToken();
+        token = tokenSign;
+      } else {
+        appleAuthAndroid.configure({
+          clientId: 'com.twendee.connectx.signin',
+          redirectUri: 'https://beta.connectx.network/',
+          scope: appleAuthAndroid.Scope.EMAIL,
+          responseType: appleAuthAndroid.ResponseType.ALL,
+        });
+        const appleAuthRequestResponse = await appleAuthAndroid.signIn();
+        if (
+          appleAuthRequestResponse.id_token &&
+          appleAuthRequestResponse.nonce
+        ) {
+          const {id_token, nonce} = appleAuthRequestResponse;
+          const appleCredential = auth.AppleAuthProvider.credential(
+            id_token,
+            nonce,
+          );
+          await auth().signInWithCredential(appleCredential);
+          const tokenSign = await auth().currentUser?.getIdToken();
+          token = tokenSign;
+        }
+      }
+
+      if (token) {
+        const {data} = await AuthApple({
+          token,
+          deviceToken: PushController.fcmToken || '',
+        });
+        await Keychain.setInternetCredentials(
+          JWT_KEY,
+          JWT_KEY,
+          data.accessToken,
+        );
+        await Keychain.setInternetCredentials(
+          JWT_REFRESH_KEY,
+          JWT_REFRESH_KEY,
+          data.refreshToken,
+        );
+        const {data: dataInfo} = await FetchInfoMe();
+        dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
+        reset(DRAWER_STACK);
+      }
+    } catch (error) {
+      typeof error === 'string' && showWarningTop(error);
+    } finally {
+      setLoadingSocial(false);
+    }
+  }, []);
+
   return (
     <LayoutAuth edges={['bottom', 'top']}>
       <KeyboardAwareScrollView>
@@ -138,17 +268,25 @@ const LoginScreen = () => {
           onPress={submitForm}>
           <Text style={styles.textBtnSignIn}>Sign in</Text>
         </ButtonGradient>
-        {false && <Text style={styles.textOr}>OR</Text>}
-        {false && (
-          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-            <GoogleIcon />
-            <Text style={styles.textBtnSocial}>Login with Google</Text>
-          </TouchableOpacity>
-        )}
-        {false && (
-          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.5}>
-            <FacebookIcon />
-            <Text style={styles.textBtnSocial}>Login with Google</Text>
+        <Text style={styles.textOr}>OR</Text>
+        <TouchableOpacity
+          onPress={handleLoginGoogle}
+          style={styles.btnSocial}
+          activeOpacity={0.5}>
+          <GoogleIcon />
+          <Text style={styles.textBtnSocial}>Login with Google</Text>
+        </TouchableOpacity>
+        {__DEV__ && (
+          <TouchableOpacity
+            onPress={handleLoginApple}
+            style={styles.btnSocial}
+            activeOpacity={0.5}>
+            <Icon
+              name={'logo-apple'}
+              color={Color.WHITE}
+              size={getSize.m(26)}
+            />
+            <Text style={styles.textBtnSocial}>Login with Apple</Text>
           </TouchableOpacity>
         )}
       </KeyboardAwareScrollView>
@@ -158,6 +296,9 @@ const LoginScreen = () => {
           <Text style={styles.textSignUp}>Sign up</Text>
         </TouchableOpacity>
       </Block>
+      {isLoadingSocial && (
+        <Spinner mode="overlay" size={'large'} color={Color.WHITE} />
+      )}
     </LayoutAuth>
   );
 };

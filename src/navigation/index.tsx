@@ -73,6 +73,7 @@ import {
   TAB_NAVIGATOR,
   VERIFY_OTP_SCREEN,
 } from './routes';
+import PushController from '@base/common/pushNotification';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -178,6 +179,7 @@ const TabsNavigator = memo(() => {
       initialRouteName={HOME_STACK}
       screenOptions={{
         headerShown: false,
+        tabBarHideOnKeyboard: true,
       }}>
       <Tab.Screen
         name={CHAT_STACK}
@@ -300,9 +302,15 @@ const RootStack: FC<{}> = () => {
   const navigationRef = useRef<NavigationContainerRef<{}>>();
   const routeNameRef = useRef<string>();
   const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
+  const pushController = PushController.getInstance();
 
   useLayoutEffect(() => {
     SplashScreen.hide();
+    pushController.init();
+
+    return () => {
+      PushController.backgroundSubscription();
+    };
   }, []);
 
   const ref = useCallback((refNavigation: any) => {

@@ -1,28 +1,27 @@
+import {IconApp} from '@assets/icons';
+import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {TabBar} from '@components';
+import {UserInfo} from '@model/user';
+import {goBack, openDrawer} from '@navigation/navigationService';
+import {ProfileScreenRouteProp} from '@navigation/routes';
+import {UserState} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
+import {FetchInfoUser} from '@services/user.service';
+import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
-import {FC, useCallback, useEffect} from 'react';
+import {AxiosResponse} from 'axios';
+import {FC, useCallback} from 'react';
 import {StyleSheet} from 'react-native';
 import {TabBarProps, Tabs} from 'react-native-collapsible-tab-view';
 import {TabName} from 'react-native-collapsible-tab-view/lib/typescript/src/types';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useSelector} from 'react-redux';
 import AboutTab from './AboutTab';
 import EventTab from './EventTab';
-import ReviewsTab from './ReviewsTab';
 import InfoUser from './components/InfoUser';
 import TabBarCustom from './components/TabBarCustom';
-import {IconApp} from '@assets/icons';
-import {getSize} from '@base/common/responsive';
-import {goBack, openDrawer} from '@navigation/navigationService';
-import {useQuery} from '@tanstack/react-query';
-import {ProfileScreenRouteProp} from '@navigation/routes';
-import {useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
-import {UserState} from '@redux/slices/userSlice';
-import {uStateUser} from '@redux/stores/selection';
-import {FetchInfoUser} from '@services/user.service';
-import {UserInfo} from '@model/user';
-import {AxiosResponse} from 'axios';
 
 interface IProps {
   route: ProfileScreenRouteProp;
@@ -32,6 +31,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const infoUser = useSelector<IRootState, UserState>(uStateUser);
   const idUser = params?.id || infoUser.id;
+  const isMe = !params?.id || params.id === infoUser.id;
 
   const {data, refetch} = useQuery<AxiosResponse<UserInfo>, Error>({
     queryKey: ['fetchInfoUser', {idUser}],
@@ -43,10 +43,11 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
       <InfoUser
         fullName={data?.data?.fullName}
         avatarUrl={data?.data?.avatarUrl}
-        isMe={!params?.id}
+        isMe={isMe}
         followers={data?.data?.followers}
         following={data?.data?.following}
         refetch={refetch}
+        id={params?.id}
       />
     );
   }, [
@@ -56,6 +57,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     data?.data?.following,
     data?.data?.followers,
     refetch,
+    isMe,
   ]);
 
   const renderTabBar = useCallback((props: TabBarProps<TabName>) => {
@@ -83,7 +85,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
           {/*// @ts-ignore */}
           <Tabs.ScrollView scrollEnabled={!!data}>
             <AboutTab
-              isMe={!params?.id}
+              isMe={isMe}
               description={data?.data?.description}
               userInterests={data?.data?.userInterests}
               refetch={refetch}

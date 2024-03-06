@@ -28,13 +28,19 @@ const api = async (
     const API = await getAxiosInstance();
     return await API({url, data, method: 'POST', ...options});
   } catch (error: any) {
-    // const refreshTokenStore = await Helper.getDataStored(JWT_KEY_REFRESH);
-    // if (error?.response?.status === 401 && refreshTokenStore) {
+    // const credentialsRefreshToken = await Keychain.getInternetCredentials(
+    //   JWT_REFRESH_KEY,
+    // );
+    // if (
+    //   error?.response?.status === 401 &&
+    //   credentialsRefreshToken &&
+    //   credentialsRefreshToken.password
+    // ) {
     //   try {
     //     const refreshToken = await axios.post(
     //       apiServerUrl + '/api/v2/auth/refresh-token',
     //       {
-    //         refreshToken: refreshTokenStore,
+    //         refreshToken: credentialsRefreshToken.password,
     //       },
     //     );
     //     if (refreshToken?.data?.accessToken) {

@@ -166,7 +166,9 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
         </Block>
       )}
       <Block row alignCenter space="between" marginTop={12}>
-        <Text style={styles.textInterest}>Interest</Text>
+        {(listInterest.length !== 0 || isMe) && (
+          <Text style={styles.textInterest}>Interest</Text>
+        )}
         {isMe && (
           <TouchableOpacity
             onPress={handleActionInterest}

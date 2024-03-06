@@ -2,6 +2,8 @@ import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, Image, Text} from '@components';
+import {navigate} from '@navigation/navigationService';
+import {PROFILE_OWNER_EVENT_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FC, memo} from 'react';
@@ -10,11 +12,18 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 interface IProps {
   avatarUrl: string | null;
   name: string;
+  id: string;
 }
 
-const ItemUserJoined: FC<IProps> = ({avatarUrl, name}) => {
+const ItemUserJoined: FC<IProps> = ({avatarUrl, name, id}) => {
+  const handleItem = () => {
+    navigate(PROFILE_OWNER_EVENT_SCREEN, {id});
+  };
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      onPress={handleItem}
+      style={styles.container}
+      activeOpacity={0.5}>
       <Image
         source={avatarUrl ? {uri: avatarUrl} : Images.AVATAR}
         style={styles.boxIcon}

@@ -38,3 +38,19 @@ export async function DeleteAccount(): Promise<any> {
     method: 'DELETE',
   });
 }
+
+export async function ConnectUser(id: string): Promise<any> {
+  return api(`${UserRouteEnum.ConnectUser}/${id}`, null);
+}
+
+export async function UnConnectUser(id: string): Promise<any> {
+  return api(UserRouteEnum.ConnectUser, {targetId: id}, {method: 'DELETE'});
+}
+
+export async function CheckConnectUser(
+  targetId: string,
+): Promise<AxiosResponse<'NO_CONNECTION' | 'FOLLOWING'>> {
+  return api(`${UserRouteEnum.CheckConnectUser}/${targetId}`, null, {
+    method: 'GET',
+  });
+}

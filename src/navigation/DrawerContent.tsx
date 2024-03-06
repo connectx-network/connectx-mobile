@@ -2,12 +2,19 @@ import {IconApp} from '@assets/icons';
 import AvatarIcon from '@assets/icons/common/AvatarIcon';
 import CalendarIcon from '@assets/icons/home/CalendarIcon';
 import ChatIcon from '@assets/icons/home/ChatIcon';
-import CommunityIcon from '@assets/icons/home/CommnunityIcon';
+import LogoutIcon from '@assets/icons/home/LogoutIcon';
 import MapIcon from '@assets/icons/home/MapIcon';
+import ProfileIcon from '@assets/icons/home/ProfileIcon';
+import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
 import {Block, Image, Text} from '@components';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
+import {UserState, actionLogoutUser} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import React, {
@@ -19,13 +26,14 @@ import React, {
   useState,
 } from 'react';
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import * as Keychain from 'react-native-keychain';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SvgProps} from 'react-native-svg';
+import {useDispatch, useSelector} from 'react-redux';
 import NavigationService, {reset} from './navigationService';
 import {
   CHAT_SCREEN,
   CHAT_STACK,
-  COMMUNITY_STACK,
   DETAIL_EVENT_SCREEN,
   EDIT_PROFILE_SCREEN,
   EVENTS_SCREEN,
@@ -39,15 +47,6 @@ import {
   PROFILE_SCREEN,
   PROFILE_STACK,
 } from './routes';
-import LogoutIcon from '@assets/icons/home/LogoutIcon';
-import ProfileIcon from '@assets/icons/home/ProfileIcon';
-import * as Keychain from 'react-native-keychain';
-import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
-import {useDispatch, useSelector} from 'react-redux';
-import {UserState, actionLogoutUser} from '@redux/slices/userSlice';
-import {IRootState} from '@redux/stores';
-import {UserInfo} from '@model/user';
-import {uStateUser} from '@redux/stores/selection';
 
 interface IProps extends DrawerContentComponentProps {}
 
@@ -149,6 +148,8 @@ const DrawerContent: FC<IProps> = ({}) => {
           dispatch(actionLogoutUser());
           await Keychain.resetInternetCredentials(JWT_KEY);
           await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
+          await auth().signOut();
+          await GoogleSignin.revokeAccess();
         }
       };
       return (

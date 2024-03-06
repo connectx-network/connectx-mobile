@@ -16,6 +16,7 @@ export interface VerifySignUpParams {
 export interface LoginParams {
   email: string;
   password: string;
+  deviceToken?: string;
 }
 
 export interface ResponseLogin {
@@ -28,4 +29,9 @@ export interface ResetPasswordParams {
   email: string;
   password: string;
   otp: string;
+}
+
+export interface AuthGoogleBody {
+  token: string;
+  deviceToken?: string;
 }

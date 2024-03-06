@@ -1,4 +1,5 @@
 import {
+  AuthGoogleBody,
   LoginParams,
   ResetPasswordParams,
   ResponseLogin,
@@ -49,4 +50,16 @@ export async function ResetPasswordService(
   body: ResetPasswordParams,
 ): Promise<AxiosResponse<{success: boolean}>> {
   return api(AuthRouteEnum.ResetPassword, body);
+}
+
+export async function AuthGoogle(
+  body: AuthGoogleBody,
+): Promise<AxiosResponse<ResponseLogin>> {
+  return api(AuthRouteEnum.AuthGoogle, body);
+}
+
+export async function AuthApple(
+  body: AuthGoogleBody,
+): Promise<AxiosResponse<ResponseLogin>> {
+  return api(AuthRouteEnum.AuthApple, body);
 }

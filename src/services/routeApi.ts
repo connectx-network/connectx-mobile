@@ -6,6 +6,8 @@ export enum AuthRouteEnum {
   RequestResetPassword = '/auth/request/reset-password',
   VerifyResetPassword = '/auth/verify-otp/reset-password',
   ResetPassword = '/auth/reset-password',
+  AuthGoogle = '/auth/sign-in/google',
+  AuthApple = '/auth/sign-in/apple',
 }
 
 export enum EventRouteEnum {
@@ -22,6 +24,8 @@ export enum UserRouteEnum {
   AuthSelf = '/auth/self',
   UploadAvatar = '/user/avatar',
   DeleteAccount = '/auth',
+  ConnectUser = '/user-connection',
+  CheckConnectUser = '/user-connection/relation',
 }
 
 export enum NotifyRouteEnum {

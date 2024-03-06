@@ -20,6 +20,8 @@ import Color from '@theme/Color';
 import {getSize} from '@base/common/responsive';
 import Geolocation from '@react-native-community/geolocation';
 import ToastNotify from '@components/ToastNotify';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {IS_IOS} from '@base/common/constants';
 
 function onAppStateChange(status: AppStateStatus) {
   focusManager.setFocused(status === 'active');
@@ -29,7 +31,18 @@ Geolocation.setRNConfiguration({
   skipPermissionRequests: false,
   authorizationLevel: 'whenInUse',
   locationProvider: 'auto',
-  enableBackgroundLocationUpdates: true
+  enableBackgroundLocationUpdates: true,
+});
+
+GoogleSignin.configure({
+  webClientId: IS_IOS
+    ? '276923841290-dr1rs3nqvni4on8bsb8jguq67mq4nnmq.apps.googleusercontent.com'
+    : '276923841290-93se9pge3f3k14lsij292cdll1tg60jh.apps.googleusercontent.com',
+  iosClientId:
+    '276923841290-dr1rs3nqvni4on8bsb8jguq67mq4nnmq.apps.googleusercontent.com',
+  scopes: ['email', 'profile'],
+  offlineAccess: true,
+  forceCodeForRefreshToken: false,
 });
 
 const App = () => {
