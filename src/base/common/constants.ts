@@ -32,3 +32,7 @@ export const RANDOM_COLORS = [
   '#F8D2D2',
   '#E58383',
 ];
+
+export const CODE_PUSH_KEY_PROP = IS_IOS
+  ? 'ePZorrmlaHsTV5XYImDz9lQIuItkdKFMi9Ncv'
+  : 'mqS1zqwaBTb7XeLxtiPKV30_kaGAyB5f5UFz5';

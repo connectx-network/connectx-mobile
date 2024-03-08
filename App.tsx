@@ -2,26 +2,27 @@ import {useAppState} from '@hooks/useAppState';
 import {useOnlineManager} from '@hooks/useOnlineManager';
 import {focusManager} from '@tanstack/react-query';
 import React, {useCallback} from 'react';
-import {AppStateStatus, Text} from 'react-native';
+import {AppStateStatus} from 'react-native';
 
+import {Icon} from '@assets/icons';
+import {IS_IOS} from '@base/common/constants';
+import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
+import PopupUpdate from '@components/PopupUpdate';
+import ToastNotify from '@components/ToastNotify';
+import Geolocation from '@react-native-community/geolocation';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {persistor, store} from '@redux/stores';
+import Color from '@theme/Color';
 import {PersistQueryClientProvider} from '@twd/react-query/PersistQueryClientProvider';
 import {persistOptions, queryClient} from '@twd/react-query/queryClient';
+import RootStack from 'navigation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import RootStack from 'navigation';
 import {ToastProvider} from 'react-native-toast-notifications';
 import {ToastProps} from 'react-native-toast-notifications/lib/typescript/toast';
-import {Icon} from '@assets/icons';
-import Color from '@theme/Color';
-import {getSize} from '@base/common/responsive';
-import Geolocation from '@react-native-community/geolocation';
-import ToastNotify from '@components/ToastNotify';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {IS_IOS} from '@base/common/constants';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
 
 function onAppStateChange(status: AppStateStatus) {
   focusManager.setFocused(status === 'active');
@@ -79,7 +80,9 @@ const App = () => {
                     size={getSize.m(20)}
                   />
                 }>
-                <RootStack />
+                <PopupUpdate>
+                  <RootStack />
+                </PopupUpdate>
               </ToastProvider>
             </GestureHandlerRootView>
           </PersistQueryClientProvider>
