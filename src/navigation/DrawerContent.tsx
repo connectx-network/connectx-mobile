@@ -148,8 +148,10 @@ const DrawerContent: FC<IProps> = ({}) => {
           dispatch(actionLogoutUser());
           await Keychain.resetInternetCredentials(JWT_KEY);
           await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
-          await auth().signOut();
-          await GoogleSignin.revokeAccess();
+          if (auth().currentUser) {
+            await auth().signOut();
+            await GoogleSignin.revokeAccess();
+          }
         }
       };
       return (

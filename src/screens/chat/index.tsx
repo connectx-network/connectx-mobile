@@ -4,13 +4,15 @@ import MessagePlusIcon from '@assets/icons/chat/MessagePlusIcon';
 import SearchIcon from '@assets/icons/home/SearchIcon';
 import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
+import {keyExtractor} from '@base/utils/Utils';
 import {Block, TabBar, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {useCallback} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import {useCallback, useMemo} from 'react';
+import {FlatList, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import ItemMessage from './Items/ItemMessage';
 
 const ChatScreen = () => {
   const customActionRight = useCallback(() => {
@@ -24,6 +26,15 @@ const ChatScreen = () => {
         </TouchableOpacity> */}
       </Block>
     );
+  }, []);
+
+  const emptyMessage = useMemo(
+    () => <Text style={styles.textEmpty}>There are no messages yet</Text>,
+    [],
+  );
+
+  const renderItem = useCallback(() => {
+    return <ItemMessage />;
   }, []);
 
   return (
@@ -44,7 +55,13 @@ const ChatScreen = () => {
           style={styles.searchInput}
         />
       </Block>
-      <Text style={styles.textEmpty}>There are no messages yet</Text>
+      <FlatList
+        data={Array.from(Array(0).keys())}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        ListEmptyComponent={emptyMessage}
+        contentContainerStyle={styles.contentContainerStyle}
+      />
     </SafeAreaView>
   );
 };
@@ -85,6 +102,9 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(18, 0.3),
     textAlign: 'center',
     marginTop: HEIGHT_SCREEN * 0.3,
+  },
+  contentContainerStyle: {
+    paddingTop: getSize.v(12),
   },
 });
 

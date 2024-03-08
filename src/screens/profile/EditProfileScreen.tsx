@@ -60,6 +60,7 @@ const validationSchema = Yup.object({
 const genders = [
   {label: 'Male', value: 'MALE'},
   {label: 'Female', value: 'FEMALE'},
+  {label: 'Other', value: 'OTHER'},
 ];
 
 const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
@@ -148,9 +149,9 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
   }, []);
 
   const onSelect = useCallback(
-    (country: Country) => {
-      setCountryCode(country.cca2);
-      setFieldValue('country', country.name);
+    (countrySelect: Country) => {
+      setCountryCode(countrySelect.cca2);
+      setFieldValue('country', countrySelect.name);
     },
     [setFieldValue],
   );
@@ -191,8 +192,10 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
       dispatch(actionLogoutUser());
       await Keychain.resetInternetCredentials(JWT_KEY);
       await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
-      await auth().signOut();
-      await GoogleSignin.revokeAccess();
+      if (auth().currentUser) {
+        await auth().signOut();
+        await GoogleSignin.revokeAccess();
+      }
       showSuccessTop('Delete account successfully!');
     } catch (error) {
       showWarningTop('Delete account failed!');
@@ -273,8 +276,9 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           onChangeText={handleChangeValue('phoneNumber')}
           label="Phone number"
           placeholder="..."
+          keyboardType="phone-pad"
         />
-        <Block row alignCenter>
+        <Block row alignCenter marginBottom={25}>
           <TouchableOpacity
             onPress={handleCountry}
             style={[styles.btnCountry, styles.marginRight]}
@@ -298,7 +302,6 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
             onChange={handleChangeSex}
           />
         </Block>
-        <Text style={styles.textError}></Text>
         <InputForm
           value={values.address}
           onChangeText={handleChangeValue('address')}

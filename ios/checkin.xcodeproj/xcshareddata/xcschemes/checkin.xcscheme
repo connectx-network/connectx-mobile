@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "checkin.app"
+               BuildableName = "ConnectX Network.app"
                BlueprintName = "checkin"
                ReferencedContainer = "container:checkin.xcodeproj">
             </BuildableReference>
@@ -55,7 +55,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "checkin.app"
+            BuildableName = "ConnectX Network.app"
             BlueprintName = "checkin"
             ReferencedContainer = "container:checkin.xcodeproj">
          </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "checkin.app"
+            BuildableName = "ConnectX Network.app"
             BlueprintName = "checkin"
             ReferencedContainer = "container:checkin.xcodeproj">
          </BuildableReference>

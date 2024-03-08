@@ -83,7 +83,9 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
         renderTabBar={renderTabBar}>
         <Tabs.Tab name="ABOUT">
           {/*// @ts-ignore */}
-          <Tabs.ScrollView scrollEnabled={!!data}>
+          <Tabs.ScrollView
+            keyboardShouldPersistTaps="handled"
+            scrollEnabled={!!data}>
             <AboutTab
               isMe={isMe}
               description={data?.data?.description}

@@ -47,6 +47,8 @@ import BottomTabCustom from './BottomTabsCustom';
 import DrawerContent from './DrawerContent';
 import NavigationService from './navigationService';
 import {
+  BUBBLE_CHAT_SCREEN,
+  CHAT_SCREEN,
   CHAT_STACK,
   CONFIRM_INFO_USER_SCREEN,
   DETAIL_EVENT_SCREEN,
@@ -72,8 +74,10 @@ import {
   SEARCH_SCREEN,
   TAB_NAVIGATOR,
   VERIFY_OTP_SCREEN,
+  linking,
 } from './routes';
 import PushController from '@base/common/pushNotification';
+import BubbleChatScreen from '@screens/chat/BubbleChatScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -133,6 +137,18 @@ const HomeStack = memo(() => {
   );
 });
 
+const ChatStack = memo(() => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName={CHAT_SCREEN}>
+      <Stack.Screen name={CHAT_SCREEN} component={ChatScreen} />
+    </Stack.Navigator>
+  );
+});
+
 const EventsStack = memo(() => {
   return (
     <Stack.Navigator
@@ -183,7 +199,7 @@ const TabsNavigator = memo(() => {
       }}>
       <Tab.Screen
         name={CHAT_STACK}
-        component={ChatScreen}
+        component={ChatStack}
         initialParams={{
           name: 'Chat',
         }}
@@ -266,6 +282,10 @@ const MainStack = memo(() => {
             name={PROFILE_OWNER_EVENT_SCREEN}
             component={ProfileScreen}
           />
+          <Stack.Screen
+            name={BUBBLE_CHAT_SCREEN}
+            component={BubbleChatScreen}
+          />
         </Stack.Navigator>
         <BSFilter ref={bottomSheetFilterRef} />
       </Animated.View>
@@ -326,7 +346,7 @@ const RootStack: FC<{}> = () => {
     <NavigationContainer
       onReady={onReady}
       // onStateChange={onStateChange}
-      // linking={linking}
+      linking={linking}
       ref={ref}>
       <Stack.Navigator
         screenOptions={{

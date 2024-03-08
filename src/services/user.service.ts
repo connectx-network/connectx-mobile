@@ -1,7 +1,7 @@
 import {AxiosResponse} from 'axios';
 import api from './api';
 import {UserRouteEnum} from './routeApi';
-import {UserInfo} from '@model/user';
+import {StatusConnect, UserInfo} from '@model/user';
 import {FileUpload} from '@model';
 
 export async function FetchInfoUser(
@@ -49,7 +49,7 @@ export async function UnConnectUser(id: string): Promise<any> {
 
 export async function CheckConnectUser(
   targetId: string,
-): Promise<AxiosResponse<'NO_CONNECTION' | 'FOLLOWING'>> {
+): Promise<AxiosResponse<StatusConnect>> {
   return api(`${UserRouteEnum.CheckConnectUser}/${targetId}`, null, {
     method: 'GET',
   });

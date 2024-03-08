@@ -1,16 +1,18 @@
+import {Icon} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
 import {getColorByName} from '@base/utils/Utils';
 import {Block} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FC, memo, useEffect, useState} from 'react';
-import {StyleSheet, TextInput} from 'react-native';
+import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 
 interface IProps {
   name: string;
   isChangeInterest: boolean;
   index: number;
   handleChangeItem: (value: string, index: number) => void;
+  handleRemoveItem: (index: number) => void;
 }
 
 const ItemInterest: FC<IProps> = ({
@@ -18,6 +20,7 @@ const ItemInterest: FC<IProps> = ({
   isChangeInterest,
   handleChangeItem,
   index,
+  handleRemoveItem,
 }) => {
   const [value, setValue] = useState<string>(name);
 
@@ -30,6 +33,8 @@ const ItemInterest: FC<IProps> = ({
     setValue(name);
   }, [name]);
 
+  const _handleRemoveItem = () => handleRemoveItem(index);
+
   return (
     <Block backgroundColor={getColorByName(value)} style={styles.itemInterest}>
       <TextInput
@@ -40,6 +45,15 @@ const ItemInterest: FC<IProps> = ({
         placeholderTextColor={`${Color.BLACK}80`}
         onChangeText={onChangeText}
       />
+      {isChangeInterest && (
+        <TouchableOpacity onPress={_handleRemoveItem} style={styles.btnClose}>
+          <Icon
+            name={'close-outline'}
+            color={Color.BLACK}
+            size={getSize.m(12)}
+          />
+        </TouchableOpacity>
+      )}
     </Block>
   );
 };
@@ -62,6 +76,23 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingTop: 0,
     textAlign: 'center',
+  },
+  btnClose: {
+    position: 'absolute',
+    left: 0,
+    width: getSize.m(16),
+    borderRadius: getSize.m(8),
+    height: getSize.m(16),
+    backgroundColor: `${Color.WHITE}60`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: -getSize.m(6),
+    zIndex: 10,
+    shadowColor: Color.BLACK,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 4,
   },
 });
 

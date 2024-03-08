@@ -6,19 +6,19 @@ import PersonIcon from '@assets/icons/auth/PersonIcon';
 import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block, ButtonGradient, InputField, LayoutAuth, Text} from '@components';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {SignUpParams} from '@model/auth';
 import {goBack, navigate} from '@navigation/navigationService';
 import {VERIFY_OTP_SCREEN} from '@navigation/routes';
+import {ResendOtpSignUpService, SignUpService} from '@services/auth.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo, useCallback, useState} from 'react';
+import {FormikHelpers, useFormik} from 'formik';
+import {useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {FormikHelpers, useFormik} from 'formik';
-import {SignUpParams} from '@model/auth';
 import * as Yup from 'yup';
-import {useToastMessage} from '@hooks/useToastMessage';
-import {ResendOtpSignUpService, SignUpService} from '@services/auth.service';
 
 const initialValues: SignUpParams = {
   fullName: '',
@@ -109,6 +109,7 @@ const RegisterScreen = () => {
           leftIcon={<MailIcon />}
           placeholder="Your email *"
           error={errors.email}
+          keyboardType="email-address"
         />
         <InputField
           isPassword

@@ -1,10 +1,10 @@
 import {Icon} from '@assets/icons';
 import EditIcon from '@assets/icons/profile/EditIcon';
-import MessageIcon from '@assets/icons/profile/MessageIcon';
 import UserPlusIcon from '@assets/icons/profile/UserPlusIcon';
 import Images from '@assets/images';
 import {getSize} from '@base/common/responsive';
-import {Block, ButtonGradient, Text, Image} from '@components';
+import {Block, ButtonGradient, Image, Text} from '@components';
+import {StatusConnect} from '@model/user';
 import {navigate} from '@navigation/navigationService';
 import {EDIT_PROFILE_SCREEN} from '@navigation/routes';
 import {
@@ -16,7 +16,7 @@ import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {AxiosResponse} from 'axios';
-import {FC, Fragment, memo, useCallback} from 'react';
+import {FC, memo} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {
@@ -43,7 +43,7 @@ const InfoUser: FC<IProps> = ({
   };
 
   const {data, refetch: refetchCheckFollow} = useQuery<
-    AxiosResponse<'NO_CONNECTION' | 'FOLLOWING'>,
+    AxiosResponse<StatusConnect>,
     Error
   >({
     queryKey: ['checkFollow', {id}],
@@ -53,7 +53,7 @@ const InfoUser: FC<IProps> = ({
 
   const handleFollow = async () => {
     try {
-      if (data?.data === 'NO_CONNECTION') {
+      if (data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER') {
         await ConnectUser(id);
       } else {
         await UnConnectUser(id);
@@ -107,7 +107,7 @@ const InfoUser: FC<IProps> = ({
               styleContainer={styles.styleContainerFollow}
               style={styles.btnFollow}
               isRightIcon={false}>
-              {data?.data === 'NO_CONNECTION' ? (
+              {data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER' ? (
                 <UserPlusIcon />
               ) : (
                 <Icon
@@ -118,7 +118,7 @@ const InfoUser: FC<IProps> = ({
               )}
               <Text
                 color={
-                  data?.data === 'NO_CONNECTION'
+                  data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER'
                     ? Color.BACKGROUND
                     : Color.WHITE
                 }

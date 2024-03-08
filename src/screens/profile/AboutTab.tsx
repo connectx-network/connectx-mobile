@@ -1,19 +1,28 @@
+import {Icon} from '@assets/icons';
 import PenIcon from '@assets/icons/profile/PenIcon';
 import {getSize} from '@base/common/responsive';
-import {Block, Text} from '@components';
-import {Interest} from '@model/user';
-import Color from '@theme/Color';
-import Font from '@theme/Font';
-import {FC, memo, useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
-import ItemInterest from './Items/ItemInterest';
+import {Block, ButtonGradient, Text} from '@components';
 import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import {useToastMessage} from '@hooks/useToastMessage';
-import {UpdateInfoUser} from '@services/user.service';
-import {useDispatch, useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
+import {Interest} from '@model/user';
 import {UserState, actionUpdateUser} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
+import {UpdateInfoUser} from '@services/user.service';
+import Color from '@theme/Color';
+import Font from '@theme/Font';
+import {FC, Fragment, memo, useCallback, useEffect, useState} from 'react';
+import {
+  Linking,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import ItemInterest from './Items/ItemInterest';
+import ContentAbout from './components/ContentAbout';
+import {IS_IOS} from '@base/common/constants';
 
 interface IProps {
   isMe: boolean;
@@ -33,11 +42,7 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     userInterests || [],
   );
   const [contentAdd, setContentAdd] = useState<string>('');
-  const [editAbout, setEditAbout] = useState<boolean>(false);
-  const isEditAbout = useDelayedValueWithLayoutAnimation(editAbout);
-  const [textDescription, setTextDescription] = useState<string>(
-    description || '',
-  );
+  const [checkbox2, setCheckbox2] = useState<boolean>(false);
   const {showWarningTop, showSuccessTop} = useToastMessage();
   const dispatch = useDispatch();
 
@@ -45,35 +50,23 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     !!userInterests && setListInterest(userInterests);
   }, [userInterests]);
 
-  const handleActionInterest = async () => {
-    if (!editInterest) {
-      setChangeInterest(true);
-    } else {
-      try {
-        const interests = listInterest.filter(item => item.name);
-        await UpdateInfoUser({
-          fullName,
-          nickname: nickname || '',
-          country,
-          address: address || '',
-          gender,
-          interests,
-          description: description || '',
-        });
-        showSuccessTop('Update interest successfully!');
-        setChangeInterest(false);
-        dispatch(actionUpdateUser({userInterests: interests}));
-        refetch();
-      } catch (error) {
-        showWarningTop('Update interest failed, please try again!');
-      }
-    }
-  };
+  const handleActionInterest = useCallback(() => {
+    setChangeInterest(prev => !prev);
+    userInterests && setListInterest(userInterests);
+  }, [userInterests]);
 
   const handleChangeItem = useCallback((value: string, index: number) => {
     setListInterest(prev => {
       prev[index].name = value;
       return prev;
+    });
+  }, []);
+
+  const handleRemoveItem = useCallback((index: number) => {
+    setListInterest(prev => {
+      const _prev = JSON.parse(JSON.stringify(prev));
+      _prev.splice(index, 1);
+      return _prev;
     });
   }, []);
 
@@ -84,140 +77,121 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
     }
   }, [contentAdd]);
 
-  const handleEditAbout = async () => {
-    if (!editAbout) {
-      setEditAbout(true);
-    } else {
-      if (!textDescription) {
-        return setEditAbout(false);
-      }
-      try {
-        await UpdateInfoUser({
-          fullName,
-          nickname: nickname || '',
-          country,
-          address: address || '',
-          gender,
-          interests: userInterests,
-          description: textDescription,
-        });
-        showSuccessTop('Update description successfully!');
-        setEditAbout(false);
-        dispatch(actionUpdateUser({description: textDescription}));
-        refetch();
-      } catch (error) {
-        showWarningTop('Update description failed, please try again!');
-      }
+  const handleCheckBox2 = useCallback(() => setCheckbox2(prev => !prev), []);
+  const handleTerm = useCallback(
+    () => Linking.openURL('https://www.connectx.network/privacy/'),
+    [],
+  );
+
+  const handleSaveInterest = async () => {
+    if (!checkbox2) {
+      return showWarningTop('Please agree ConnectX’s terms & conditions');
+    }
+    try {
+      const interests = listInterest.filter(item => item.name);
+      await UpdateInfoUser({
+        fullName,
+        nickname: nickname || '',
+        country,
+        address: address || '',
+        gender,
+        interests,
+        description: description || '',
+      });
+      showSuccessTop('Update interest successfully!');
+      setChangeInterest(false);
+      dispatch(actionUpdateUser({userInterests: interests}));
+      refetch();
+    } catch (error) {
+      showWarningTop('Update interest failed, please try again!');
     }
   };
 
   return (
     <Block style={styles.container}>
-      {description && !editAbout ? (
-        <>
-          {isMe && (
-            <Block row space="between">
-              <Text style={styles.textInterest}>Update biography</Text>
-              <TouchableOpacity
-                onPress={handleEditAbout}
-                activeOpacity={0.5}
-                style={styles.btnChange}>
-                <PenIcon color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'} />
-                <Text
-                  color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'}
-                  style={styles.textChange}>
-                  {isEditAbout ? 'SAVE' : 'CHANGE'}
-                </Text>
-              </TouchableOpacity>
-            </Block>
+      <KeyboardAvoidingView behavior={IS_IOS ? 'padding' : 'height'}>
+        <ContentAbout refetch={refetch} description={description} isMe={isMe} />
+        <Block row alignCenter space="between" marginTop={12}>
+          {(listInterest.length !== 0 || isMe) && (
+            <Text style={styles.textInterest}>Interest</Text>
           )}
-          <Text style={styles.textAbout}>{description}</Text>
-        </>
-      ) : (
-        <Block row alignStart space="between">
-          <Text style={styles.textEmptyProfile}>
-            {isMe ? 'Update biography' : 'No biography yet'}
-          </Text>
           {isMe && (
             <TouchableOpacity
-              onPress={handleEditAbout}
+              onPress={handleActionInterest}
               activeOpacity={0.5}
               style={styles.btnChange}>
-              <PenIcon color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'} />
+              <PenIcon
+                color={isChangeInterest ? Color.RED_HOLDER : '#5669FF'}
+              />
               <Text
-                color={isEditAbout ? Color.GREEN_HOLDER : '#5669FF'}
+                color={isChangeInterest ? Color.RED_HOLDER : '#5669FF'}
                 style={styles.textChange}>
-                {isEditAbout ? 'SAVE' : 'CHANGE'}
+                {isChangeInterest ? 'Cancel' : 'CHANGE'}
               </Text>
             </TouchableOpacity>
           )}
         </Block>
-      )}
-      {isEditAbout && (
-        <Block style={styles.boxInputAbout}>
-          <TextInput
-            multiline
-            style={styles.inputAbout}
-            placeholder="Enter biography...."
-            placeholderTextColor={`${Color.WHITE}40`}
-            value={textDescription}
-            onChangeText={setTextDescription}
-          />
-        </Block>
-      )}
-      <Block row alignCenter space="between" marginTop={12}>
-        {(listInterest.length !== 0 || isMe) && (
-          <Text style={styles.textInterest}>Interest</Text>
-        )}
-        {isMe && (
-          <TouchableOpacity
-            onPress={handleActionInterest}
-            activeOpacity={0.5}
-            style={styles.btnChange}>
-            <PenIcon
-              color={isChangeInterest ? Color.GREEN_HOLDER : '#5669FF'}
-            />
-            <Text
-              color={isChangeInterest ? Color.GREEN_HOLDER : '#5669FF'}
-              style={styles.textChange}>
-              {isChangeInterest ? 'SAVE' : 'CHANGE'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </Block>
-      <Block row wrap alignCenter marginTop={12}>
-        {listInterest.map((item, index) => {
-          return (
-            <ItemInterest
-              isChangeInterest={isChangeInterest}
-              key={index}
-              name={item.name}
-              index={index}
-              handleChangeItem={handleChangeItem}
-            />
-          );
-        })}
-        {isChangeInterest && (
-          <Block row alignCenter marginBottom={12}>
-            <Block style={[styles.itemInterest, styles.itemInterestNoMargin]}>
-              <TextInput
-                placeholderTextColor={`${Color.BLACK}80`}
-                style={styles.inputInterest}
-                placeholder="Interest"
-                autoFocus
-                onChangeText={setContentAdd}
-                value={contentAdd}
+        <Block row wrap alignCenter marginTop={12}>
+          {listInterest.map((item, index) => {
+            return (
+              <ItemInterest
+                isChangeInterest={isChangeInterest}
+                key={index}
+                name={item.name}
+                index={index}
+                handleChangeItem={handleChangeItem}
+                handleRemoveItem={handleRemoveItem}
               />
+            );
+          })}
+          {isChangeInterest && (
+            <Block row alignCenter marginBottom={12}>
+              <Block style={[styles.itemInterest, styles.itemInterestNoMargin]}>
+                <TextInput
+                  placeholderTextColor={`${Color.BLACK}80`}
+                  style={styles.inputInterest}
+                  placeholder="Interest"
+                  autoFocus
+                  onChangeText={setContentAdd}
+                  value={contentAdd}
+                />
+              </Block>
+              <TouchableOpacity
+                onPress={handleAdd}
+                style={styles.btnAddInterest}
+                activeOpacity={0.5}>
+                <Text style={styles.textAdd}>Add</Text>
+              </TouchableOpacity>
             </Block>
-            <TouchableOpacity
-              onPress={handleAdd}
-              style={styles.btnAddInterest}
-              activeOpacity={0.5}>
-              <Text style={styles.textAdd}>Add</Text>
-            </TouchableOpacity>
-          </Block>
+          )}
+        </Block>
+        {isChangeInterest && (
+          <Fragment>
+            <Block style={styles.term} marginTop={12}>
+              <TouchableOpacity onPress={handleCheckBox2} activeOpacity={0.5}>
+                {!checkbox2 ? (
+                  <Block style={styles.btnCheckbox} />
+                ) : (
+                  <Icon
+                    name={'checkbox'}
+                    color={'#BF56FF'}
+                    size={getSize.m(22)}
+                  />
+                )}
+              </TouchableOpacity>
+              <Text onPress={handleTerm} style={styles.textTerm}>
+                Agree ConnectX’s terms & conditions
+              </Text>
+            </Block>
+            <ButtonGradient
+              onPress={handleSaveInterest}
+              style={styles.btnSave}
+              styleContainer={styles.btnSaveContainer}>
+              <Text style={styles.textSave}>SAVE</Text>
+            </ButtonGradient>
+          </Fragment>
         )}
-      </Block>
+      </KeyboardAvoidingView>
     </Block>
   );
 };
@@ -291,6 +265,9 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_medium_500,
     color: Color.BACKGROUND,
     minWidth: getSize.m(30),
+    paddingBottom: 0,
+    paddingTop: 0,
+    // textAlign: 'center',
   },
   boxInputAbout: {
     backgroundColor: '#29313E',
@@ -305,6 +282,35 @@ const styles = StyleSheet.create({
     minHeight: getSize.v(100),
     fontSize: getSize.m(13, 0.3),
     fontFamily: Font.font_regular_400,
+  },
+  term: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: getSize.v(8),
+  },
+  btnCheckbox: {
+    width: getSize.m(22),
+    height: getSize.m(22),
+    borderRadius: getSize.m(4),
+    borderColor: Color.WHITE,
+    borderWidth: getSize.m(2),
+  },
+  textTerm: {
+    marginLeft: getSize.m(8),
+    fontFamily: Font.font_medium_500,
+    fontSize: getSize.m(12),
+    textDecorationLine: 'underline',
+  },
+  btnSaveContainer: {
+    marginBottom: getSize.v(30),
+  },
+  btnSave: {
+    height: getSize.m(48),
+  },
+  textSave: {
+    fontSize: getSize.m(15, 0.3),
+    fontFamily: Font.font_medium_500,
+    color: Color.BACKGROUND,
   },
 });
 

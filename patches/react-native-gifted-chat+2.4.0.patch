@@ -1,0 +1,56 @@
+diff --git a/node_modules/react-native-gifted-chat/lib/GiftedChat.js b/node_modules/react-native-gifted-chat/lib/GiftedChat.js
+index 9951cd8..997fea9 100644
+--- a/node_modules/react-native-gifted-chat/lib/GiftedChat.js
++++ b/node_modules/react-native-gifted-chat/lib/GiftedChat.js
+@@ -120,6 +120,15 @@ function GiftedChat(props) {
+         // Reset the indicator since the keyboard is shown
+         _isTextInputWasFocused = false;
+     };
++
++         useEffect(() => {
++                const newMessagesContainerHeight = getMessagesContainerHeightWithKeyboard();
++                setState({
++                    ...state,
++                    messagesContainerHeight: newMessagesContainerHeight,
++                });
++            }, [minComposerHeight]);
++
+     const onKeyboardWillShow = (e) => {
+         handleTextInputFocusWhenKeyboardShow();
+         if (isKeyboardInternallyHandled) {
+diff --git a/node_modules/react-native-gifted-chat/lib/InputToolbar.d.ts b/node_modules/react-native-gifted-chat/lib/InputToolbar.d.ts
+index c3856fe..157ea65 100644
+--- a/node_modules/react-native-gifted-chat/lib/InputToolbar.d.ts
++++ b/node_modules/react-native-gifted-chat/lib/InputToolbar.d.ts
+@@ -18,6 +18,7 @@ export interface InputToolbarProps<TMessage extends IMessage> {
+     renderSend?(props: SendProps<TMessage>): React.ReactNode;
+     renderComposer?(props: ComposerProps): React.ReactNode;
+     onPressActionButton?(): void;
++    renderReply?(): React.ReactNode;
+ }
+ export declare function InputToolbar<TMessage extends IMessage = IMessage>(props: InputToolbarProps<TMessage>): JSX.Element;
+ export declare namespace InputToolbar {
+diff --git a/node_modules/react-native-gifted-chat/lib/InputToolbar.js b/node_modules/react-native-gifted-chat/lib/InputToolbar.js
+index 2ff651d..e95c0df 100644
+--- a/node_modules/react-native-gifted-chat/lib/InputToolbar.js
++++ b/node_modules/react-native-gifted-chat/lib/InputToolbar.js
+@@ -1,5 +1,5 @@
+ import PropTypes from 'prop-types';
+-import React, { useEffect, useState } from 'react';
++import React, { Fragment, useEffect, useState } from 'react';
+ import { StyleSheet, View, Keyboard } from 'react-native';
+ import { Composer } from './Composer';
+ import { Send } from './Send';
+@@ -34,8 +34,10 @@ export function InputToolbar(props) {
+         };
+     }, []);
+     const { containerStyle, ...rest } = props;
+-    const { renderActions, onPressActionButton, renderComposer, renderSend, renderAccessory, } = rest;
+-    return (<View style={[styles.container, { position }, containerStyle]}>
++    const { renderActions, onPressActionButton, renderComposer, renderSend, renderAccessory,renderReply } = rest;
++    return (
++         <View style={[styles.container, { position }, containerStyle]}>
++        {renderReply && renderReply()}
+       <View style={[styles.primary, props.primaryStyle]}>
+         {(renderActions === null || renderActions === void 0 ? void 0 : renderActions(rest)) ||
+             (onPressActionButton && <Actions {...rest}/>)}

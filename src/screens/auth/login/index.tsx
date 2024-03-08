@@ -1,8 +1,10 @@
-import FacebookIcon from '@assets/icons/auth/FacebookIcon';
+import {Icon} from '@assets/icons';
 import GoogleIcon from '@assets/icons/auth/GoogleIcon';
 import LockIcon from '@assets/icons/auth/LockIcon';
 import MailIcon from '@assets/icons/auth/MailIcon';
 import Images from '@assets/images';
+import {IS_IOS, JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
+import PushController from '@base/common/pushNotification';
 import {getSize} from '@base/common/responsive';
 import {
   Block,
@@ -14,6 +16,9 @@ import {
   Text,
 } from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
+import appleAuth, {
+  appleAuthAndroid,
+} from '@invertase/react-native-apple-authentication';
 import {LoginParams} from '@model/auth';
 import {navigate, reset} from '@navigation/navigationService';
 import {
@@ -21,30 +26,20 @@ import {
   FORGOT_PASSWORD_SCREEN,
   REGISTER_SCREEN,
 } from '@navigation/routes';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {actionUpdateUser} from '@redux/slices/userSlice';
 import {AuthApple, AuthGoogle, LoginService} from '@services/auth.service';
+import {FetchInfoMe, UploadAvatar} from '@services/user.service';
+import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {useFormik} from 'formik';
+import {FormikHelpers, useFormik} from 'formik';
 import {useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import * as Keychain from 'react-native-keychain';
 import {useDispatch} from 'react-redux';
 import * as Yup from 'yup';
-import * as Keychain from 'react-native-keychain';
-import {IS_IOS, JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
-import {FetchInfoMe, FetchInfoUser, UploadAvatar} from '@services/user.service';
-import PushController from '@base/common/pushNotification';
-import {
-  GoogleSignin,
-  statusCodes,
-  User,
-} from '@react-native-google-signin/google-signin';
-import appleAuth, {
-  appleAuthAndroid,
-} from '@invertase/react-native-apple-authentication';
-import {Icon} from '@assets/icons';
-import Color from '@theme/Color';
-import auth from '@react-native-firebase/auth';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
@@ -62,7 +57,7 @@ const LoginScreen = () => {
   };
 
   const handleSignIn = useCallback(
-    async (values: LoginParams) => {
+    async (values: LoginParams, {resetForm}: FormikHelpers<LoginParams>) => {
       try {
         setLoading(true);
         const {data} = await LoginService({
@@ -81,6 +76,7 @@ const LoginScreen = () => {
           data.refreshToken,
         );
         const {data: dataInfo} = await FetchInfoMe();
+        resetForm();
         dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
         reset(DRAWER_STACK);
       } catch (error) {
@@ -244,6 +240,7 @@ const LoginScreen = () => {
             leftIcon={<MailIcon />}
             value={values.email}
             onChangeText={handleChangeValue('email')}
+            keyboardType="email-address"
           />
           <InputField
             error={errors.password}
@@ -276,19 +273,13 @@ const LoginScreen = () => {
           <GoogleIcon />
           <Text style={styles.textBtnSocial}>Login with Google</Text>
         </TouchableOpacity>
-        {__DEV__ && (
-          <TouchableOpacity
-            onPress={handleLoginApple}
-            style={styles.btnSocial}
-            activeOpacity={0.5}>
-            <Icon
-              name={'logo-apple'}
-              color={Color.WHITE}
-              size={getSize.m(26)}
-            />
-            <Text style={styles.textBtnSocial}>Login with Apple</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={handleLoginApple}
+          style={styles.btnSocial}
+          activeOpacity={0.5}>
+          <Icon name={'logo-apple'} color={Color.WHITE} size={getSize.m(26)} />
+          <Text style={styles.textBtnSocial}>Login with Apple</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
       <Block style={styles.footer}>
         <Text style={styles.textNotAccount}>Don’t have an account?</Text>

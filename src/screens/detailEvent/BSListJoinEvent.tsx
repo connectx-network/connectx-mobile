@@ -26,13 +26,14 @@ interface IProps {
 export const listJoinEventRef = React.createRef<any>();
 
 export const listJoinEventControl = {
-  show: () => listJoinEventRef?.current?.show(),
+  show: () => listJoinEventRef.current?.show(),
+  refresh: () => listJoinEventRef.current?.refresh(),
 };
 
 const BSListJoinEvent = forwardRef(({eventId}: IProps, ref) => {
   const [isShow, setShow] = useState<boolean>(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const {data, onEndReached} = useFetchJoinEvent({
+  const {data, onEndReached, onRefresh} = useFetchJoinEvent({
     page: 1,
     size: 20,
     userId: '',
@@ -45,7 +46,7 @@ const BSListJoinEvent = forwardRef(({eventId}: IProps, ref) => {
   }, []);
 
   useImperativeHandle(ref, () => {
-    return {show};
+    return {show, refresh: onRefresh};
   });
 
   const snapPoints = useMemo(() => ['92%'], []);
@@ -86,7 +87,7 @@ const BSListJoinEvent = forwardRef(({eventId}: IProps, ref) => {
       handleIndicatorStyle={styles.handleIndicatorStyle}
       backgroundStyle={styles.container}
       enablePanDownToClose={true}>
-      <Text style={styles.textTitle}>List joined event</Text>
+      <Text style={styles.textTitle}>List of participants</Text>
       <BottomSheetFlatList
         data={data}
         keyExtractor={keyExtractor}

@@ -24,6 +24,7 @@ export const SEARCH_SCREEN = 'Search';
 //Chat stack
 export const CHAT_STACK = 'ChatStack';
 export const CHAT_SCREEN = 'Chat';
+export const BUBBLE_CHAT_SCREEN = 'BubbleChat';
 
 //Event stack
 export const EVENT_STACK = 'EventStack';
@@ -89,3 +90,12 @@ export type ConfirmInfoUserScreenRouteProp = RouteProp<
   RootStackParamList,
   'ConfirmInfoUser'
 >;
+
+export const linking = {
+  prefixes: ['connectx.network://', 'https://connectx.network/'],
+  config: {
+    screens: {
+      [PROFILE_OWNER_EVENT_SCREEN]: 'events/:id',
+    },
+  },
+};

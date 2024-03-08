@@ -20,6 +20,7 @@ const ItemNotify: FC<IProps> = ({title, body, sender, createdAt}) => {
   return (
     <TouchableOpacity
       onPress={handleItem}
+      disabled={!__DEV__}
       activeOpacity={0.5}
       style={styles.container}>
       <Image

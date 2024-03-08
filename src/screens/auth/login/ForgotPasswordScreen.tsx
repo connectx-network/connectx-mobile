@@ -11,7 +11,7 @@ import {RequestResetPassword} from '@services/auth.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FormikHelpers, useFormik} from 'formik';
-import {memo, useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import * as Yup from 'yup';
@@ -88,6 +88,7 @@ const ForgotPasswordScreen = () => {
           error={errors.email}
           placeholder="abc@email.com"
           leftIcon={<MailIcon />}
+          keyboardType="email-address"
         />
         <ButtonGradient
           onPress={submitForm}

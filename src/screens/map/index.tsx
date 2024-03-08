@@ -1,9 +1,9 @@
 import {Switcher} from '@components';
-import {useCallback, useMemo, useState} from 'react';
+import {useFetchEvents} from '@screens/events/hooks';
+import {useMemo, useState} from 'react';
 import MapHome, {refMap} from './MapHome';
 import MapSearch from './MapSearch';
 import SearchContainer, {refSearchMap} from './SearchContainer';
-import {useFetchEvents} from '@screens/events/hooks';
 
 const MapScreen = () => {
   const [showSearch, setShowSearch] = useState<boolean>(false);

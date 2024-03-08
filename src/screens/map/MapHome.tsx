@@ -5,15 +5,14 @@ import {keyExtractor} from '@base/utils/Utils';
 import {Block} from '@components';
 import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
 import {Event} from '@model/event';
-import {useFetchEvents} from '@screens/events/hooks';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
 import {
-  FC,
   Fragment,
   createRef,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
 } from 'react';
@@ -33,11 +32,11 @@ interface IProps {
 }
 
 const MapHome = forwardRef(({data}: IProps, ref) => {
-  const refMap = useRef<MapView>(null);
+  const refMapView = useRef<MapView>(null);
   const {coord} = useGetLocationCurrent();
 
   const navigator = useCallback((region: Region) => {
-    refMap.current?.animateToRegion(region, 1000);
+    refMapView.current?.animateToRegion(region, 1000);
   }, []);
 
   useImperativeHandle(ref, () => ({navigator}));
@@ -50,7 +49,7 @@ const MapHome = forwardRef(({data}: IProps, ref) => {
         latitude: Number(item.eventLocationDetail.latitude),
         longitude: Number(item.eventLocationDetail.longitude),
       };
-      refMap.current?.animateToRegion(region, 1000);
+      refMapView.current?.animateToRegion(region, 1000);
     };
     return (
       <ItemEventNear
@@ -69,14 +68,18 @@ const MapHome = forwardRef(({data}: IProps, ref) => {
         latitude: coord.latitude,
         longitude: coord.longitude,
       };
-      refMap.current?.animateToRegion(region, 1000);
+      refMapView.current?.animateToRegion(region, 1000);
     }
   }, [coord?.latitude, coord?.longitude]);
+
+  useEffect(() => {
+    handleCurrentLocation();
+  }, [coord]);
 
   return (
     <Fragment>
       <MapView
-        ref={refMap}
+        ref={refMapView}
         provider={PROVIDER_GOOGLE}
         style={Styles.root}
         initialRegion={{

@@ -22,3 +22,9 @@ export interface Interest {
   id?: string;
   name: string;
 }
+
+export type StatusConnect =
+  | 'NO_CONNECTION'
+  | 'FOLLOWER'
+  | 'FOLLOWING'
+  | 'FRIEND';

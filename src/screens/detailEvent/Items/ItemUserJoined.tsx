@@ -22,6 +22,7 @@ const ItemUserJoined: FC<IProps> = ({avatarUrl, name, id}) => {
   return (
     <TouchableOpacity
       onPress={handleItem}
+      disabled={!__DEV__}
       style={styles.container}
       activeOpacity={0.5}>
       <Image

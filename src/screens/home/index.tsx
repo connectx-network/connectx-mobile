@@ -127,7 +127,7 @@ const HomeScreen = () => {
         <Banner />
 
         <Block style={styles.label}>
-          <Text style={styles.textLabel}>Nearby You</Text>
+          <Text style={styles.textLabel}>Near You</Text>
           {false && (
             <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
               <Text style={styles.textSeeAll}>See All</Text>

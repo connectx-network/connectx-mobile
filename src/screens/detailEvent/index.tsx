@@ -80,6 +80,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
       await JoinEvent(data?.id || params.id);
       refetch();
       onRefresh();
+      listJoinEventControl.refresh();
       setShowModalSuccess(true);
     } catch (error) {
       showWarningTop(

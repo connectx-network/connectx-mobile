@@ -37,7 +37,7 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>connect-x-app.netlify.app</string>
+				<string>connectx.network</string>
 			</array>
 		</dict>
 		<dict>
@@ -48,7 +48,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>12</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -63,13 +65,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to the camera.</string>
+	<string>$(PRODUCT_NAME) want to use your camera to take pictures of avatar</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs to get your location to find events near you and display on the map</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs to get your location to find events near you and display on the map</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library.</string>
+	<string>$(PRODUCT_NAME) would like access to your photo gallery to choose pictures of avatar</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
