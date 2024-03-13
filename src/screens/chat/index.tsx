@@ -1,18 +1,20 @@
 import {IconApp} from '@assets/icons';
 import SearchIcon from '@assets/icons/home/SearchIcon';
 import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
-import Styles from '@base/common/styles';
 import {hapticFeedback, keyExtractor} from '@base/utils/Utils';
 import {Block, TabBar, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {useCallback, useMemo} from 'react';
 import {FlatList, StyleSheet, TextInput} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemMessage from './Items/ItemMessage';
 
 const ChatScreen = () => {
+  const styles = useStyle(getStyles);
   const customActionRight = useCallback(() => {
     return (
       <Block style={styles.boxRightAction}>
@@ -41,12 +43,12 @@ const ChatScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={Styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabBar
         title="Chat"
         handleLeftIcon={handleDrawer}
         leftIcon={
-          <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
+          <IconApp name={'menu'} {...styles.iconDrawer} size={getSize.m(18)} />
         }
         customActionRight={customActionRight}
       />
@@ -69,46 +71,54 @@ const ChatScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  boxRightAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  btnMessage: {
-    paddingHorizontal: getSize.m(4),
-    paddingVertical: getSize.m(2),
-    marginRight: getSize.m(6),
-  },
-  btnContact: {
-    paddingHorizontal: getSize.m(4),
-    paddingVertical: getSize.m(2),
-  },
-  search: {
-    height: getSize.m(40),
-    borderRadius: getSize.m(8),
-    backgroundColor: '#1D1D32',
-    marginHorizontal: getSize.s(20),
-    marginTop: getSize.v(8),
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: getSize.v(12),
-    paddingHorizontal: getSize.m(12),
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: getSize.m(12),
-    fontSize: getSize.m(14, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  textEmpty: {
-    color: Color.GRAY,
-    fontSize: getSize.m(18, 0.3),
-    textAlign: 'center',
-    marginTop: HEIGHT_SCREEN * 0.3,
-  },
-  contentContainerStyle: {
-    paddingTop: getSize.v(12),
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.mainBackground,
+    },
+    boxRightAction: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    btnMessage: {
+      paddingHorizontal: getSize.m(4),
+      paddingVertical: getSize.m(2),
+      marginRight: getSize.m(6),
+    },
+    btnContact: {
+      paddingHorizontal: getSize.m(4),
+      paddingVertical: getSize.m(2),
+    },
+    search: {
+      height: getSize.m(40),
+      borderRadius: getSize.m(8),
+      backgroundColor: '#1D1D32',
+      marginHorizontal: getSize.s(20),
+      marginTop: getSize.v(8),
+      alignItems: 'center',
+      flexDirection: 'row',
+      marginBottom: getSize.v(12),
+      paddingHorizontal: getSize.m(12),
+    },
+    searchInput: {
+      flex: 1,
+      marginLeft: getSize.m(12),
+      fontSize: getSize.m(14, 0.3),
+      fontFamily: Font.font_medium_500,
+    },
+    textEmpty: {
+      color: Color.GRAY,
+      fontSize: getSize.m(18, 0.3),
+      textAlign: 'center',
+      marginTop: HEIGHT_SCREEN * 0.3,
+    },
+    contentContainerStyle: {
+      paddingTop: getSize.v(12),
+    },
+    iconDrawer: {
+      color: colors.mainForeground,
+    },
+  });
 
 export default ChatScreen;

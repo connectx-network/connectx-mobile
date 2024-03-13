@@ -9,6 +9,7 @@ import {
 } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import PushController from '@base/common/pushNotification';
 import {WIDTH_SCREEN} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {Block} from '@components';
@@ -17,15 +18,17 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
+import {IAppSettingState} from '@redux/slices/appSettingSlice';
 import {UserState} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
-import {uStateUser} from '@redux/stores/selection';
+import {uStateAppSetting, uStateUser} from '@redux/stores/selection';
 import LoginScreen from '@screens/auth/login';
 import ForgotPasswordScreen from '@screens/auth/login/ForgotPasswordScreen';
 import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
 import RegisterScreen from '@screens/auth/register';
 import VerifyOtpScreen from '@screens/auth/register/VerifyOtpScreen';
 import ChatScreen from '@screens/chat';
+import BubbleChatScreen from '@screens/chat/BubbleChatScreen';
 import DetailEventScreen from '@screens/detailEvent';
 import EventsScreen from '@screens/events';
 import BSFilter, {bottomSheetFilterRef} from '@screens/filter';
@@ -35,10 +38,20 @@ import MapScreen from '@screens/map';
 import NotificationScreen from '@screens/notification';
 import ProfileScreen from '@screens/profile';
 import EditProfileScreen from '@screens/profile/EditProfileScreen';
+import ShareProfileScreen from '@screens/profile/ShareProfileScreen';
 import ScanQrAdminScreen from '@screens/scanQrAdmin';
 import ConfirmInfoUserScreen from '@screens/scanQrAdmin/ConfirmInfoUser';
 import Color from '@theme/Color';
-import React, {FC, memo, useCallback, useLayoutEffect, useRef} from 'react';
+import {ColorSchemeContext} from '@theme/ColorSchemeProvider';
+import {useTheme} from '@theme/Theme';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import SplashScreen from 'react-native-splash-screen';
 import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
@@ -77,9 +90,6 @@ import {
   VERIFY_OTP_SCREEN,
   linking,
 } from './routes';
-import PushController from '@base/common/pushNotification';
-import BubbleChatScreen from '@screens/chat/BubbleChatScreen';
-import ShareProfileScreen from '@screens/profile/ShareProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -245,6 +255,7 @@ const TabsNavigator = memo(() => {
 
 const MainStack = memo(() => {
   const progress: any = useDrawerProgress();
+  const {colors} = useTheme();
 
   const stylesDrawer = useAnimatedStyle(() => {
     const scale = interpolate(progress.value, [0, 1], [1, 0.8]);
@@ -259,7 +270,7 @@ const MainStack = memo(() => {
   }, []);
 
   return (
-    <Block style={Styles.container}>
+    <Block backgroundColor={colors.mainBackground} style={Styles.root}>
       <Animated.View style={[Styles.root, stylesDrawer]}>
         <Stack.Navigator
           screenOptions={{
@@ -333,11 +344,25 @@ const RootStack: FC<{}> = () => {
   const navigationRef = useRef<NavigationContainerRef<{}>>();
   const routeNameRef = useRef<string>();
   const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
+  const {colorScheme} = useSelector<IRootState, IAppSettingState>(
+    uStateAppSetting,
+  );
   const pushController = PushController.getInstance();
+  const ctx = useContext(ColorSchemeContext);
 
   useLayoutEffect(() => {
     SplashScreen.hide();
     pushController.init();
+
+    if (ctx && colorScheme) {
+      ctx.dispatch({
+        active: false,
+        colorScheme: colorScheme ?? 'dark',
+        overlay1: null,
+        overlay2: null,
+        statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+      });
+    }
 
     return () => {
       PushController.backgroundSubscription();

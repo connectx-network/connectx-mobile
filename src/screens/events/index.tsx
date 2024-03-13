@@ -9,8 +9,11 @@ import {FlatList, RefreshControl, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from './components/Header';
 import {useFetchEvents} from './hooks';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 
 const EventsScreen = () => {
+  const styles = useStyle(getStyles);
   const {data, isLoading, onEndReached, onRefresh} = useFetchEvents({
     page: 1,
     size: 10,
@@ -44,14 +47,15 @@ const EventsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Color.BACKGROUND,
-  },
-  contentContainerStyle: {
-    paddingTop: getSize.m(20),
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.mainBackground,
+    },
+    contentContainerStyle: {
+      paddingTop: getSize.m(20),
+    },
+  });
 
 export default EventsScreen;

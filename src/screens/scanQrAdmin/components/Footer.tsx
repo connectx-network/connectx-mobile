@@ -1,7 +1,8 @@
-import {HEIGHT_SCREEN, WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {ButtonGradient, Text} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, memo} from 'react';
 import {StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,9 +13,13 @@ interface IProps {
 }
 
 const Footer: FC<IProps> = ({handleCheckIn, isLoading}) => {
+  const {colorScheme} = useTheme();
   return (
     <LinearGradient
-      colors={[Color.BLACK, Color.TRANSPARENT]}
+      colors={[
+        colorScheme === 'light' ? Color.TRANSPARENT : Color.BLACK,
+        Color.TRANSPARENT,
+      ]}
       start={{x: 0, y: 0.7}}
       end={{x: 0, y: 0}}
       style={styles.container}>

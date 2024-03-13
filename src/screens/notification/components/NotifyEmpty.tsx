@@ -2,14 +2,18 @@ import Images from '@assets/images';
 import {HEIGHT_SCREEN, WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {memo} from 'react';
 import {StyleSheet} from 'react-native';
 
 const NotifyEmpty = () => {
+  const {colors} = useTheme();
   return (
     <Block style={styles.container}>
       <Image style={styles.image} source={Images.NOTIFY_EMPTY} />
-      <Text style={styles.title}>No Notifications!</Text>
+      <Text color={colors.mainForeground} style={styles.title}>
+        No Notifications!
+      </Text>
     </Block>
   );
 };

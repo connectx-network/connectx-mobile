@@ -6,12 +6,14 @@ import {Block, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {}
 
 const Header: FC<IProps> = () => {
+  const {colors} = useTheme();
   const handleDrawer = useCallback(() => {
     openDrawer();
     hapticFeedback();
@@ -20,9 +22,16 @@ const Header: FC<IProps> = () => {
     <Block style={styles.tabBar}>
       <Block row alignCenter flex>
         <TouchableOpacity onPress={handleDrawer} activeOpacity={0.5}>
-          <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
+          <IconApp
+            name={'menu'}
+            color={colors.mainForeground}
+            size={getSize.m(18)}
+          />
         </TouchableOpacity>
-        <Text numberOfLines={1} style={styles.title}>
+        <Text
+          color={colors.mainForeground}
+          numberOfLines={1}
+          style={styles.title}>
           Events
         </Text>
       </Block>

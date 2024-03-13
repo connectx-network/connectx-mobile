@@ -3,11 +3,10 @@ import {getSize} from '@base/common/responsive';
 import {Text} from '@components';
 import Block from '@components/Block';
 import {goBack} from '@navigation/navigationService';
-import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, ReactNode, memo} from 'react';
-import {StyleProp, TouchableOpacity, ViewStyle} from 'react-native';
-import {StyleSheet} from 'react-native';
+import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
 
 interface IProps {
   title: string;
@@ -26,6 +25,7 @@ const TabBar: FC<IProps> = ({
   leftIcon,
   handleLeftIcon,
 }) => {
+  const {colors} = useTheme();
   return (
     <Block style={[styles.tabBar, styleContainer]}>
       <Block row alignCenter flex>
@@ -35,12 +35,15 @@ const TabBar: FC<IProps> = ({
           {leftIcon || (
             <Icon
               name={'arrow-back-outline'}
-              color={Color.WHITE}
+              color={colors.mainForeground}
               size={getSize.m(26)}
             />
           )}
         </TouchableOpacity>
-        <Text numberOfLines={1} style={styles.title}>
+        <Text
+          color={colors.mainForeground}
+          numberOfLines={1}
+          style={styles.title}>
           {title}
         </Text>
       </Block>
@@ -52,7 +55,7 @@ const TabBar: FC<IProps> = ({
             <TouchableOpacity style={styles.btnAction} activeOpacity={0.5}>
               <Icon
                 name={'ellipsis-vertical'}
-                color={Color.WHITE}
+                color={colors.mainForeground}
                 size={getSize.m(22)}
               />
             </TouchableOpacity>

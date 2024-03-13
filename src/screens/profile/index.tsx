@@ -1,6 +1,6 @@
 import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
-import Styles from '@base/common/styles';
+import {hapticFeedback} from '@base/utils/Utils';
 import {TabBar} from '@components';
 import {UserInfo} from '@model/user';
 import {
@@ -19,7 +19,8 @@ import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
 import {FetchInfoUser} from '@services/user.service';
 import {useQuery} from '@tanstack/react-query';
-import Color from '@theme/Color';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
 import {FC, useCallback, useState} from 'react';
 import {LayoutChangeEvent, StyleSheet} from 'react-native';
@@ -32,7 +33,6 @@ import EventTab from './EventTab';
 import ActionRightTabBar from './components/ActionRightTabBar';
 import InfoUser from './components/InfoUser';
 import TabBarCustom from './components/TabBarCustom';
-import {hapticFeedback} from '@base/utils/Utils';
 
 interface IProps {
   route: ProfileScreenRouteProp;
@@ -40,6 +40,7 @@ interface IProps {
 
 const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
+  const styles = useStyle(getStyles);
   const [heightHeader, setHeightHeader] = useState<number>(0);
   const infoUser = useSelector<IRootState, UserState>(uStateUser);
   const idUser = params?.id || infoUser.id;
@@ -102,12 +103,16 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   }, []);
 
   return (
-    <SafeAreaView style={Styles.container} edges={[]}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <TabBar
         title=""
         leftIcon={
           !params?.id ? (
-            <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
+            <IconApp
+              name={'menu'}
+              {...styles.iconDrawer}
+              size={getSize.m(18)}
+            />
           ) : null
         }
         customActionRight={() => <ActionRightTabBar />}
@@ -148,16 +153,24 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  tabBar: {
-    zIndex: 100,
-    backgroundColor: Color.BACKGROUND,
-  },
-  headerContainerStyle: {
-    backgroundColor: Color.BACKGROUND,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.mainBackground,
+    },
+    tabBar: {
+      zIndex: 100,
+      backgroundColor: colors.mainBackground,
+    },
+    headerContainerStyle: {
+      backgroundColor: colors.mainBackground,
+      shadowOpacity: 0,
+      elevation: 0,
+    },
+    iconDrawer: {
+      color: colors.mainForeground,
+    },
+  });
 
 export default ProfileScreen;

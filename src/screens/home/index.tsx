@@ -7,11 +7,12 @@ import {Event} from '@model/event';
 import {useFetchEvents} from '@screens/events/hooks';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {useCallback, useMemo, useState} from 'react';
 import {
   FlatList,
   LayoutChangeEvent,
-  StatusBar,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
@@ -33,6 +34,7 @@ const HomeScreen = () => {
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const {position} = useGetLocationCurrent();
   const {data} = useFetchEvents({page: 1, size: 10});
+  const styles = useStyle(getStyles);
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -75,11 +77,6 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView edges={[]} style={styles.container}>
-      <StatusBar
-        translucent
-        barStyle={'light-content'}
-        backgroundColor={'transparent'}
-      />
       <Header
         paddingTop={top}
         scrollY={scrollY}
@@ -145,34 +142,36 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Color.BACKGROUND,
-    flex: 1,
-  },
-  label: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: getSize.v(25),
-    marginHorizontal: getSize.s(20),
-    justifyContent: 'space-between',
-    marginBottom: getSize.v(12),
-  },
-  seeAll: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  textLabel: {
-    fontSize: getSize.m(18, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  textSeeAll: {
-    fontSize: getSize.m(14, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-  contentContainerStyle: {
-    paddingLeft: getSize.s(20),
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.mainBackground,
+      flex: 1,
+    },
+    label: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: getSize.v(25),
+      marginHorizontal: getSize.s(20),
+      justifyContent: 'space-between',
+      marginBottom: getSize.v(8),
+    },
+    seeAll: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    textLabel: {
+      fontSize: getSize.m(18, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: colors.mainForeground,
+    },
+    textSeeAll: {
+      fontSize: getSize.m(14, 0.3),
+      fontFamily: Font.font_regular_400,
+    },
+    contentContainerStyle: {
+      paddingLeft: getSize.s(20),
+    },
+  });
 
 export default HomeScreen;

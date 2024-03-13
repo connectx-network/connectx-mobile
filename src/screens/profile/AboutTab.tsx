@@ -23,6 +23,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import ItemInterest from './Items/ItemInterest';
 import ContentAbout from './components/ContentAbout';
 import {IS_IOS} from '@base/common/constants';
+import {useStyle} from '@theme/useStyle';
+import {TColors} from '@theme/Theme';
 
 interface IProps {
   isMe: boolean;
@@ -32,6 +34,7 @@ interface IProps {
 }
 
 const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
+  const styles = useStyle(getStyles);
   const {fullName, country, nickname, gender, address} = useSelector<
     IRootState,
     UserState
@@ -196,122 +199,125 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: getSize.s(20),
-    marginTop: getSize.m(20),
-  },
-  textAbout: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_extra_light_300,
-    lineHeight: getSize.m(26),
-    marginBottom: getSize.m(24),
-  },
-  textInterest: {
-    fontSize: getSize.m(18, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  itemInterest: {
-    height: getSize.m(32),
-    borderRadius: getSize.m(16),
-    paddingHorizontal: getSize.m(12),
-    backgroundColor: '#6B7AED',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: getSize.m(12),
-    marginRight: getSize.m(8),
-  },
-  itemInterestNoMargin: {
-    marginBottom: 0,
-  },
-  btnAddInterest: {
-    height: getSize.m(32),
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Color.GREEN_HOLDER,
-    borderRadius: getSize.m(16),
-    paddingHorizontal: getSize.s(8),
-  },
-  textAdd: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  btnChange: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF10',
-    height: getSize.m(28),
-    paddingHorizontal: getSize.m(12),
-    borderRadius: getSize.m(14),
-  },
-  textChange: {
-    fontSize: getSize.m(10, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginLeft: getSize.m(4),
-  },
-  textEmptyProfile: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_regular_400,
-    flex: 1,
-    marginRight: getSize.m(8),
-  },
-  textItemInterest: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_medium_500,
-    color: Color.BACKGROUND,
-  },
-  inputInterest: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_medium_500,
-    color: Color.BACKGROUND,
-    minWidth: getSize.m(30),
-    paddingBottom: 0,
-    paddingTop: 0,
-    // textAlign: 'center',
-  },
-  boxInputAbout: {
-    backgroundColor: '#29313E',
-    marginVertical: getSize.v(12),
-    paddingHorizontal: getSize.s(12),
-    borderRadius: getSize.m(12),
-    paddingVertical: getSize.m(8),
-  },
-  inputAbout: {
-    textAlignVertical: 'top',
-    color: Color.WHITE,
-    minHeight: getSize.v(100),
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-  term: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: getSize.v(8),
-  },
-  btnCheckbox: {
-    width: getSize.m(22),
-    height: getSize.m(22),
-    borderRadius: getSize.m(4),
-    borderColor: Color.WHITE,
-    borderWidth: getSize.m(2),
-  },
-  textTerm: {
-    marginLeft: getSize.m(8),
-    fontFamily: Font.font_medium_500,
-    fontSize: getSize.m(12),
-    textDecorationLine: 'underline',
-  },
-  btnSaveContainer: {
-    marginBottom: getSize.v(30),
-  },
-  btnSave: {
-    height: getSize.m(48),
-  },
-  textSave: {
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_medium_500,
-    color: Color.BACKGROUND,
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      paddingHorizontal: getSize.s(20),
+      marginTop: getSize.m(20),
+    },
+    textAbout: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_extra_light_300,
+      lineHeight: getSize.m(26),
+      marginBottom: getSize.m(24),
+    },
+    textInterest: {
+      fontSize: getSize.m(18, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: colors.mainForeground,
+    },
+    itemInterest: {
+      height: getSize.m(32),
+      borderRadius: getSize.m(16),
+      paddingHorizontal: getSize.m(12),
+      backgroundColor: '#6B7AED',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: getSize.m(12),
+      marginRight: getSize.m(8),
+    },
+    itemInterestNoMargin: {
+      marginBottom: 0,
+    },
+    btnAddInterest: {
+      height: getSize.m(32),
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: Color.GREEN_HOLDER,
+      borderRadius: getSize.m(16),
+      paddingHorizontal: getSize.s(8),
+    },
+    textAdd: {
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_medium_500,
+    },
+    btnChange: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: `${colors.mainForeground}10`,
+      height: getSize.m(28),
+      paddingHorizontal: getSize.m(12),
+      borderRadius: getSize.m(14),
+    },
+    textChange: {
+      fontSize: getSize.m(10, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginLeft: getSize.m(4),
+    },
+    textEmptyProfile: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_regular_400,
+      flex: 1,
+      marginRight: getSize.m(8),
+    },
+    textItemInterest: {
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: Color.BACKGROUND,
+    },
+    inputInterest: {
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: Color.BACKGROUND,
+      minWidth: getSize.m(30),
+      paddingBottom: 0,
+      paddingTop: 0,
+      // textAlign: 'center',
+    },
+    boxInputAbout: {
+      backgroundColor: '#29313E',
+      marginVertical: getSize.v(12),
+      paddingHorizontal: getSize.s(12),
+      borderRadius: getSize.m(12),
+      paddingVertical: getSize.m(8),
+    },
+    inputAbout: {
+      textAlignVertical: 'top',
+      color: Color.WHITE,
+      minHeight: getSize.v(100),
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_regular_400,
+    },
+    term: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: getSize.v(8),
+    },
+    btnCheckbox: {
+      width: getSize.m(22),
+      height: getSize.m(22),
+      borderRadius: getSize.m(4),
+      borderColor: colors.mainForeground,
+      borderWidth: getSize.m(2),
+    },
+    textTerm: {
+      marginLeft: getSize.m(8),
+      fontFamily: Font.font_medium_500,
+      fontSize: getSize.m(12),
+      textDecorationLine: 'underline',
+      color: colors.mainForeground,
+    },
+    btnSaveContainer: {
+      marginBottom: getSize.v(30),
+    },
+    btnSave: {
+      height: getSize.m(48),
+    },
+    textSave: {
+      fontSize: getSize.m(15, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: Color.BACKGROUND,
+    },
+  });
 
 export default memo(AboutTab);

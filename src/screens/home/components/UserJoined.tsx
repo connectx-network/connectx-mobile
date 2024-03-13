@@ -4,10 +4,16 @@ import {Block, Image, Text} from '@components';
 import {JoinEventUser} from '@model/event';
 import Font from '@theme/Font';
 import {FC, memo} from 'react';
-import {ImageStyle, StyleProp, StyleSheet, TextStyle} from 'react-native';
+import {
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 
 interface IProps {
-  style?: StyleProp<ImageStyle>;
+  style?: StyleProp<ImageStyle | ViewStyle>;
   translateX?: number;
   styleText?: StyleProp<TextStyle>;
   totalUser?: number;

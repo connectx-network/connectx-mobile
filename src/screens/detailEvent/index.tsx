@@ -26,6 +26,8 @@ import {CheckJoinEvent, JoinEvent} from '@services/event.service';
 import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors, useTheme} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
 import {FC, Fragment, useCallback, useState} from 'react';
 import {Linking, Share, StyleSheet, TouchableOpacity} from 'react-native';
@@ -56,6 +58,8 @@ interface IProps {
 
 const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
+  const styles = useStyle(getStyles);
+  const {colors} = useTheme();
   const {showWarningTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
   const {data, onRefresh} = useDetailEvent(params.shortId);
@@ -170,7 +174,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               activeOpacity={0.5}>
               <Icon
                 name={'share-outline'}
-                color={Color.WHITE}
+                color={colors.mainForeground}
                 size={getSize.m(24)}
               />
             </TouchableOpacity>
@@ -192,7 +196,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
 
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
-              <CalendarIcon />
+              <CalendarIcon color={colors.mainForeground} />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
@@ -211,7 +215,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
-              <LocationIcon />
+              <LocationIcon color={colors.mainForeground} />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
@@ -229,7 +233,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               style={styles.btnShowQr}>
               <Icon
                 name={'qr-code-outline'}
-                color={Color.WHITE}
+                color={colors.mainForeground}
                 size={getSize.m(22)}
               />
               <Text style={styles.textShowQr}>Show Qr code event</Text>
@@ -286,106 +290,118 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Color.BACKGROUND,
-    flex: 1,
-  },
-  contentContainerStyle: {
-    paddingTop: HEIGHT_COVER - getSize.m(30),
-    paddingBottom: HEIGHT_SCREEN * 0.25,
-  },
-  boxInvite: {
-    backgroundColor: '#29313E',
-    height: getSize.m(60),
-    marginHorizontal: getSize.s(40),
-    borderRadius: getSize.m(30),
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: getSize.s(12),
-    justifyContent: 'space-between',
-  },
-  imageUser: {
-    width: getSize.m(34),
-    height: getSize.m(34),
-    borderRadius: getSize.m(17),
-  },
-  textGoing: {
-    color: '#38BFDD',
-    fontSize: getSize.m(14, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginLeft: getSize.m(8),
-  },
-  btnInvite: {
-    height: getSize.m(34),
-    paddingHorizontal: getSize.s(12),
-    borderRadius: getSize.m(8),
-  },
-  title: {
-    fontSize: getSize.m(24, 0.3),
-    fontFamily: Font.font_regular_400,
-    flex: 1,
-  },
-  boxIcon: {
-    width: getSize.m(48),
-    height: getSize.m(48),
-    borderRadius: getSize.m(12),
-    backgroundColor: `${Color.WHITE}10`,
-    ...Styles.centerNoFlex,
-    marginRight: getSize.m(12),
-  },
-  textTitleInfo: {
-    fontFamily: Font.font_medium_500,
-    fontSize: getSize.m(16, 0.3),
-    marginBottom: getSize.m(6),
-  },
-  textSubInfo: {
-    fontSize: getSize.m(12, 0.3),
-    fontFamily: Font.font_light_200,
-  },
-  textAboutEvent: {
-    fontFamily: Font.font_medium_500,
-    fontSize: getSize.m(18, 0.3),
-    marginBottom: getSize.m(12),
-  },
-  textDescription: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_thin_100,
-    lineHeight: getSize.m(24),
-    marginBottom: getSize.v(12),
-  },
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.mainBackground,
+      flex: 1,
+    },
+    contentContainerStyle: {
+      paddingTop: HEIGHT_COVER - getSize.m(30),
+      paddingBottom: HEIGHT_SCREEN * 0.25,
+    },
+    boxInvite: {
+      backgroundColor: colors.secondaryBackground,
+      height: getSize.m(60),
+      marginHorizontal: getSize.s(40),
+      borderRadius: getSize.m(30),
+      alignItems: 'center',
+      flexDirection: 'row',
+      paddingHorizontal: getSize.s(12),
+      justifyContent: 'space-between',
+      shadowColor: colors.shadow,
+      shadowOffset: {width: 0, height: 0},
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    imageUser: {
+      width: getSize.m(34),
+      height: getSize.m(34),
+      borderRadius: getSize.m(17),
+    },
+    textGoing: {
+      color: '#38BFDD',
+      fontSize: getSize.m(14, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginLeft: getSize.m(8),
+    },
+    btnInvite: {
+      height: getSize.m(34),
+      paddingHorizontal: getSize.s(12),
+      borderRadius: getSize.m(8),
+    },
+    title: {
+      fontSize: getSize.m(24, 0.3),
+      fontFamily: Font.font_regular_400,
+      flex: 1,
+      color: colors.mainForeground,
+    },
+    boxIcon: {
+      width: getSize.m(48),
+      height: getSize.m(48),
+      borderRadius: getSize.m(12),
+      backgroundColor: `${colors.mainForeground}10`,
+      ...Styles.centerNoFlex,
+      marginRight: getSize.m(12),
+    },
+    textTitleInfo: {
+      fontFamily: Font.font_medium_500,
+      fontSize: getSize.m(16, 0.3),
+      marginBottom: getSize.m(6),
+      color: colors.mainForeground,
+    },
+    textSubInfo: {
+      fontSize: getSize.m(12, 0.3),
+      fontFamily: Font.font_light_200,
+      color: colors.mainForeground,
+    },
+    textAboutEvent: {
+      fontFamily: Font.font_medium_500,
+      fontSize: getSize.m(18, 0.3),
+      marginBottom: getSize.m(12),
+      color: colors.mainForeground,
+    },
+    textDescription: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_thin_100,
+      lineHeight: getSize.m(24),
+      marginBottom: getSize.v(12),
+      color: colors.mainForeground,
+    },
 
-  textHost: {
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_medium_500,
-    color: '#5669FF',
-  },
-  textJoinEvent: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
-    marginLeft: getSize.m(6),
-    color: Color.GREEN_HOLDER,
-  },
-  btnShowQr: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: getSize.m(20),
-    alignSelf: 'center',
-  },
-  textShowQr: {
-    marginLeft: getSize.m(8),
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  seeMore: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-  btnShare: {
-    paddingVertical: getSize.m(4),
-    paddingHorizontal: getSize.m(2),
-    marginTop: getSize.m(4),
-  },
-});
+    textHost: {
+      fontSize: getSize.m(15, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: '#5669FF',
+    },
+    textJoinEvent: {
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_regular_400,
+      marginLeft: getSize.m(6),
+      color: Color.GREEN_HOLDER,
+    },
+    btnShowQr: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: getSize.m(20),
+      alignSelf: 'center',
+    },
+    textShowQr: {
+      marginLeft: getSize.m(8),
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: colors.mainForeground,
+    },
+    seeMore: {
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_regular_400,
+    },
+    btnShare: {
+      paddingVertical: getSize.m(4),
+      paddingHorizontal: getSize.m(2),
+      marginTop: getSize.m(4),
+    },
+  });
 
 export default DetailEventScreen;

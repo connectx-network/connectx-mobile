@@ -6,8 +6,10 @@ import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {getDateEvent, getTimeEvent} from '@base/utils/Utils';
 import {Block, Image, TabBar, Text} from '@components';
-import {Event, GetQrCodeEventParams, InfoQrEventResponse} from '@model/event';
+import {useToastMessage} from '@hooks/useToastMessage';
+import {Event, InfoQrEventResponse} from '@model/event';
 import {UserInfo} from '@model/user';
+import {goBack} from '@navigation/navigationService';
 import {ConfirmInfoUserScreenRouteProp} from '@navigation/routes';
 import {CheckIneEvent, GetInfoQrCodeEvent} from '@services/event.service';
 import {useQuery} from '@tanstack/react-query';
@@ -19,8 +21,8 @@ import {FC, useCallback, useState} from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Footer from './components/Footer';
-import {goBack} from '@navigation/navigationService';
-import {useToastMessage} from '@hooks/useToastMessage';
+import {TColors, useTheme} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 
 interface IProps {
   route: ConfirmInfoUserScreenRouteProp;
@@ -28,6 +30,8 @@ interface IProps {
 
 const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
   const {eventId, userId} = params;
+  const styles = useStyle(getStyles);
+  const {colors} = useTheme();
   const {showWarningTop, showSuccessTop} = useToastMessage();
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -54,8 +58,8 @@ const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
   }, [eventId, userId, user?.fullName]);
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <TabBar title="Confirm Info" />
+    <SafeAreaView style={styles.container}>
+      <TabBar title="Confirm Info" hideRightIcon />
       <ScrollView>
         <Block alignCenter marginVertical={30}>
           <Image
@@ -72,7 +76,7 @@ const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
             <Block style={styles.boxIcon}>
               <Icon
                 name={'person-add'}
-                color={Color.WHITE}
+                color={colors.mainForeground}
                 size={getSize.m(20)}
               />
             </Block>
@@ -87,7 +91,7 @@ const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
-              <CalendarIcon />
+              <CalendarIcon color={colors.mainForeground} />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
@@ -100,7 +104,7 @@ const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
           <Block row alignCenter marginBottom={20}>
             <Block style={styles.boxIcon}>
-              <LocationIcon />
+              <LocationIcon color={colors.mainForeground} />
             </Block>
             <Block flex>
               <Text numberOfLines={1} style={styles.textTitleInfo}>
@@ -143,43 +147,52 @@ const ConfirmInfoUserScreen: FC<IProps> = ({route: {params}}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  avatar: {
-    width: getSize.m(94),
-    height: getSize.m(94),
-    borderRadius: getSize.m(47),
-  },
-  fullName: {
-    fontSize: getSize.m(22, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginTop: getSize.m(8),
-  },
-  boxIcon: {
-    width: getSize.m(48),
-    height: getSize.m(48),
-    borderRadius: getSize.m(12),
-    backgroundColor: `${Color.WHITE}10`,
-    ...Styles.centerNoFlex,
-    marginRight: getSize.m(12),
-  },
-  textTitleInfo: {
-    fontFamily: Font.font_medium_500,
-    fontSize: getSize.m(16, 0.3),
-    marginBottom: getSize.m(6),
-  },
-  textSubInfo: {
-    fontSize: getSize.m(12, 0.3),
-    fontFamily: Font.font_light_200,
-  },
-  titleEvent: {
-    fontSize: getSize.m(18, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  textCheckIn: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginLeft: getSize.m(6),
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.mainBackground,
+    },
+    avatar: {
+      width: getSize.m(94),
+      height: getSize.m(94),
+      borderRadius: getSize.m(47),
+    },
+    fullName: {
+      fontSize: getSize.m(22, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginTop: getSize.m(8),
+      color: colors.mainForeground,
+    },
+    boxIcon: {
+      width: getSize.m(48),
+      height: getSize.m(48),
+      borderRadius: getSize.m(12),
+      backgroundColor: `${colors.mainForeground}10`,
+      ...Styles.centerNoFlex,
+      marginRight: getSize.m(12),
+    },
+    textTitleInfo: {
+      fontFamily: Font.font_medium_500,
+      fontSize: getSize.m(16, 0.3),
+      marginBottom: getSize.m(6),
+      color: colors.mainForeground,
+    },
+    textSubInfo: {
+      fontSize: getSize.m(12, 0.3),
+      fontFamily: Font.font_light_200,
+      color: colors.mainForeground,
+    },
+    titleEvent: {
+      fontSize: getSize.m(18, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: colors.mainForeground,
+    },
+    textCheckIn: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginLeft: getSize.m(6),
+    },
+  });
 
 export default ConfirmInfoUserScreen;

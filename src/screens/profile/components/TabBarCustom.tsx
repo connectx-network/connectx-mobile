@@ -2,6 +2,7 @@ import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {hapticFeedback} from '@base/utils/Utils';
 import {Block, Text} from '@components';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, memo, useCallback, useRef, useState} from 'react';
 import {LayoutChangeEvent, Pressable, StyleSheet} from 'react-native';
 import {ItemLayout} from 'react-native-collapsible-tab-view/lib/typescript/src/MaterialTabBar/types';
@@ -14,6 +15,7 @@ const widthTab = WIDTH_SCREEN - getSize.s(40);
 
 const TabBarCustom: FC<IProps> = ({tabNames, indexDecimal, onTabPress}) => {
   const nTabs = tabNames.length;
+  const {colors} = useTheme();
   const itemLayoutGathering = useRef(new Map<any, ItemLayout>());
   const [itemsLayout, setItemsLayout] = useState<ItemLayout[]>(
     tabNames.map((_, i) => {
@@ -92,7 +94,9 @@ const TabBarCustom: FC<IProps> = ({tabNames, indexDecimal, onTabPress}) => {
                 borderless: true,
                 color: '#DDDDDD',
               }}>
-              <Text style={styles.label}>{tab}</Text>
+              <Text color={colors.mainForeground} style={styles.label}>
+                {tab}
+              </Text>
             </Pressable>
           );
         })}

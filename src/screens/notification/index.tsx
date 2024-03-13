@@ -8,8 +8,10 @@ import ItemNotify from './Items/ItemNotify';
 import NotifyEmpty from './components/NotifyEmpty';
 import {useFetchNotification} from './hooks';
 import {ItemNotification} from '@model/notification';
+import {useTheme} from '@theme/Theme';
 
 const NotificationScreen = () => {
+  const {colors} = useTheme();
   const {data} = useFetchNotification({page: 1, size: 10});
 
   const renderItem = useCallback(({item}: {item: ItemNotification}) => {
@@ -17,7 +19,14 @@ const NotificationScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView edges={['top']} style={Styles.container}>
+    <SafeAreaView
+      edges={['top']}
+      style={[
+        Styles.root,
+        {
+          backgroundColor: colors.mainBackground,
+        },
+      ]}>
       <TabBar title="Notification" hideRightIcon />
       <FlatList
         data={data}

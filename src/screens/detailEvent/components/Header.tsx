@@ -1,9 +1,9 @@
-import {Icon} from '@assets/icons';
 import Images from '@assets/images';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
-import {Block, Image, Text} from '@components';
+import {Block, Image} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, Fragment, useCallback, useState} from 'react';
 import {LayoutChangeEvent, StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,6 +14,7 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import IconVt from 'react-native-vector-icons/Ionicons';
 import {HEIGHT_COVER} from '../layout';
 
 interface IProps {
@@ -24,7 +25,10 @@ interface IProps {
   handleBack: () => void;
 }
 
+const Icon = Animated.createAnimatedComponent<any>(IconVt);
+
 const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
+  const {colorScheme, colors} = useTheme();
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const onLayoutTabBar = useCallback(
     ({nativeEvent: {layout}}: LayoutChangeEvent) => {
@@ -56,12 +60,23 @@ const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
     const backgroundColor = interpolateColor(
       scrollY.value,
       [0, HEIGHT_COVER / 2.2],
-      [Color.TRANSPARENT, Color.BACKGROUND],
+      [Color.TRANSPARENT, colors.mainBackground],
     );
     return {
       backgroundColor,
     };
-  }, []);
+  }, [colors.mainBackground]);
+
+  const styleTitle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      scrollY.value,
+      [0, HEIGHT_COVER / 2.2],
+      [colors.mainBackground, colors.mainForeground],
+    );
+    return {
+      color,
+    };
+  }, [colors.mainForeground, colors.mainBackground]);
 
   return (
     <Fragment>
@@ -90,13 +105,17 @@ const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
             activeOpacity={0.5}>
             <Icon
               name={'arrow-back-outline'}
-              color={Color.WHITE}
               size={getSize.m(26)}
+              style={
+                colorScheme === 'light' ? styleTitle : {color: Color.WHITE}
+              }
             />
           </TouchableOpacity>
-          <Text numberOfLines={1} style={styles.title}>
+          <Animated.Text
+            numberOfLines={1}
+            style={[styles.title, colorScheme === 'light' && styleTitle]}>
             {title}
-          </Text>
+          </Animated.Text>
         </Block>
         {/* <TouchableOpacity
           onPress={handleShare}
@@ -122,6 +141,7 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(24, 0.1),
     fontFamily: Font.font_medium_500,
     flex: 1,
+    color: Color.WHITE,
   },
   btnBack: {
     padding: getSize.s(5),

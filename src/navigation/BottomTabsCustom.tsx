@@ -6,8 +6,9 @@ import MapIcon from '@assets/icons/home/MapIcon';
 import {getSize} from '@base/common/responsive';
 import {Block, Text} from '@components';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
-import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors, useTheme} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {FC, memo} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -24,6 +25,9 @@ interface IPropsItemTab {
 
 const ItemTab = memo(
   ({params, navigation, isFocused, name, keyRoute}: IPropsItemTab) => {
+    const styles = useStyle(getStyles);
+    const {colors} = useTheme();
+
     const handleTab = () => {
       const event = navigation.emit({
         type: 'tabPress',
@@ -42,21 +46,45 @@ const ItemTab = memo(
             activeOpacity={0.5}
             style={styles.btnTab}>
             {name === CHAT_STACK ? (
-              <ChatIcon color={isFocused ? Color.WHITE : `${Color.WHITE}50`} />
+              <ChatIcon
+                color={
+                  isFocused
+                    ? colors.mainForeground
+                    : `${colors.mainForeground}50`
+                }
+              />
             ) : name === EVENT_STACK ? (
               <CalendarIcon
-                color={isFocused ? Color.WHITE : `${Color.WHITE}50`}
+                color={
+                  isFocused
+                    ? colors.mainForeground
+                    : `${colors.mainForeground}50`
+                }
               />
             ) : name === MAP_STACK ? (
-              <MapIcon color={isFocused ? Color.WHITE : `${Color.WHITE}50`} />
+              <MapIcon
+                color={
+                  isFocused
+                    ? colors.mainForeground
+                    : `${colors.mainForeground}50`
+                }
+              />
             ) : (
               <CommunityIcon
-                color={isFocused ? Color.WHITE : `${Color.WHITE}50`}
+                color={
+                  isFocused
+                    ? colors.mainForeground
+                    : `${colors.mainForeground}50`
+                }
               />
             )}
             {params?.name && (
               <Text
-                color={isFocused ? Color.WHITE : `${Color.WHITE}50`}
+                color={
+                  isFocused
+                    ? colors.mainForeground
+                    : `${colors.mainForeground}50`
+                }
                 style={styles.textItemTab}>
                 {params.name}
               </Text>
@@ -73,7 +101,9 @@ const ItemTab = memo(
                 <IconApp
                   name={params?.icon}
                   size={getSize.m(22)}
-                  color={isFocused ? Color.WHITE : '#29313E'}
+                  color={
+                    isFocused ? colors.mainForeground : colors.mainBackground
+                  }
                 />
               )}
             </LinearGradient>
@@ -85,26 +115,9 @@ const ItemTab = memo(
 );
 
 const BottomTabCustom: FC<IProps> = props => {
-  // const [show, setShow] = useState<boolean>(true);
-  // useEffect(() => {
-  //   const nextRoute = NavigationService.getCurrentRoute();
-  //   if (
-  //     nextRoute?.name === undefined ||
-  //     nextRoute?.name === CHAT_STACK ||
-  //     nextRoute?.name === EVENTS_SCREEN ||
-  //     nextRoute?.name === HOME_SCREEN ||
-  //     nextRoute?.name === MAP_STACK ||
-  //     nextRoute?.name === COMMUNITY_STACK ||
-  //     nextRoute?.name === DRAWER_STACK
-  //   ) {
-  //     setShow(true);
-  //   } else {
-  //     setShow(false);
-  //   }
-  // }, [NavigationService.getCurrentRoute()]);
-
+  const styles = useStyle(getStyles);
   return (
-    <Block style={[styles.container]}>
+    <Block style={styles.container}>
       {props.state.routes.map((route: any, index) => {
         return (
           <ItemTab
@@ -120,35 +133,41 @@ const BottomTabCustom: FC<IProps> = props => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#29313E',
-    paddingBottom: getSize.v(15),
-    paddingTop: getSize.m(15),
-    paddingHorizontal: getSize.s(8),
-  },
-  itemTab: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  btnTab: {
-    alignItems: 'center',
-  },
-  tabHome: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: getSize.m(48),
-    height: getSize.m(48),
-    borderRadius: getSize.m(24),
-    transform: [{translateY: -getSize.m(10)}],
-  },
-  textItemTab: {
-    fontSize: getSize.m(12),
-    fontFamily: Font.font_regular_400,
-    marginTop: getSize.m(4),
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.secondaryBackground,
+      paddingBottom: getSize.v(15),
+      paddingTop: getSize.m(15),
+      paddingHorizontal: getSize.s(8),
+      shadowColor: colors.shadow,
+      shadowOffset: {width: 0, height: 0},
+      shadowOpacity: 0.4,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    itemTab: {
+      alignItems: 'center',
+      flex: 1,
+    },
+    btnTab: {
+      alignItems: 'center',
+    },
+    tabHome: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: getSize.m(48),
+      height: getSize.m(48),
+      borderRadius: getSize.m(24),
+      transform: [{translateY: -getSize.m(10)}],
+    },
+    textItemTab: {
+      fontSize: getSize.m(12),
+      fontFamily: Font.font_regular_400,
+      marginTop: getSize.m(4),
+    },
+  });
 
 export default BottomTabCustom;

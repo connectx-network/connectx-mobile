@@ -23,6 +23,10 @@ import {ToastProvider} from 'react-native-toast-notifications';
 import {ToastProps} from 'react-native-toast-notifications/lib/typescript/toast';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import ColorSchemeProvider from '@theme/ColorSchemeProvider';
+import {useColorScheme} from '@theme/useColorScheme';
+import {ThemeProvider} from '@shopify/restyle';
+import {darkTheme, theme} from '@theme/Theme';
 
 function onAppStateChange(status: AppStateStatus) {
   focusManager.setFocused(status === 'active');
@@ -46,15 +50,46 @@ GoogleSignin.configure({
   forceCodeForRefreshToken: false,
 });
 
-const App = () => {
-  useOnlineManager();
-
-  useAppState(onAppStateChange);
+const MainAppContent = () => {
+  const {colorScheme} = useColorScheme();
 
   const renderToast = useCallback(
     (toastOptions: ToastProps) => <ToastNotify {...toastOptions} />,
     [],
   );
+
+  return (
+    <ThemeProvider theme={colorScheme === 'dark' ? darkTheme : theme}>
+      <GestureHandlerRootView style={Styles.root}>
+        <ToastProvider
+          renderToast={renderToast}
+          warningIcon={
+            <Icon
+              name={'alert-circle-outline'}
+              color={Color.RED}
+              size={getSize.m(20)}
+            />
+          }
+          successIcon={
+            <Icon
+              name={'checkmark-circle-outline'}
+              color={Color.GREEN_START}
+              size={getSize.m(20)}
+            />
+          }>
+          <PopupUpdate>
+            <RootStack />
+          </PopupUpdate>
+        </ToastProvider>
+      </GestureHandlerRootView>
+    </ThemeProvider>
+  );
+};
+
+const App = () => {
+  useOnlineManager();
+
+  useAppState(onAppStateChange);
 
   return (
     <SafeAreaProvider>
@@ -63,28 +98,9 @@ const App = () => {
           <PersistQueryClientProvider
             client={queryClient}
             persistOptions={persistOptions}>
-            <GestureHandlerRootView style={Styles.root}>
-              <ToastProvider
-                renderToast={renderToast}
-                warningIcon={
-                  <Icon
-                    name={'alert-circle-outline'}
-                    color={Color.RED}
-                    size={getSize.m(20)}
-                  />
-                }
-                successIcon={
-                  <Icon
-                    name={'checkmark-circle-outline'}
-                    color={Color.GREEN_START}
-                    size={getSize.m(20)}
-                  />
-                }>
-                <PopupUpdate>
-                  <RootStack />
-                </PopupUpdate>
-              </ToastProvider>
-            </GestureHandlerRootView>
+            <ColorSchemeProvider>
+              <MainAppContent />
+            </ColorSchemeProvider>
           </PersistQueryClientProvider>
         </PersistGate>
       </Provider>

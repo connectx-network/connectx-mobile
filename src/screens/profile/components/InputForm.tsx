@@ -2,6 +2,7 @@ import {getSize} from '@base/common/responsive';
 import {Block, Text} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC} from 'react';
 import {StyleSheet, TextInput, TextInputProps} from 'react-native';
 
@@ -11,13 +12,18 @@ interface IProps extends TextInputProps {
 }
 
 const InputForm: FC<IProps> = ({label, ...props}) => {
+  const {colors} = useTheme();
   return (
     <Block style={styles.root}>
-      <Block style={styles.container}>
-        <Text style={styles.textLabel}>{label}</Text>
+      <Block
+        style={styles.container}
+        backgroundColor={`${colors.mainForeground}10`}>
+        <Text color={colors.mainForeground} style={styles.textLabel}>
+          {label}
+        </Text>
         <TextInput
-          style={styles.textInput}
-          placeholderTextColor={`${Color.WHITE}60`}
+          style={[styles.textInput, {color: colors.mainForeground}]}
+          placeholderTextColor={`${colors.mainForeground}60`}
           {...props}
         />
       </Block>
@@ -35,7 +41,6 @@ const styles = StyleSheet.create({
     borderRadius: getSize.m(12),
     borderColor: '#757575',
     borderWidth: getSize.m(1),
-    backgroundColor: `${Color.WHITE}10`,
     paddingHorizontal: getSize.s(12),
     paddingTop: getSize.m(6),
     paddingBottom: getSize.m(2),
@@ -46,7 +51,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: getSize.m(14, 0.3),
-    color: Color.WHITE,
     flex: 1,
     paddingTop: 0,
     paddingBottom: 0,

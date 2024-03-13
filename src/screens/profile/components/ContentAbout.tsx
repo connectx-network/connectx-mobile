@@ -10,6 +10,8 @@ import {uStateUser} from '@redux/stores/selection';
 import {UpdateInfoUser} from '@services/user.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors, useTheme} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {useFormik} from 'formik';
 import {FC, Fragment, memo, useCallback, useEffect, useState} from 'react';
 import {Linking, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
@@ -33,6 +35,8 @@ const validationSchema = Yup.object({
 });
 
 const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
+  const {colors} = useTheme();
+  const styles = useStyle(getStyles);
   const [editAbout, setEditAbout] = useState<boolean>(false);
   const isEditAbout = useDelayedValueWithLayoutAnimation(editAbout);
   const {fullName, country, nickname, gender, address, userInterests} =
@@ -161,7 +165,9 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
               {!values.isAgree ? (
                 <Block
                   style={styles.btnCheckbox}
-                  borderColor={errors.isAgree ? Color.RED_HOLDER : Color.WHITE}
+                  borderColor={
+                    errors.isAgree ? Color.RED_HOLDER : colors.mainForeground
+                  }
                 />
               ) : (
                 <Icon
@@ -173,7 +179,7 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
             </TouchableOpacity>
             <Text
               onPress={handleTerm}
-              color={errors.isAgree ? Color.RED_HOLDER : Color.WHITE}
+              color={errors.isAgree ? Color.RED_HOLDER : colors.mainForeground}
               style={styles.textTerm}>
               Agree ConnectX’s terms & conditions
             </Text>
@@ -190,95 +196,99 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  textAbout: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_extra_light_300,
-    lineHeight: getSize.m(26),
-    marginBottom: getSize.m(24),
-  },
-  textInterest: {
-    fontSize: getSize.m(18, 0.3),
-    fontFamily: Font.font_medium_500,
-  },
-  itemInterest: {
-    height: getSize.m(32),
-    borderRadius: getSize.m(16),
-    paddingHorizontal: getSize.m(12),
-    backgroundColor: '#6B7AED',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: getSize.m(12),
-    marginRight: getSize.m(8),
-  },
-  btnChange: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF10',
-    height: getSize.m(28),
-    paddingHorizontal: getSize.m(12),
-    borderRadius: getSize.m(14),
-  },
-  textChange: {
-    fontSize: getSize.m(10, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginLeft: getSize.m(4),
-  },
-  textEmptyProfile: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_regular_400,
-    flex: 1,
-    marginRight: getSize.m(8),
-  },
-  boxInputAbout: {
-    backgroundColor: '#29313E',
-    marginTop: getSize.v(12),
-    marginBottom: getSize.v(6),
-    paddingHorizontal: getSize.s(12),
-    borderRadius: getSize.m(12),
-    paddingVertical: getSize.m(8),
-  },
-  inputAbout: {
-    textAlignVertical: 'top',
-    color: Color.WHITE,
-    minHeight: getSize.v(100),
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-  term: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: getSize.v(8),
-    marginTop: getSize.m(12),
-  },
-  btnCheckbox: {
-    width: getSize.m(22),
-    height: getSize.m(22),
-    borderRadius: getSize.m(4),
-    borderWidth: getSize.m(2),
-  },
-  textTerm: {
-    marginLeft: getSize.m(8),
-    fontFamily: Font.font_medium_500,
-    fontSize: getSize.m(12),
-    textDecorationLine: 'underline',
-  },
-  textSave: {
-    fontSize: getSize.m(15, 0.3),
-    fontFamily: Font.font_medium_500,
-    color: Color.BACKGROUND,
-  },
-  btnSaveContainer: {
-    marginBottom: getSize.v(30),
-  },
-  btnSave: {
-    height: getSize.m(48),
-  },
-  textError: {
-    color: Color.RED_HOLDER,
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-});
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    textAbout: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_extra_light_300,
+      lineHeight: getSize.m(26),
+      marginBottom: getSize.m(24),
+      color: colors.mainForeground,
+    },
+    textInterest: {
+      fontSize: getSize.m(18, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: colors.mainForeground,
+    },
+    itemInterest: {
+      height: getSize.m(32),
+      borderRadius: getSize.m(16),
+      paddingHorizontal: getSize.m(12),
+      backgroundColor: '#6B7AED',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: getSize.m(12),
+      marginRight: getSize.m(8),
+    },
+    btnChange: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: `${colors.mainForeground}10`,
+      height: getSize.m(28),
+      paddingHorizontal: getSize.m(12),
+      borderRadius: getSize.m(14),
+    },
+    textChange: {
+      fontSize: getSize.m(10, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginLeft: getSize.m(4),
+    },
+    textEmptyProfile: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_regular_400,
+      flex: 1,
+      marginRight: getSize.m(8),
+      color: colors.mainForeground,
+    },
+    boxInputAbout: {
+      backgroundColor: '#29313E',
+      marginTop: getSize.v(12),
+      marginBottom: getSize.v(6),
+      paddingHorizontal: getSize.s(12),
+      borderRadius: getSize.m(12),
+      paddingVertical: getSize.m(8),
+    },
+    inputAbout: {
+      textAlignVertical: 'top',
+      color: Color.WHITE,
+      minHeight: getSize.v(100),
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_regular_400,
+    },
+    term: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: getSize.v(8),
+      marginTop: getSize.m(12),
+    },
+    btnCheckbox: {
+      width: getSize.m(22),
+      height: getSize.m(22),
+      borderRadius: getSize.m(4),
+      borderWidth: getSize.m(2),
+    },
+    textTerm: {
+      marginLeft: getSize.m(8),
+      fontFamily: Font.font_medium_500,
+      fontSize: getSize.m(12),
+      textDecorationLine: 'underline',
+    },
+    textSave: {
+      fontSize: getSize.m(15, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: Color.BACKGROUND,
+    },
+    btnSaveContainer: {
+      marginBottom: getSize.v(30),
+    },
+    btnSave: {
+      height: getSize.m(48),
+    },
+    textError: {
+      color: Color.RED_HOLDER,
+      fontSize: getSize.m(13, 0.3),
+      fontFamily: Font.font_regular_400,
+    },
+  });
 
 export default memo(ContentAbout);

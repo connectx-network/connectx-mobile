@@ -15,6 +15,8 @@ import {
 import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
 import {FC, memo} from 'react';
 import {LayoutChangeEvent, StyleSheet, TouchableOpacity} from 'react-native';
@@ -44,6 +46,7 @@ const InfoUser: FC<IProps> = ({
   isLogged,
   onLayoutHeader,
 }) => {
+  const styles = useStyle(getStyles);
   const handleEditProfile = () => {
     navigate(EDIT_PROFILE_SCREEN, {refetch});
   };
@@ -85,11 +88,7 @@ const InfoUser: FC<IProps> = ({
         <Text style={styles.nameUser}>{fullName}</Text>
         {company && (
           <Block row alignCenter marginBottom={8}>
-            <Icon
-              name={'business'}
-              size={getSize.m(18)}
-              color={`${Color.WHITE}80`}
-            />
+            <Icon name={'business'} size={getSize.m(18)} {...styles.icon} />
             <Text style={styles.textCompany}>{company}</Text>
           </Block>
         )}
@@ -157,77 +156,84 @@ const InfoUser: FC<IProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: getSize.s(20),
-    marginBottom: getSize.v(20),
-  },
-  avatar: {
-    width: getSize.s(96),
-    height: getSize.s(96),
-    borderRadius: getSize.s(48),
-    marginTop: getSize.v(12),
-    backgroundColor: '#29313E',
-  },
-  nameUser: {
-    fontSize: getSize.m(24, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginTop: getSize.v(16),
-    marginBottom: getSize.v(6),
-  },
-  wall: {
-    backgroundColor: '#DDDDDD',
-    width: getSize.m(1),
-    marginHorizontal: getSize.s(16),
-    height: getSize.m(30),
-  },
-  numberFollow: {
-    fontSize: getSize.m(16, 0.3),
-    fontFamily: Font.font_medium_500,
-    marginBottom: getSize.m(6),
-  },
-  textFollow: {
-    fontSize: getSize.m(14, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
-  styleContainerFollow: {
-    alignSelf: 'center',
+const getStyles = (colors: TColors) =>
+  StyleSheet.create({
+    container: {
+      paddingHorizontal: getSize.s(20),
+      marginBottom: getSize.v(20),
+    },
+    avatar: {
+      width: getSize.s(96),
+      height: getSize.s(96),
+      borderRadius: getSize.s(48),
+      marginTop: getSize.v(12),
+      backgroundColor: '#29313E',
+    },
+    nameUser: {
+      fontSize: getSize.m(24, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginTop: getSize.v(16),
+      marginBottom: getSize.v(6),
+      color: colors.mainForeground,
+    },
+    wall: {
+      backgroundColor: '#DDDDDD',
+      width: getSize.m(1),
+      marginHorizontal: getSize.s(16),
+      height: getSize.m(30),
+    },
+    numberFollow: {
+      fontSize: getSize.m(16, 0.3),
+      fontFamily: Font.font_medium_500,
+      marginBottom: getSize.m(6),
+      color: colors.mainForeground,
+    },
+    textFollow: {
+      fontSize: getSize.m(14, 0.3),
+      fontFamily: Font.font_regular_400,
+      color: colors.mainForeground,
+    },
+    styleContainerFollow: {
+      alignSelf: 'center',
 
-    // flex: 1,
-    // marginRight: getSize.s(20),
-  },
-  btnFollow: {
-    height: getSize.m(50),
-    paddingHorizontal: getSize.s(30),
-  },
-  btnMessage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    height: getSize.m(50),
-    borderRadius: getSize.m(12),
-    borderWidth: getSize.m(2),
-    borderColor: '#5669FF',
-    justifyContent: 'center',
-    paddingHorizontal: getSize.s(20),
-  },
-  textBtnFollow: {
-    fontSize: getSize.m(16),
-    fontFamily: Font.font_regular_400,
-    marginLeft: getSize.m(8),
-  },
-  textBtnMessage: {
-    fontSize: getSize.m(16),
-    fontFamily: Font.font_regular_400,
-    color: '#5669FF',
-    marginLeft: getSize.m(8),
-  },
-  textCompany: {
-    marginLeft: getSize.m(4),
-    fontFamily: Font.font_medium_500,
-    color: `${Color.WHITE}80`,
-    fontSize: getSize.m(13, 0.3),
-  },
-});
+      // flex: 1,
+      // marginRight: getSize.s(20),
+    },
+    btnFollow: {
+      height: getSize.m(50),
+      paddingHorizontal: getSize.s(30),
+    },
+    btnMessage: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      height: getSize.m(50),
+      borderRadius: getSize.m(12),
+      borderWidth: getSize.m(2),
+      borderColor: '#5669FF',
+      justifyContent: 'center',
+      paddingHorizontal: getSize.s(20),
+    },
+    textBtnFollow: {
+      fontSize: getSize.m(16),
+      fontFamily: Font.font_regular_400,
+      marginLeft: getSize.m(8),
+    },
+    textBtnMessage: {
+      fontSize: getSize.m(16),
+      fontFamily: Font.font_regular_400,
+      color: '#5669FF',
+      marginLeft: getSize.m(8),
+    },
+    textCompany: {
+      marginLeft: getSize.m(4),
+      fontFamily: Font.font_medium_500,
+      color: `${colors.mainForeground}80`,
+      fontSize: getSize.m(13, 0.3),
+    },
+    icon: {
+      color: `${colors.mainForeground}80`,
+    },
+  });
 
 export default memo(InfoUser);

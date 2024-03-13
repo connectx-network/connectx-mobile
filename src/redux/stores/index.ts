@@ -5,9 +5,7 @@ import {persistReducer, persistStore} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {configureStore} from '@reduxjs/toolkit';
 
-import typeVehicleSlice, {
-  ITypeVehicleState,
-} from '@redux/slices/typeVehicleSlice';
+import appSettingSlice, {IAppSettingState} from '@redux/slices/appSettingSlice';
 import userSlice, {UserState} from '@redux/slices/userSlice';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from './rootSagas';
@@ -15,12 +13,12 @@ import rootSaga from './rootSagas';
 setAutoFreeze(false);
 
 export interface IRootState {
-  typeVehicle: ITypeVehicleState;
+  appSetting: IAppSettingState;
   user: UserState;
 }
 
 const reducers = combineReducers({
-  typeVehicle: typeVehicleSlice,
+  appSetting: appSettingSlice,
   user: userSlice,
 });
 
@@ -28,7 +26,7 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   timeout: 10000,
-  whitelist: ['typeVehicle', 'user'],
+  whitelist: ['appSetting', 'user'],
   blacklist: [],
 };
 
