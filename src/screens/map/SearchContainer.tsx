@@ -6,11 +6,11 @@ import {
   useCallback,
   useImperativeHandle,
   useRef,
-  useState,
 } from 'react';
 import {Keyboard, TextInput} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import SearchBar from './components/SearchBar';
+import {hapticFeedback} from '@base/utils/Utils';
 
 export const refSearchMap = createRef<any>();
 
@@ -54,6 +54,7 @@ const SearchContainer = (
   });
 
   const onTapSearch = useCallback(() => {
+    hapticFeedback();
     searchInputRef.current?.focus();
     setShowSearch(true);
   }, []);

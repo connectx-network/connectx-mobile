@@ -1,5 +1,6 @@
 import {RANDOM_COLORS} from '@base/common/constants';
 import moment from 'moment';
+import {HapticFeedbackTypes, trigger} from 'react-native-haptic-feedback';
 
 export const keyExtractor = (item, index) => 'item_' + item?.id + '_' + index;
 
@@ -13,10 +14,14 @@ export const getColorByName = (name: string) => {
     let index = 0;
     if (name.length > 0) {
       index = name.charCodeAt(0);
-      if (index > 65) index -= 65;
+      if (index > 65) {
+        index -= 65;
+      }
       if (name.length > 1) {
         index += name.charCodeAt(1);
-        if (index > 65) index -= 65;
+        if (index > 65) {
+          index -= 65;
+        }
       }
     }
     index = index % colorList.length;
@@ -46,4 +51,13 @@ export function getTimeEvent(start?: string, end?: string) {
   return `${moment(start).format('dddd, h:mm A')} - ${moment(end).format(
     'dddd, h:mm A',
   )}`;
+}
+
+export function hapticFeedback(
+  type: string |  HapticFeedbackTypes = 'impactLight',
+) {
+  trigger(type, {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: true,
+  });
 }

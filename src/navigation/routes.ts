@@ -47,6 +47,7 @@ export const BS_FILTER = 'BSFilter';
 export const PROFILE_STACK = 'ProfileStack';
 export const PROFILE_SCREEN = 'Profile';
 export const EDIT_PROFILE_SCREEN = 'EditProfile';
+export const SHARE_PROFILE_SCREEN = 'ShareProfile';
 
 export const navigationRef = React.createRef<any>();
 
@@ -95,7 +96,8 @@ export const linking = {
   prefixes: ['connectx.network://', 'https://connectx.network/'],
   config: {
     screens: {
-      [PROFILE_OWNER_EVENT_SCREEN]: 'events/:id',
+      [DETAIL_EVENT_SCREEN]: '/:shortId',
+      [PROFILE_OWNER_EVENT_SCREEN]: 'user/:id',
     },
   },
 };

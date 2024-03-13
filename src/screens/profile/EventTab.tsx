@@ -56,7 +56,7 @@ const EventTab: FC<IProps> = ({scrollEnabled, userId}) => {
 const styles = StyleSheet.create({
   contentContainerStyle: {
     paddingBottom: getSize.m(20),
-    paddingTop: getSize.m(20),
+    marginTop: getSize.m(20),
   },
   textEmpty: {
     fontSize: getSize.m(15, 0.3),

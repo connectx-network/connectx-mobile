@@ -1,21 +1,23 @@
+import {Icon} from '@assets/icons';
 import Images from '@assets/images';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
-import Font from '@theme/Font';
-import {FC, memo, useCallback} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import UserJoined from '../components/UserJoined';
-import {Icon, IconApp} from '@assets/icons';
-import Color from '@theme/Color';
+import {Event} from '@model/event';
 import {navigate} from '@navigation/navigationService';
 import {DETAIL_EVENT_SCREEN} from '@navigation/routes';
-import {Event} from '@model/event';
+import Color from '@theme/Color';
+import Font from '@theme/Font';
+import {FC, memo} from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import UserJoined from '../components/UserJoined';
+import {hapticFeedback} from '@base/utils/Utils';
 
 interface IProps extends Event {}
 
 const ItemEvent: FC<IProps> = props => {
   const handleEvent = () => {
     navigate(DETAIL_EVENT_SCREEN, props);
+    hapticFeedback();
   };
   return (
     <TouchableOpacity

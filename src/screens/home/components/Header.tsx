@@ -2,9 +2,14 @@ import {Icon, IconApp} from '@assets/icons';
 import NotifyIcon from '@assets/icons/home/NotifyIcon';
 import SearchIcon from '@assets/icons/home/SearchIcon';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, Text} from '@components';
 import {navigate, openDrawer} from '@navigation/navigationService';
-import {NOTIFICATION_SCREEN, SEARCH_SCREEN} from '@navigation/routes';
+import {
+  MAP_STACK,
+  NOTIFICATION_SCREEN,
+  SEARCH_SCREEN,
+} from '@navigation/routes';
 import {BSFilterControl} from '@screens/filter';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
@@ -42,6 +47,7 @@ const Header: FC<IProps> = ({
 
   const handleNotify = useCallback(() => {
     navigate(NOTIFICATION_SCREEN);
+    hapticFeedback();
   }, []);
 
   const handleFilter = useCallback(() => {
@@ -91,6 +97,15 @@ const Header: FC<IProps> = ({
     navigate(SEARCH_SCREEN, {heightSearch, heightTabBar});
   }, [heightSearch, heightTabBar]);
 
+  const handleDrawer = useCallback(() => {
+    openDrawer();
+    hapticFeedback();
+  }, []);
+
+  const handleLocation = useCallback(() => {
+    navigate(MAP_STACK);
+  }, []);
+
   return (
     <Block onLayout={onLayoutTabBar} style={[styles.root, {paddingTop}]}>
       <Animated.View
@@ -106,10 +121,13 @@ const Header: FC<IProps> = ({
         />
       </Animated.View>
       <Block style={styles.tabBar}>
-        <TouchableOpacity activeOpacity={0.5} onPress={openDrawer}>
+        <TouchableOpacity activeOpacity={0.5} onPress={handleDrawer}>
           <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(22)} />
         </TouchableOpacity>
-        <Block style={styles.content}>
+        <TouchableOpacity
+          onPress={handleLocation}
+          activeOpacity={0.8}
+          style={styles.content}>
           <Block row alignCenter>
             <Text style={styles.textTitleLocation}>Current Location</Text>
             <Icon
@@ -121,7 +139,7 @@ const Header: FC<IProps> = ({
           <Text numberOfLines={1} style={styles.textLocation}>
             {address || 'Location not determined'}
           </Text>
-        </Block>
+        </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={handleNotify}

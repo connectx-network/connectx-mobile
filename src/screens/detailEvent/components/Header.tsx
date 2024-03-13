@@ -1,9 +1,7 @@
 import {Icon} from '@assets/icons';
-import SavedActiveIcon from '@assets/icons/home/SavedActiveIcon';
 import Images from '@assets/images';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {Block, Image, Text} from '@components';
-import {goBack} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FC, Fragment, useCallback, useState} from 'react';
@@ -23,9 +21,10 @@ interface IProps {
   scrollY: SharedValue<number>;
   title: string;
   banner?: string;
+  handleBack: () => void;
 }
 
-const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
+const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const onLayoutTabBar = useCallback(
     ({nativeEvent: {layout}}: LayoutChangeEvent) => {
@@ -87,7 +86,7 @@ const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
         <Block row alignCenter flex>
           <TouchableOpacity
             style={styles.btnBack}
-            onPress={goBack}
+            onPress={handleBack}
             activeOpacity={0.5}>
             <Icon
               name={'arrow-back-outline'}
@@ -96,7 +95,7 @@ const Header: FC<IProps> = ({top, scrollY, title, banner}) => {
             />
           </TouchableOpacity>
           <Text numberOfLines={1} style={styles.title}>
-            {title || 'Event Name'}
+            {title}
           </Text>
         </Block>
         {/* <TouchableOpacity
@@ -120,7 +119,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   title: {
-    fontSize: getSize.m(24, 0.3),
+    fontSize: getSize.m(24, 0.1),
     fontFamily: Font.font_medium_500,
     flex: 1,
   },

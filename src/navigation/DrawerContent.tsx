@@ -7,7 +7,7 @@ import MapIcon from '@assets/icons/home/MapIcon';
 import ProfileIcon from '@assets/icons/home/ProfileIcon';
 import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
-import {keyExtractor} from '@base/utils/Utils';
+import {hapticFeedback, keyExtractor} from '@base/utils/Utils';
 import {Block, Image, Text} from '@components';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
@@ -141,6 +141,7 @@ const DrawerContent: FC<IProps> = ({}) => {
   const renderItem = useCallback(
     ({item}) => {
       const _handleMenu = async () => {
+        hapticFeedback();
         if (item.screen) {
           NavigationService.navigate(item.screen);
         } else {

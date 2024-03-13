@@ -1,5 +1,6 @@
 import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import Block from '@components/Block';
 import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import Color from '@theme/Color';
@@ -23,6 +24,7 @@ interface IProps extends TouchableOpacityProps {
   isRightIcon?: boolean;
   colors?: string[];
   isLoading?: boolean;
+  onPress?: () => void;
 }
 
 const ButtonGradient: FC<PropsWithChildren<IProps>> = ({
@@ -35,11 +37,20 @@ const ButtonGradient: FC<PropsWithChildren<IProps>> = ({
   styleContainer = {},
   colors,
   isLoading,
+  onPress,
   ...props
 }) => {
   const loadingButton = useDelayedValueWithLayoutAnimation(isLoading);
+  const handleButton = () => {
+    onPress?.();
+    hapticFeedback();
+  };
   return (
-    <TouchableOpacity {...props} activeOpacity={0.5} style={styleContainer}>
+    <TouchableOpacity
+      {...props}
+      onPress={handleButton}
+      activeOpacity={0.5}
+      style={styleContainer}>
       <LinearGradient
         style={StyleSheet.flatten([styles.container, style])}
         colors={colors || ['#5669FF', '#BF56FF']}

@@ -1,4 +1,5 @@
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, ModalBox, Text} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
@@ -30,6 +31,7 @@ const ModalQrCode = forwardRef(({}, ref) => {
   }, []);
 
   const handleClose = useCallback(() => {
+    hapticFeedback();
     setVisible(false);
   }, []);
 

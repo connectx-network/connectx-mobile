@@ -8,5 +8,12 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:connectx.network</string>
+		<string>applinks:connectx.network</string>
+		<string>webcredentials:https://connectx.network</string>
+		<string>applinks:https://connectx.network</string>
+	</array>
 </dict>
 </plist>

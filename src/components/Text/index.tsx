@@ -1,4 +1,4 @@
-import React, {forwardRef, memo} from 'react';
+import React, {forwardRef} from 'react';
 
 import {isNumber} from 'lodash';
 import {Animated, StyleSheet, Text} from 'react-native';
@@ -73,6 +73,7 @@ const Typography = forwardRef<any, ITypography>((props, ref) => {
       <Animated.Text
         style={textStyle}
         {...textProps}
+        allowFontScaling={false}
         maxFontSizeMultiplier={12}>
         {props.children}
       </Animated.Text>
@@ -80,7 +81,7 @@ const Typography = forwardRef<any, ITypography>((props, ref) => {
   }
 
   return (
-    <Text style={textStyle} {...textProps} ref={ref}>
+    <Text style={textStyle} {...textProps} allowFontScaling={false} ref={ref}>
       {props.children}
     </Text>
   );

@@ -17,7 +17,7 @@ import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {AxiosResponse} from 'axios';
 import {FC, memo} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {LayoutChangeEvent, StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {
   isMe: boolean;
@@ -27,6 +27,9 @@ interface IProps {
   following?: number;
   refetch?: () => void;
   id?: string;
+  company?: string | null;
+  isLogged: boolean;
+  onLayoutHeader: (event: LayoutChangeEvent) => void;
 }
 
 const InfoUser: FC<IProps> = ({
@@ -37,6 +40,9 @@ const InfoUser: FC<IProps> = ({
   following,
   refetch,
   id = '',
+  company,
+  isLogged,
+  onLayoutHeader,
 }) => {
   const handleEditProfile = () => {
     navigate(EDIT_PROFILE_SCREEN, {refetch});
@@ -48,7 +54,7 @@ const InfoUser: FC<IProps> = ({
   >({
     queryKey: ['checkFollow', {id}],
     queryFn: () => CheckConnectUser(id),
-    enabled: !isMe,
+    enabled: !isMe && isLogged,
   });
 
   const handleFollow = async () => {
@@ -64,7 +70,7 @@ const InfoUser: FC<IProps> = ({
   };
 
   return (
-    <Block style={styles.container}>
+    <Block style={styles.container} onLayout={onLayoutHeader}>
       <Block alignCenter>
         <Image
           source={
@@ -77,7 +83,17 @@ const InfoUser: FC<IProps> = ({
           style={styles.avatar}
         />
         <Text style={styles.nameUser}>{fullName}</Text>
-        <Block row alignCenter justifyCenter>
+        {company && (
+          <Block row alignCenter marginBottom={8}>
+            <Icon
+              name={'business'}
+              size={getSize.m(18)}
+              color={`${Color.WHITE}80`}
+            />
+            <Text style={styles.textCompany}>{company}</Text>
+          </Block>
+        )}
+        <Block row alignCenter justifyCenter marginTop={8}>
           <Block alignCenter>
             <Text style={styles.numberFollow}>{following}</Text>
             <Text style={styles.textFollow}>Following</Text>
@@ -102,30 +118,34 @@ const InfoUser: FC<IProps> = ({
           </Block>
         ) : (
           <Block alignCenter flex>
-            <ButtonGradient
-              onPress={handleFollow}
-              styleContainer={styles.styleContainerFollow}
-              style={styles.btnFollow}
-              isRightIcon={false}>
-              {data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER' ? (
-                <UserPlusIcon />
-              ) : (
-                <Icon
-                  name={'heart-outline'}
-                  color={Color.WHITE}
-                  size={getSize.m(22)}
-                />
-              )}
-              <Text
-                color={
-                  data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER'
-                    ? Color.BACKGROUND
-                    : Color.WHITE
-                }
-                style={styles.textBtnFollow}>
-                {data?.data === 'NO_CONNECTION' ? 'Follow' : 'Followed'}
-              </Text>
-            </ButtonGradient>
+            {false && isLogged && (
+              <ButtonGradient
+                onPress={handleFollow}
+                styleContainer={styles.styleContainerFollow}
+                style={styles.btnFollow}
+                isRightIcon={false}>
+                {data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER' ? (
+                  <UserPlusIcon />
+                ) : (
+                  <Icon
+                    name={'heart-outline'}
+                    color={Color.WHITE}
+                    size={getSize.m(22)}
+                  />
+                )}
+                <Text
+                  color={
+                    data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER'
+                      ? Color.BACKGROUND
+                      : Color.WHITE
+                  }
+                  style={styles.textBtnFollow}>
+                  {data?.data === 'NO_CONNECTION' || data?.data === 'FOLLOWER'
+                    ? 'Follow'
+                    : 'Followed'}
+                </Text>
+              </ButtonGradient>
+            )}
             {/* <TouchableOpacity activeOpacity={0.5} style={styles.btnMessage}>
               <MessageIcon />
               <Text style={styles.textBtnMessage}>Massages</Text>
@@ -152,7 +172,8 @@ const styles = StyleSheet.create({
   nameUser: {
     fontSize: getSize.m(24, 0.3),
     fontFamily: Font.font_medium_500,
-    marginVertical: getSize.v(16),
+    marginTop: getSize.v(16),
+    marginBottom: getSize.v(6),
   },
   wall: {
     backgroundColor: '#DDDDDD',
@@ -200,6 +221,12 @@ const styles = StyleSheet.create({
     fontFamily: Font.font_regular_400,
     color: '#5669FF',
     marginLeft: getSize.m(8),
+  },
+  textCompany: {
+    marginLeft: getSize.m(4),
+    fontFamily: Font.font_medium_500,
+    color: `${Color.WHITE}80`,
+    fontSize: getSize.m(13, 0.3),
   },
 });
 

@@ -1,20 +1,25 @@
 import {Icon, IconApp} from '@assets/icons';
 import SearchIcon from '@assets/icons/home/SearchIcon';
 import {getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {FC} from 'react';
+import {FC, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {}
 
 const Header: FC<IProps> = () => {
+  const handleDrawer = useCallback(() => {
+    openDrawer();
+    hapticFeedback();
+  }, []);
   return (
     <Block style={styles.tabBar}>
       <Block row alignCenter flex>
-        <TouchableOpacity onPress={openDrawer} activeOpacity={0.5}>
+        <TouchableOpacity onPress={handleDrawer} activeOpacity={0.5}>
           <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.title}>

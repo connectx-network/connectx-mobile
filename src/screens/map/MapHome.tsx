@@ -1,7 +1,7 @@
 import AutoCurrentIcon from '@assets/icons/map/AutoCurrentIcon';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
-import {keyExtractor} from '@base/utils/Utils';
+import {hapticFeedback, keyExtractor} from '@base/utils/Utils';
 import {Block} from '@components';
 import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
 import {Event} from '@model/event';
@@ -61,6 +61,7 @@ const MapHome = forwardRef(({data}: IProps, ref) => {
   }, []);
 
   const handleCurrentLocation = useCallback(() => {
+    hapticFeedback();
     if (coord?.latitude && coord?.longitude) {
       const region: Region = {
         latitudeDelta: 0.004,

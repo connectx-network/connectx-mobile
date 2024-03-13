@@ -1,16 +1,14 @@
 import {IconApp} from '@assets/icons';
-import ContactIcon from '@assets/icons/chat/ContactIcon';
-import MessagePlusIcon from '@assets/icons/chat/MessagePlusIcon';
 import SearchIcon from '@assets/icons/home/SearchIcon';
 import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
-import {keyExtractor} from '@base/utils/Utils';
+import {hapticFeedback, keyExtractor} from '@base/utils/Utils';
 import {Block, TabBar, Text} from '@components';
 import {openDrawer} from '@navigation/navigationService';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {useCallback, useMemo} from 'react';
-import {FlatList, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import {FlatList, StyleSheet, TextInput} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemMessage from './Items/ItemMessage';
 
@@ -37,11 +35,16 @@ const ChatScreen = () => {
     return <ItemMessage />;
   }, []);
 
+  const handleDrawer = useCallback(() => {
+    openDrawer();
+    hapticFeedback();
+  }, []);
+
   return (
     <SafeAreaView style={Styles.container}>
       <TabBar
         title="Chat"
-        handleLeftIcon={openDrawer}
+        handleLeftIcon={handleDrawer}
         leftIcon={
           <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
         }

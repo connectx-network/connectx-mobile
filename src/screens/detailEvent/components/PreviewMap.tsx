@@ -27,22 +27,24 @@ const PreviewMap: FC<IProps> = ({latitude, longitude, location}) => {
 
   return (
     <Block>
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.container}
-        initialRegion={{
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.004,
-          longitudeDelta: 0.004,
-        }}>
-        <Marker
-          coordinate={{
+      {!!latitude && !!longitude && (
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.container}
+          initialRegion={{
             latitude: latitude,
             longitude: longitude,
-          }}
-        />
-      </MapView>
+            latitudeDelta: 0.004,
+            longitudeDelta: 0.004,
+          }}>
+          <Marker
+            coordinate={{
+              latitude: latitude,
+              longitude: longitude,
+            }}
+          />
+        </MapView>
+      )}
       <TouchableOpacity onPress={handlePreview} style={styles.overlay} />
     </Block>
   );

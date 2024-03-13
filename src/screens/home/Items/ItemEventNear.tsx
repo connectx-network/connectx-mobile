@@ -1,17 +1,17 @@
 import {Icon} from '@assets/icons';
-import SavedActiveIcon from '@assets/icons/home/SavedActiveIcon';
 import Images from '@assets/images';
-import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, Image, Text} from '@components';
 import {Event} from '@model/event';
 import {navigate} from '@navigation/navigationService';
 import {DETAIL_EVENT_SCREEN} from '@navigation/routes';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import lodash from 'lodash';
 import moment from 'moment';
 import {FC, memo} from 'react';
 import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
-import lodash from 'lodash';
 interface IProps extends Event {
   style?: StyleProp<ViewStyle>;
   handleItem?: () => void;
@@ -20,6 +20,7 @@ interface IProps extends Event {
 const ItemEventNear: FC<IProps> = ({style, ...props}) => {
   const handleItem = () => {
     navigate(DETAIL_EVENT_SCREEN, props);
+    hapticFeedback();
   };
 
   return (
@@ -49,7 +50,7 @@ const ItemEventNear: FC<IProps> = ({style, ...props}) => {
             {props.name || 'Name of Event'}
           </Text>
         </Block>
-        <Block marginTop={12} row alignCenter marginBottom={8}>
+        <Block marginTop={8} row alignCenter>
           <Icon
             name={'location-sharp'}
             color={Color.WHITE}
@@ -72,12 +73,14 @@ const styles = StyleSheet.create({
     marginBottom: getSize.v(12),
     padding: getSize.m(10),
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    // alignItems: 'flex-start',
   },
   image: {
     borderRadius: getSize.m(9),
     width: getSize.s(80),
-    height: getSize.s(92),
+    // maxHeight: getSize.s(92),
+    height: '100%',
+    minHeight: getSize.s(80),
   },
   textLocation: {
     fontSize: getSize.m(13, 0.3),
@@ -89,18 +92,18 @@ const styles = StyleSheet.create({
     marginLeft: getSize.s(12),
     flex: 1,
     justifyContent: 'space-between',
-    height: getSize.s(92),
   },
   textDate: {
     color: '#5669FF',
     fontSize: getSize.m(12, 0.3),
     fontFamily: Font.font_medium_500,
-    marginTop: getSize.s(8),
+    marginTop: getSize.m(4),
   },
   textName: {
     fontSize: getSize.m(15, 0.3),
     fontFamily: Font.font_medium_500,
     marginTop: getSize.m(4),
+    marginBottom: getSize.m(4),
   },
   btnSave: {
     paddingLeft: getSize.m(4),

@@ -18,6 +18,10 @@ export function setParams(params: object) {
   navigator?.dispatch(CommonActions.setParams(params));
 }
 
+export function checkCanGoBack() {
+  return navigator?.canGoBack();
+}
+
 export function navigate(name: string, params: object = {}, key?: any): void {
   navigator?.dispatch(
     CommonActions.navigate({name, params, ...(!!key && {key})}),
@@ -88,9 +92,11 @@ export function resetRoute(routesFilter: string[], route: any) {
   });
 }
 
-function handleAction(name, params = {}, replace = false) {
-  if (!navigator) return;
-  const action = (replace ? StackActions.replace : CommonActions.navigate)(
+function handleAction(name, params = {}, isReplace = false) {
+  if (!navigator) {
+    return;
+  }
+  const action = (isReplace ? StackActions.replace : CommonActions.navigate)(
     name,
     params,
   );

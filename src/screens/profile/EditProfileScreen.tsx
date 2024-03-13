@@ -114,7 +114,7 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
           setTimeout(() => {
             dispatch(actionUpdateUser({...data, avatarUrl: dataImage.url}));
             params?.refetch?.();
-          }, 2000);
+          }, 3000);
         } else {
           dispatch(actionUpdateUser(data));
           params?.refetch?.();

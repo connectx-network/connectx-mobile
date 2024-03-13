@@ -72,12 +72,14 @@ import {
   RootStackParamList,
   SCAN_QR_SCREEN,
   SEARCH_SCREEN,
+  SHARE_PROFILE_SCREEN,
   TAB_NAVIGATOR,
   VERIFY_OTP_SCREEN,
   linking,
 } from './routes';
 import PushController from '@base/common/pushNotification';
 import BubbleChatScreen from '@screens/chat/BubbleChatScreen';
+import ShareProfileScreen from '@screens/profile/ShareProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -122,7 +124,7 @@ const HomeStack = memo(() => {
             close: iosTransitionSpec,
           },
         }}
-        sharedElements={route => {
+        sharedElements={() => {
           return [
             {
               animation: 'fade',
@@ -182,6 +184,11 @@ const ProfileStack = memo(() => {
       initialRouteName={PROFILE_SCREEN}>
       <Stack.Screen name={PROFILE_SCREEN} component={ProfileScreen} />
       <Stack.Screen name={EDIT_PROFILE_SCREEN} component={EditProfileScreen} />
+      <Stack.Screen
+        name={SHARE_PROFILE_SCREEN}
+        component={ShareProfileScreen}
+        options={{animation: 'fade'}}
+      />
     </Stack.Navigator>
   );
 });
@@ -283,6 +290,10 @@ const MainStack = memo(() => {
             component={ProfileScreen}
           />
           <Stack.Screen
+            name={EDIT_PROFILE_SCREEN}
+            component={EditProfileScreen}
+          />
+          <Stack.Screen
             name={BUBBLE_CHAT_SCREEN}
             component={BubbleChatScreen}
           />
@@ -365,6 +376,19 @@ const RootStack: FC<{}> = () => {
         <Stack.Screen
           name={RESET_PASSWORD_SCREEN}
           component={ResetPasswordScreen}
+        />
+        <Stack.Screen
+          name={DETAIL_EVENT_SCREEN}
+          component={DetailEventScreen}
+        />
+        <Stack.Screen
+          name={PROFILE_OWNER_EVENT_SCREEN}
+          component={ProfileScreen}
+        />
+        <Stack.Screen
+          name={SHARE_PROFILE_SCREEN}
+          component={ShareProfileScreen}
+          options={{animation: 'fade'}}
         />
         <Stack.Screen name={DRAWER_STACK} component={DrawerStack} />
       </Stack.Navigator>

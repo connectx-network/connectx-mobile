@@ -2,9 +2,12 @@ import {Icon} from '@assets/icons';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
 import {Block, Text} from '@components';
+import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
+import {Event} from '@model/event';
+import {useFetchEvents} from '@screens/events/hooks';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {memo, useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {
   FlatList,
   LayoutChangeEvent,
@@ -22,9 +25,6 @@ import ItemEvent from './Items/ItemEvent';
 import ItemEventNear from './Items/ItemEventNear';
 import Banner from './components/Banner';
 import Header from './components/Header';
-import {useGetLocationCurrent} from '@hooks/useGetLocationCurrent';
-import {useFetchEvents} from '@screens/events/hooks';
-import {Event} from '@model/event';
 
 const HomeScreen = () => {
   const {top} = useSafeAreaInsets();

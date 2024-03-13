@@ -47,6 +47,7 @@ export interface Event {
     eventHosts: number;
     joinedEventUsers: number;
   };
+  shortId: string;
 }
 
 export interface EventHost {

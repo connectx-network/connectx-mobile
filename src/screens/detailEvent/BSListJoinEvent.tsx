@@ -65,15 +65,20 @@ const BSListJoinEvent = forwardRef(({eventId}: IProps, ref) => {
     setShow(indexNext === 0);
   }, []);
 
-  const renderItem = useCallback(({item}: {item: {user: UserInfo}}) => {
-    return (
-      <ItemUserJoined
-        name={item.user.fullName}
-        avatarUrl={item.user.avatarUrl}
-        id={item.user.id}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({item}: {item: {user: UserInfo; checkedIn: boolean}}) => {
+      return (
+        <ItemUserJoined
+          name={item.user.fullName}
+          avatarUrl={item.user.avatarUrl}
+          id={item.user.id}
+          company={item.user.company}
+          checkedIn={item.checkedIn}
+        />
+      );
+    },
+    [],
+  );
 
   return (
     <BottomSheet

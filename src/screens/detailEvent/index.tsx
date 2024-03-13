@@ -3,10 +3,21 @@ import CalendarIcon from '@assets/icons/detailEvent/CalendarIcon';
 import LocationIcon from '@assets/icons/detailEvent/LocationIcon';
 import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
-import {getDateEvent, getTimeEvent} from '@base/utils/Utils';
+import {getDateEvent, getTimeEvent, hapticFeedback} from '@base/utils/Utils';
 import {Block, ButtonGradient, Text} from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
-import {DetailEventScreenRouteProp, SCAN_QR_SCREEN} from '@navigation/routes';
+import {
+  checkCanGoBack,
+  goBack,
+  navigate,
+  reset,
+} from '@navigation/navigationService';
+import {
+  DRAWER_STACK,
+  DetailEventScreenRouteProp,
+  LOGIN_SCREEN,
+  SCAN_QR_SCREEN,
+} from '@navigation/routes';
 import {UserState} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
@@ -17,13 +28,17 @@ import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {AxiosResponse} from 'axios';
 import {FC, Fragment, useCallback, useState} from 'react';
-import {Linking, StyleSheet, TouchableOpacity} from 'react-native';
+import {Linking, Share, StyleSheet, TouchableOpacity} from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
+import BSListJoinEvent, {
+  listJoinEventControl,
+  listJoinEventRef,
+} from './BSListJoinEvent';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import ModalJoinSuccess from './components/ModalJoinSuccess';
@@ -32,13 +47,8 @@ import ModalQrCode, {
   refModalQr,
 } from './components/ModalQrCode';
 import PreviewMap from './components/PreviewMap';
-import {useDetailEvent, useFetchJoinEvent} from './hooks';
+import {useDetailEvent} from './hooks';
 import {HEIGHT_COVER} from './layout';
-import BSListJoinEvent, {
-  listJoinEventControl,
-  listJoinEventRef,
-} from './BSListJoinEvent';
-import {navigate} from '@navigation/navigationService';
 
 interface IProps {
   route: DetailEventScreenRouteProp;
@@ -48,8 +58,10 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const {showWarningTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
-  const {data, onRefresh} = useDetailEvent(params.id);
-  const {id, userRole} = useSelector<IRootState, UserState>(uStateUser);
+  const {data, onRefresh} = useDetailEvent(params.shortId);
+  const {id, userRole, isLogged} = useSelector<IRootState, UserState>(
+    uStateUser,
+  );
   const [isLoading, setLoading] = useState<boolean>(false);
   const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
 
@@ -57,8 +69,8 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     AxiosResponse<{joined: boolean}>,
     Error
   >({
-    queryKey: ['checkJoinEvent', {id: params.id}],
-    queryFn: () => CheckJoinEvent(params.id),
+    queryKey: ['checkJoinEvent', {id: params.shortId}],
+    queryFn: () => CheckJoinEvent(params.shortId),
   });
 
   const onScroll = useAnimatedScrollHandler({
@@ -66,10 +78,6 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
       scrollY.value = y;
     },
   });
-
-  // const handleProfileOwner = useCallback(() => {
-  //   navigate(PROFILE_OWNER_EVENT_SCREEN, {id: data?.eventHosts?.[0]?.id});
-  // }, [data?.eventHosts?.[0]?.id]);
 
   const handleJoinEvent = useCallback(async () => {
     if (userRole === 'ADMIN') {
@@ -98,6 +106,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   }, []);
 
   const handleShowQrCode = useCallback(() => {
+    hapticFeedback();
     modalQrControl.show(`${params.id};${id}`); //eventId;userId
   }, [id, params.id]);
 
@@ -105,9 +114,26 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     listJoinEventControl.show();
   }, []);
 
+  const handleShare = useCallback(() => {
+    hapticFeedback();
+    params.shortId &&
+      Share.share({
+        title: `https://connectx.network/${params.shortId}`,
+        message: `https://connectx.network/${params.shortId}`,
+      });
+  }, [params.shortId]);
+
+  const handleBack = useCallback(() => {
+    if (checkCanGoBack()) {
+      return goBack();
+    }
+    reset(isLogged ? DRAWER_STACK : LOGIN_SCREEN);
+  }, [isLogged]);
+
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       <Header
+        handleBack={handleBack}
         banner={data?.eventAssets?.[0]?.url}
         top={top}
         scrollY={scrollY}
@@ -136,7 +162,19 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
         <Block
           marginTop={!data?.joinedEventUsers?.length ? 30 : 0}
           style={Styles.paddingHorizontal}>
-          <Text style={styles.title}>{data?.name || params.name}</Text>
+          <Block row marginTop={20} space="between" alignStart>
+            <Text style={styles.title}>{data?.name || params.name}</Text>
+            <TouchableOpacity
+              style={styles.btnShare}
+              onPress={handleShare}
+              activeOpacity={0.5}>
+              <Icon
+                name={'share-outline'}
+                color={Color.WHITE}
+                size={getSize.m(24)}
+              />
+            </TouchableOpacity>
+          </Block>
           <Block row alignCenter marginBottom={30} marginTop={8}>
             {dataCheckJoinEvent?.data?.joined && (
               <Fragment>
@@ -184,29 +222,6 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               </Text>
             </Block>
           </Block>
-          {/* {false && (
-            <Block row alignCenter marginBottom={30}>
-              <TouchableOpacity
-                onPress={handleProfileOwner}
-                activeOpacity={0.5}
-                style={styles.contentUser}>
-                <Image source={Images.AVATAR} style={styles.boxIcon} />
-                <Block row flex alignCenter>
-                  <Block flex>
-                    <Text numberOfLines={1} style={styles.textTitleInfo}>
-                      {data?.eventHosts?.[0]?.title || 'Location'}
-                    </Text>
-                    <Text numberOfLines={1} style={styles.textSubInfo}>
-                      Sub Location
-                    </Text>
-                  </Block>
-                </Block>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.btnFollow} activeOpacity={0.5}>
-                <Text style={styles.textFollow}>Follow</Text>
-              </TouchableOpacity>
-            </Block>
-          )} */}
           {dataCheckJoinEvent?.data?.joined && (
             <TouchableOpacity
               activeOpacity={0.5}
@@ -253,13 +268,14 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
         </Block>
       </Animated.ScrollView>
-      {(!dataCheckJoinEvent?.data?.joined || userRole === 'ADMIN') && (
-        <Footer
-          isLoading={isLoading}
-          userRole={userRole}
-          handleJoinEvent={handleJoinEvent}
-        />
-      )}
+      {(dataCheckJoinEvent?.data?.joined === false || userRole === 'ADMIN') &&
+        isLogged && (
+          <Footer
+            isLoading={isLoading}
+            userRole={userRole}
+            handleJoinEvent={handleJoinEvent}
+          />
+        )}
       <ModalJoinSuccess
         isVisible={showModalSuccess}
         onBackdropPress={handleCloseModalJoin}
@@ -296,7 +312,7 @@ const styles = StyleSheet.create({
   },
   textGoing: {
     color: '#38BFDD',
-    fontSize: getSize.m(15, 0.3),
+    fontSize: getSize.m(14, 0.3),
     fontFamily: Font.font_medium_500,
     marginLeft: getSize.m(8),
   },
@@ -308,7 +324,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: getSize.m(24, 0.3),
     fontFamily: Font.font_regular_400,
-    marginTop: getSize.m(20),
+    flex: 1,
   },
   boxIcon: {
     width: getSize.m(48),
@@ -327,17 +343,6 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(12, 0.3),
     fontFamily: Font.font_light_200,
   },
-  btnFollow: {
-    height: getSize.m(32),
-    backgroundColor: `${Color.WHITE}30`,
-    justifyContent: 'center',
-    borderRadius: getSize.m(8),
-    paddingHorizontal: getSize.m(12),
-  },
-  textFollow: {
-    fontSize: getSize.m(12, 0.3),
-    fontFamily: Font.font_regular_400,
-  },
   textAboutEvent: {
     fontFamily: Font.font_medium_500,
     fontSize: getSize.m(18, 0.3),
@@ -349,11 +354,7 @@ const styles = StyleSheet.create({
     lineHeight: getSize.m(24),
     marginBottom: getSize.v(12),
   },
-  contentUser: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
+
   textHost: {
     fontSize: getSize.m(15, 0.3),
     fontFamily: Font.font_medium_500,
@@ -379,6 +380,11 @@ const styles = StyleSheet.create({
   seeMore: {
     fontSize: getSize.m(13, 0.3),
     fontFamily: Font.font_regular_400,
+  },
+  btnShare: {
+    paddingVertical: getSize.m(4),
+    paddingHorizontal: getSize.m(2),
+    marginTop: getSize.m(4),
   },
 });
 

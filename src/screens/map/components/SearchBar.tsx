@@ -5,7 +5,7 @@ import {Block} from '@components';
 import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {FC, MutableRefObject, RefObject} from 'react';
+import {FC, MutableRefObject} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -60,7 +60,7 @@ const SearchBar: FC<IProps> = ({
             <Icon
               name={'close-circle'}
               size={getSize.m(22)}
-              color={Color.GRAY}
+              color={`${Color.BLACK}40`}
             />
           </TouchableOpacity>
         )}

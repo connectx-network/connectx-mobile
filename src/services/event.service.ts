@@ -43,7 +43,9 @@ export async function CheckJoinEvent(
 
 export async function FetchListJoinEvent(
   params: ParamsFetchJoinEvent,
-): Promise<AxiosResponse<DataList<Array<{user: UserInfo}>>>> {
+): Promise<
+  AxiosResponse<DataList<Array<{user: UserInfo; checkedIn: boolean}>>>
+> {
   return api(EventRouteEnum.ListJoinUserEvent, null, {
     method: 'GET',
     params,

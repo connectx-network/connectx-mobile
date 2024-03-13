@@ -1,14 +1,14 @@
+import {IS_IOS} from '@base/common/constants';
 import {getSize} from '@base/common/responsive';
 import {keyExtractor} from '@base/utils/Utils';
+import {Event} from '@model/event';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import {FlatList, RefreshControl, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from './components/Header';
 import {useFetchEvents} from './hooks';
-import {Event} from '@model/event';
-import {IS_IOS} from '@base/common/constants';
 
 const EventsScreen = () => {
   const {data, isLoading, onEndReached, onRefresh} = useFetchEvents({

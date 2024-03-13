@@ -1,7 +1,8 @@
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, Text} from '@components';
 import Font from '@theme/Font';
-import {FC, Fragment, memo, useCallback, useRef, useState} from 'react';
+import {FC, memo, useCallback, useRef, useState} from 'react';
 import {LayoutChangeEvent, Pressable, StyleSheet} from 'react-native';
 import {ItemLayout} from 'react-native-collapsible-tab-view/lib/typescript/src/MaterialTabBar/types';
 import {TabBarProps} from 'react-native-collapsible-tab-view/lib/typescript/src/types';
@@ -23,7 +24,9 @@ const TabBarCustom: FC<IProps> = ({tabNames, indexDecimal, onTabPress}) => {
 
   const onTabItemLayout = useCallback(
     (event: LayoutChangeEvent, name: string) => {
-      if (!event.nativeEvent?.layout) return;
+      if (!event.nativeEvent?.layout) {
+        return;
+      }
       const {width, x} = event.nativeEvent.layout;
 
       itemLayoutGathering.current.set(name, {
@@ -80,7 +83,10 @@ const TabBarCustom: FC<IProps> = ({tabNames, indexDecimal, onTabPress}) => {
             <Pressable
               onLayout={event => onTabItemLayout(event, tab)}
               key={index + tab}
-              onPress={() => onTabPress(tab)}
+              onPress={() => {
+                onTabPress(tab);
+                hapticFeedback();
+              }}
               style={({pressed}) => [{opacity: pressed ? 0.5 : 1}, styles.item]}
               android_ripple={{
                 borderless: true,
@@ -108,7 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: getSize.s(10),
     paddingVertical: getSize.v(8),
-    marginRight: getSize.s(30)
+    marginRight: getSize.s(30),
   },
   label: {
     fontSize: getSize.m(16, 0.3),

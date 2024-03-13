@@ -1,10 +1,12 @@
 import {Icon} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
+import {hapticFeedback} from '@base/utils/Utils';
 import {Block, ButtonGradient, ModalBox, Text} from '@components';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import {FC, memo} from 'react';
+import {FC, memo, useCallback} from 'react';
 import {StyleSheet} from 'react-native';
+import {HapticFeedbackTypes} from 'react-native-haptic-feedback';
 
 interface IProps {
   isVisible: boolean;
@@ -12,6 +14,10 @@ interface IProps {
 }
 
 const ModalJoinSuccess: FC<IProps> = ({isVisible, onBackdropPress}) => {
+  const handleDone = useCallback(() => {
+    onBackdropPress();
+    hapticFeedback(HapticFeedbackTypes.notificationSuccess);
+  }, [onBackdropPress]);
   return (
     <ModalBox
       isVisible={isVisible}
@@ -27,7 +33,7 @@ const ModalJoinSuccess: FC<IProps> = ({isVisible, onBackdropPress}) => {
           <Text style={styles.title}>Join Event Successfully</Text>
         </Block>
         <ButtonGradient
-          onPress={onBackdropPress}
+          onPress={handleDone}
           style={styles.btnDone}
           isRightIcon={false}>
           <Text style={styles.textBtnDone}>Done</Text>

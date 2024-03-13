@@ -3,8 +3,17 @@ import {getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {TabBar} from '@components';
 import {UserInfo} from '@model/user';
-import {goBack, openDrawer} from '@navigation/navigationService';
-import {ProfileScreenRouteProp} from '@navigation/routes';
+import {
+  checkCanGoBack,
+  goBack,
+  openDrawer,
+  reset,
+} from '@navigation/navigationService';
+import {
+  DRAWER_STACK,
+  LOGIN_SCREEN,
+  ProfileScreenRouteProp,
+} from '@navigation/routes';
 import {UserState} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
@@ -12,16 +21,18 @@ import {FetchInfoUser} from '@services/user.service';
 import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import {AxiosResponse} from 'axios';
-import {FC, useCallback} from 'react';
-import {StyleSheet} from 'react-native';
+import {FC, useCallback, useState} from 'react';
+import {LayoutChangeEvent, StyleSheet} from 'react-native';
 import {TabBarProps, Tabs} from 'react-native-collapsible-tab-view';
 import {TabName} from 'react-native-collapsible-tab-view/lib/typescript/src/types';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 import AboutTab from './AboutTab';
 import EventTab from './EventTab';
+import ActionRightTabBar from './components/ActionRightTabBar';
 import InfoUser from './components/InfoUser';
 import TabBarCustom from './components/TabBarCustom';
+import {hapticFeedback} from '@base/utils/Utils';
 
 interface IProps {
   route: ProfileScreenRouteProp;
@@ -29,6 +40,7 @@ interface IProps {
 
 const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
+  const [heightHeader, setHeightHeader] = useState<number>(0);
   const infoUser = useSelector<IRootState, UserState>(uStateUser);
   const idUser = params?.id || infoUser.id;
   const isMe = !params?.id || params.id === infoUser.id;
@@ -37,6 +49,13 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     queryKey: ['fetchInfoUser', {idUser}],
     queryFn: () => FetchInfoUser(idUser),
   });
+
+  const onLayoutHeader = useCallback(
+    ({nativeEvent: {layout}}: LayoutChangeEvent) => {
+      setHeightHeader(layout.height);
+    },
+    [],
+  );
 
   const renderHeader = useCallback(() => {
     return (
@@ -48,6 +67,9 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
         following={data?.data?.following}
         refetch={refetch}
         id={params?.id}
+        company={data?.data?.company}
+        isLogged={infoUser.isLogged}
+        onLayoutHeader={onLayoutHeader}
       />
     );
   }, [
@@ -58,10 +80,25 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     data?.data?.followers,
     refetch,
     isMe,
+    data?.data?.company,
+    infoUser.isLogged,
+    onLayoutHeader,
   ]);
 
   const renderTabBar = useCallback((props: TabBarProps<TabName>) => {
     return <TabBarCustom {...props} />;
+  }, []);
+
+  const handleBack = useCallback(() => {
+    if (checkCanGoBack()) {
+      return goBack();
+    }
+    reset(infoUser.isLogged ? DRAWER_STACK : LOGIN_SCREEN);
+  }, [infoUser.isLogged]);
+
+  const handleDrawer = useCallback(() => {
+    openDrawer();
+    hapticFeedback();
   }, []);
 
   return (
@@ -73,12 +110,15 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
             <IconApp name={'menu'} color={Color.WHITE} size={getSize.m(18)} />
           ) : null
         }
-        hideRightIcon
-        handleLeftIcon={!params?.id ? openDrawer : goBack}
+        customActionRight={() => <ActionRightTabBar />}
+        hideRightIcon={!isMe}
+        handleLeftIcon={!params?.id ? handleDrawer : handleBack}
         styleContainer={StyleSheet.flatten([styles.tabBar, {paddingTop: top}])}
       />
       <Tabs.Container
         headerContainerStyle={styles.headerContainerStyle}
+        allowHeaderOverscroll={true}
+        headerHeight={heightHeader + 100}
         renderHeader={renderHeader}
         renderTabBar={renderTabBar}>
         <Tabs.Tab name="ABOUT">

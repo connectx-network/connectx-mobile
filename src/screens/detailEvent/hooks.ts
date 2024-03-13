@@ -9,8 +9,8 @@ import {useCallback, useEffect, useState} from 'react';
 export function useDetailEvent(id: string) {
   const [data, setData] = useState<IDetailEvent | null>(null);
 
-  const onSuccess = useCallback((data: AxiosResponse<IDetailEvent>) => {
-    setData(data.data);
+  const onSuccess = useCallback((values: AxiosResponse<IDetailEvent>) => {
+    setData(values.data);
   }, []);
 
   const {mutate, isPending, reset} = useMutation<
@@ -41,7 +41,9 @@ export function useFetchJoinEvent({
   userId,
   eventId,
 }: ParamsFetchJoinEvent) {
-  const [data, setData] = useState<Array<{user: UserInfo}>>([]);
+  const [data, setData] = useState<Array<{user: UserInfo; checkedIn: boolean}>>(
+    [],
+  );
   const [paging, setPaging] = useState<Paging>({
     page,
     size,
@@ -51,12 +53,14 @@ export function useFetchJoinEvent({
 
   const onSuccess = useCallback(
     ({
-      data: {data, ...props},
-    }: AxiosResponse<DataList<Array<{user: UserInfo}>>>) => {
+      data: {data: newData, ...props},
+    }: AxiosResponse<
+      DataList<Array<{user: UserInfo; checkedIn: boolean}>>
+    >) => {
       if (props.page === 1) {
-        setData(data);
+        setData(newData);
       } else {
-        setData(prev => [...prev, ...data]);
+        setData(prev => [...prev, ...newData]);
       }
       setPaging(props);
     },
@@ -64,7 +68,7 @@ export function useFetchJoinEvent({
   );
 
   const {mutate, isPending} = useMutation<
-    AxiosResponse<DataList<Array<{user: UserInfo}>>>,
+    AxiosResponse<DataList<Array<{user: UserInfo; checkedIn: boolean}>>>,
     Error,
     ParamsFetchJoinEvent
   >({
