@@ -92,6 +92,7 @@ import {
   VERIFY_OTP_SCREEN,
   linking,
 } from './routes';
+import Analytics from '@base/utils/Analytics';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -385,10 +386,18 @@ const RootStack: FC<{}> = () => {
     routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
   }, []);
 
+  const onStateChange = useCallback(() => {
+    const previousRouteName = routeNameRef.current;
+    const currentRouteName = navigationRef.current?.getCurrentRoute?.()?.name;
+    if (currentRouteName && previousRouteName !== currentRouteName) {
+      Analytics.screenViewer(currentRouteName);
+    }
+  }, []);
+
   return (
     <NavigationContainer
       onReady={onReady}
-      // onStateChange={onStateChange}
+      onStateChange={onStateChange}
       linking={linking}
       ref={ref}>
       <Stack.Navigator

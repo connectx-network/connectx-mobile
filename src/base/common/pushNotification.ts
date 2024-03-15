@@ -61,12 +61,12 @@ class PushController {
     if (enabled) {
       const token = await this.getFcmToken();
       this.updateFcmTokenHandler(token, 'refresh');
-      console.log(
-        'Authorization status:',
-        authStatus,
-        token,
-        PushController.fcmToken,
-      );
+      // console.log(
+      //   'Authorization status:',
+      //   authStatus,
+      //   token,
+      //   PushController.fcmToken,
+      // );
     }
   };
 

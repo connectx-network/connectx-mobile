@@ -27,6 +27,7 @@ import ColorSchemeProvider from '@theme/ColorSchemeProvider';
 import {useColorScheme} from '@theme/useColorScheme';
 import {ThemeProvider} from '@shopify/restyle';
 import {darkTheme, theme} from '@theme/Theme';
+import {setupSentry} from '@base/utils/SetupSentry';
 
 function onAppStateChange(status: AppStateStatus) {
   focusManager.setFocused(status === 'active');
@@ -49,6 +50,8 @@ GoogleSignin.configure({
   offlineAccess: true,
   forceCodeForRefreshToken: false,
 });
+
+setupSentry();
 
 const MainAppContent = () => {
   const {colorScheme} = useColorScheme();
