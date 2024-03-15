@@ -1,9 +1,6 @@
 import {Icon, IconApp} from '@assets/icons';
 import AvatarIcon from '@assets/icons/common/AvatarIcon';
-import CalendarIcon from '@assets/icons/home/CalendarIcon';
-import ChatIcon from '@assets/icons/home/ChatIcon';
 import LogoutIcon from '@assets/icons/home/LogoutIcon';
-import MapIcon from '@assets/icons/home/MapIcon';
 import ProfileIcon from '@assets/icons/home/ProfileIcon';
 import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
@@ -12,6 +9,7 @@ import {Block, Image, Text} from '@components';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
+import {actionUpdateAppSetting} from '@redux/slices/appSettingSlice';
 import {UserState, actionLogoutUser} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
@@ -37,6 +35,7 @@ import NavigationService, {reset} from './navigationService';
 import {
   CHAT_SCREEN,
   CHAT_STACK,
+  CONNECT_QR_SCREEN,
   DETAIL_EVENT_SCREEN,
   EDIT_PROFILE_SCREEN,
   EVENTS_SCREEN,
@@ -50,7 +49,6 @@ import {
   PROFILE_SCREEN,
   PROFILE_STACK,
 } from './routes';
-import {actionUpdateAppSetting} from '@redux/slices/appSettingSlice';
 
 interface IProps extends DrawerContentComponentProps {}
 
@@ -71,19 +69,25 @@ export const LIST_MENU = [
     name: 'Message',
     screens: [CHAT_SCREEN],
     screen: CHAT_STACK,
-    icon: (props?: SvgProps) => <ChatIcon {...props} />,
+    icon: (props?: SvgProps) => (
+      <Icon name={'chatbubbles-outline'} size={24} {...props} />
+    ),
   },
   {
     name: 'Events',
     screens: [EVENTS_SCREEN],
     screen: EVENT_STACK,
-    icon: (props?: SvgProps) => <CalendarIcon {...props} />,
+    icon: (props?: SvgProps) => (
+      <Icon name={'calendar-outline'} size={24} {...props} />
+    ),
   },
   {
     name: 'Map',
     screens: [MAP_SCREEN],
     screen: MAP_STACK,
-    icon: (props?: SvgProps) => <MapIcon {...props} />,
+    icon: (props?: SvgProps) => (
+      <Icon name={'location-outline'} size={24} {...props} />
+    ),
   },
   {
     name: 'My Profile',
@@ -91,12 +95,14 @@ export const LIST_MENU = [
     screen: PROFILE_STACK,
     icon: (props?: SvgProps) => <ProfileIcon {...props} />,
   },
-  // {
-  //   name: 'Community',
-  //   screens: [COMMUNITY_STACK],
-  //   screen: COMMUNITY_STACK,
-  //   icon: (props?: SvgProps) => <CommunityIcon {...props} />,
-  // },
+  {
+    name: 'Connect with QR',
+    screens: [CONNECT_QR_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
+    screen: CONNECT_QR_SCREEN,
+    icon: (props?: SvgProps) => (
+      <Icon name={'qr-code-outline'} size={24} {...props} />
+    ),
+  },
   {
     name: 'Sign Out',
     icon: (props?: SvgProps) => <LogoutIcon {...props} />,

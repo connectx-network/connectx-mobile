@@ -7,6 +7,7 @@ import {useFetchEvents} from '@screens/events/hooks';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
+import {useTheme} from '@theme/Theme';
 import {FC, memo, useCallback} from 'react';
 import {RefreshControl, StyleSheet} from 'react-native';
 import {Tabs} from 'react-native-collapsible-tab-view';
@@ -17,6 +18,7 @@ interface IProps {
 }
 
 const EventTab: FC<IProps> = ({scrollEnabled, userId}) => {
+  const {colors} = useTheme();
   const {data, isLoading, onRefresh, onEndReached} = useFetchEvents({
     page: 1,
     size: 10,
@@ -28,8 +30,12 @@ const EventTab: FC<IProps> = ({scrollEnabled, userId}) => {
   }, []);
 
   const listEmptyComponent = useCallback(() => {
-    return <Text style={styles.textEmpty}>There are no reviews yet</Text>;
-  }, []);
+    return (
+      <Text color={`${colors.mainForeground}80`} style={styles.textEmpty}>
+        There are no reviews yet
+      </Text>
+    );
+  }, [colors.mainForeground]);
 
   return (
     <Tabs.FlatList
@@ -62,7 +68,6 @@ const styles = StyleSheet.create({
     fontSize: getSize.m(15, 0.3),
     fontFamily: Font.font_medium_500,
     textAlign: 'center',
-    color: `${Color.WHITE}80`,
     marginTop: getSize.v(12),
   },
 });

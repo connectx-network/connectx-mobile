@@ -49,6 +49,9 @@ export const PROFILE_SCREEN = 'Profile';
 export const EDIT_PROFILE_SCREEN = 'EditProfile';
 export const SHARE_PROFILE_SCREEN = 'ShareProfile';
 
+//ConnectQr
+export const CONNECT_QR_SCREEN = 'ConnectQr';
+
 export const navigationRef = React.createRef<any>();
 
 export type RootStackParamList = {
@@ -63,6 +66,7 @@ export type RootStackParamList = {
   [PROFILE_OWNER_EVENT_SCREEN]: {id?: string};
   [EDIT_PROFILE_SCREEN]: {refetch?: () => void};
   [CONFIRM_INFO_USER_SCREEN]: {eventId: string; userId: string};
+  [LOGIN_SCREEN]: {shortId?: string};
 };
 
 export type SearchScreenRouteProp = RouteProp<RootStackParamList, 'Search'>;
@@ -91,6 +95,7 @@ export type ConfirmInfoUserScreenRouteProp = RouteProp<
   RootStackParamList,
   'ConfirmInfoUser'
 >;
+export type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
 
 export const linking = {
   prefixes: ['connectx.network://', 'https://connectx.network/'],

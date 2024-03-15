@@ -1,6 +1,5 @@
-import {IconApp} from '@assets/icons';
+import {Icon, IconApp} from '@assets/icons';
 import CalendarIcon from '@assets/icons/home/CalendarIcon';
-import ChatIcon from '@assets/icons/home/ChatIcon';
 import CommunityIcon from '@assets/icons/home/CommnunityIcon';
 import MapIcon from '@assets/icons/home/MapIcon';
 import {getSize} from '@base/common/responsive';
@@ -46,44 +45,36 @@ const ItemTab = memo(
             activeOpacity={0.5}
             style={styles.btnTab}>
             {name === CHAT_STACK ? (
-              <ChatIcon
+              <Icon
+                name={isFocused ? 'chatbubbles' : 'chatbubbles-outline'}
+                size={24}
                 color={
-                  isFocused
-                    ? colors.mainForeground
-                    : `${colors.mainForeground}50`
+                  isFocused ? colors.tabColor : `${colors.mainForeground}50`
                 }
               />
             ) : name === EVENT_STACK ? (
               <CalendarIcon
                 color={
-                  isFocused
-                    ? colors.mainForeground
-                    : `${colors.mainForeground}50`
+                  isFocused ? colors.tabColor : `${colors.mainForeground}50`
                 }
               />
             ) : name === MAP_STACK ? (
               <MapIcon
                 color={
-                  isFocused
-                    ? colors.mainForeground
-                    : `${colors.mainForeground}50`
+                  isFocused ? colors.tabColor : `${colors.mainForeground}50`
                 }
               />
             ) : (
               <CommunityIcon
                 color={
-                  isFocused
-                    ? colors.mainForeground
-                    : `${colors.mainForeground}50`
+                  isFocused ? colors.tabColor : `${colors.mainForeground}50`
                 }
               />
             )}
             {params?.name && (
               <Text
                 color={
-                  isFocused
-                    ? colors.mainForeground
-                    : `${colors.mainForeground}50`
+                  isFocused ? colors.tabColor : `${colors.mainForeground}50`
                 }
                 style={styles.textItemTab}>
                 {params.name}

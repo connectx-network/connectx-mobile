@@ -60,28 +60,26 @@ const MainAppContent = () => {
 
   return (
     <ThemeProvider theme={colorScheme === 'dark' ? darkTheme : theme}>
-      <GestureHandlerRootView style={Styles.root}>
-        <ToastProvider
-          renderToast={renderToast}
-          warningIcon={
-            <Icon
-              name={'alert-circle-outline'}
-              color={Color.RED}
-              size={getSize.m(20)}
-            />
-          }
-          successIcon={
-            <Icon
-              name={'checkmark-circle-outline'}
-              color={Color.GREEN_START}
-              size={getSize.m(20)}
-            />
-          }>
-          <PopupUpdate>
-            <RootStack />
-          </PopupUpdate>
-        </ToastProvider>
-      </GestureHandlerRootView>
+      <ToastProvider
+        renderToast={renderToast}
+        warningIcon={
+          <Icon
+            name={'alert-circle-outline'}
+            color={Color.RED}
+            size={getSize.m(20)}
+          />
+        }
+        successIcon={
+          <Icon
+            name={'checkmark-circle-outline'}
+            color={Color.GREEN_START}
+            size={getSize.m(20)}
+          />
+        }>
+        <PopupUpdate>
+          <RootStack />
+        </PopupUpdate>
+      </ToastProvider>
     </ThemeProvider>
   );
 };
@@ -98,9 +96,11 @@ const App = () => {
           <PersistQueryClientProvider
             client={queryClient}
             persistOptions={persistOptions}>
-            <ColorSchemeProvider>
-              <MainAppContent />
-            </ColorSchemeProvider>
+            <GestureHandlerRootView style={Styles.root}>
+              <ColorSchemeProvider>
+                <MainAppContent />
+              </ColorSchemeProvider>
+            </GestureHandlerRootView>
           </PersistQueryClientProvider>
         </PersistGate>
       </Provider>

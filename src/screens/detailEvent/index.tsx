@@ -75,6 +75,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   >({
     queryKey: ['checkJoinEvent', {id: params.shortId}],
     queryFn: () => CheckJoinEvent(params.shortId),
+    enabled: isLogged,
   });
 
   const onScroll = useAnimatedScrollHandler({
@@ -84,6 +85,9 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   });
 
   const handleJoinEvent = useCallback(async () => {
+    if (!isLogged) {
+      return reset(LOGIN_SCREEN, {shortId: params.shortId});
+    }
     if (userRole === 'ADMIN') {
       return navigate(SCAN_QR_SCREEN);
     }
@@ -103,7 +107,15 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     } finally {
       setLoading(false);
     }
-  }, [data?.id || params.id, refetch, onRefresh, userRole]);
+  }, [
+    data?.id,
+    params.id,
+    refetch,
+    onRefresh,
+    userRole,
+    isLogged,
+    params.shortId,
+  ]);
 
   const handleCloseModalJoin = useCallback(() => {
     setShowModalSuccess(false);
@@ -111,8 +123,8 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
 
   const handleShowQrCode = useCallback(() => {
     hapticFeedback();
-    modalQrControl.show(`${params.id};${id}`); //eventId;userId
-  }, [id, params.id]);
+    modalQrControl.show(`${params.id || data?.id};${id}`); //eventId;userId
+  }, [id, params.id, data?.id]);
 
   const handleShowListJoinEvent = useCallback(() => {
     listJoinEventControl.show();
@@ -132,7 +144,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
       return goBack();
     }
     reset(isLogged ? DRAWER_STACK : LOGIN_SCREEN);
-  }, [isLogged]);
+  }, [isLogged, params.shortId]);
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
@@ -272,17 +284,20 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
           </Block>
         </Block>
       </Animated.ScrollView>
-      {(dataCheckJoinEvent?.data?.joined === false || userRole === 'ADMIN') &&
-        isLogged && (
-          <Footer
-            isLoading={isLoading}
-            userRole={userRole}
-            handleJoinEvent={handleJoinEvent}
-          />
-        )}
+      {(dataCheckJoinEvent?.data?.joined === false ||
+        userRole === 'ADMIN' ||
+        !isLogged) && (
+        <Footer
+          isLoading={isLoading}
+          userRole={userRole}
+          handleJoinEvent={handleJoinEvent}
+        />
+      )}
       <ModalJoinSuccess
         isVisible={showModalSuccess}
         onBackdropPress={handleCloseModalJoin}
+        userId={id}
+        eventId={params.id || data?.id}
       />
       <ModalQrCode ref={refModalQr} />
       <BSListJoinEvent ref={listJoinEventRef} eventId={data?.id || params.id} />

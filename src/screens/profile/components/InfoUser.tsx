@@ -19,7 +19,7 @@ import {TColors} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
 import {FC, memo} from 'react';
-import {LayoutChangeEvent, StyleSheet, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IProps {
   isMe: boolean;
@@ -31,7 +31,6 @@ interface IProps {
   id?: string;
   company?: string | null;
   isLogged: boolean;
-  onLayoutHeader: (event: LayoutChangeEvent) => void;
 }
 
 const InfoUser: FC<IProps> = ({
@@ -44,7 +43,6 @@ const InfoUser: FC<IProps> = ({
   id = '',
   company,
   isLogged,
-  onLayoutHeader,
 }) => {
   const styles = useStyle(getStyles);
   const handleEditProfile = () => {
@@ -73,7 +71,7 @@ const InfoUser: FC<IProps> = ({
   };
 
   return (
-    <Block style={styles.container} onLayout={onLayoutHeader}>
+    <Block style={styles.container}>
       <Block alignCenter>
         <Image
           source={

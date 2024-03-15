@@ -22,8 +22,10 @@ import appleAuth, {
 import {LoginParams} from '@model/auth';
 import {navigate, reset} from '@navigation/navigationService';
 import {
+  DETAIL_EVENT_SCREEN,
   DRAWER_STACK,
   FORGOT_PASSWORD_SCREEN,
+  LoginScreenRouteProp,
   REGISTER_SCREEN,
 } from '@navigation/routes';
 import auth from '@react-native-firebase/auth';
@@ -34,19 +36,23 @@ import {FetchInfoMe, UploadAvatar} from '@services/user.service';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {FormikHelpers, useFormik} from 'formik';
-import {useCallback, useState} from 'react';
+import {FC, useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import * as Keychain from 'react-native-keychain';
 import {useDispatch} from 'react-redux';
 import * as Yup from 'yup';
 
+interface IProps {
+  route: LoginScreenRouteProp;
+}
+
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
   password: Yup.string().required('Password is required'),
 });
 
-const LoginScreen = () => {
+const LoginScreen: FC<IProps> = ({route: {params}}) => {
   const {showWarningTop} = useToastMessage();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isLoadingSocial, setLoadingSocial] = useState<boolean>(false);
@@ -78,14 +84,18 @@ const LoginScreen = () => {
         const {data: dataInfo} = await FetchInfoMe();
         resetForm();
         dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
-        reset(DRAWER_STACK);
+        !params?.shortId
+          ? reset(DRAWER_STACK)
+          : reset(DETAIL_EVENT_SCREEN, {
+              shortId: params.shortId,
+            });
       } catch (error) {
         showWarningTop('Email or password is incorrect!');
       } finally {
         setLoading(false);
       }
     },
-    [showWarningTop],
+    [showWarningTop, params?.shortId],
   );
 
   const {values, handleChange, errors, setFieldError, submitForm} =
@@ -137,7 +147,11 @@ const LoginScreen = () => {
         );
         const {data: dataInfo} = await FetchInfoMe();
         dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
-        reset(DRAWER_STACK);
+        !params?.shortId
+          ? reset(DRAWER_STACK)
+          : reset(DETAIL_EVENT_SCREEN, {
+              shortId: params.shortId,
+            });
         if (userInfo.user?.photo && !dataInfo.avatarUrl) {
           const {data: dataImage} = await UploadAvatar({
             uri: userInfo.user?.photo,
@@ -154,7 +168,7 @@ const LoginScreen = () => {
     } finally {
       setLoadingSocial(false);
     }
-  }, []);
+  }, [params?.shortId]);
 
   const handleLoginApple = useCallback(async () => {
     try {
@@ -216,14 +230,18 @@ const LoginScreen = () => {
         );
         const {data: dataInfo} = await FetchInfoMe();
         dispatch(actionUpdateUser({...dataInfo, isLogged: true}));
-        reset(DRAWER_STACK);
+        !params?.shortId
+          ? reset(DRAWER_STACK)
+          : reset(DETAIL_EVENT_SCREEN, {
+              shortId: params.shortId,
+            });
       }
     } catch (error) {
       typeof error === 'string' && showWarningTop(error);
     } finally {
       setLoadingSocial(false);
     }
-  }, []);
+  }, [params?.shortId]);
 
   return (
     <LayoutAuth edges={['bottom', 'top']}>

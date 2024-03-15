@@ -3,6 +3,8 @@ export default {
   RED_HOLDER: '#EF251B',
   PINK: '#FF9AA3',
   GRAY: '#666666',
+  GRAY_START: '#D8D8D8',
+  GRAY_END: '#9B9B9B',
   WHITE: '#ffffff',
   TRANSPARENT: 'rgba(0, 0, 0, 0)',
   BLUE: '#201a30',

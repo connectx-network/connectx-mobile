@@ -1,3 +1,4 @@
+import {IS_IOS} from '@base/common/constants';
 import {HEIGHT_SCREEN, WIDTH_SCREEN} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {
@@ -85,27 +86,29 @@ const ColorSchemeProvider = ({children}: ColorSchemeProviderProps) => {
           {children}
         </ColorSchemeContext.Provider>
       </View>
-      <Canvas style={StyleSheet.absoluteFill} pointerEvents={'none'}>
-        <Image
-          image={overlay1}
-          x={0}
-          y={0}
-          width={WIDTH_SCREEN}
-          height={HEIGHT_SCREEN}
-        />
-        {overlay2 && (
-          <Circle c={circle} r={r}>
-            <ImageShader
-              image={overlay2}
-              x={0}
-              y={0}
-              width={WIDTH_SCREEN}
-              height={HEIGHT_SCREEN}
-              fit="cover"
-            />
-          </Circle>
-        )}
-      </Canvas>
+      {IS_IOS && (
+        <Canvas style={StyleSheet.absoluteFill} pointerEvents={'none'}>
+          <Image
+            image={overlay1}
+            x={0}
+            y={0}
+            width={WIDTH_SCREEN}
+            height={HEIGHT_SCREEN}
+          />
+          {overlay2 && (
+            <Circle c={circle} r={r}>
+              <ImageShader
+                image={overlay2}
+                x={0}
+                y={0}
+                width={WIDTH_SCREEN}
+                height={HEIGHT_SCREEN}
+                fit="cover"
+              />
+            </Circle>
+          )}
+        </Canvas>
+      )}
     </View>
   );
 };

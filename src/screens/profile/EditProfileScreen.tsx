@@ -110,8 +110,8 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
         if (avatar) {
           const {data: dataImage} = await UploadAvatar({
             uri: avatar.uri || '',
-            name: avatar.uri || '',
-            type: avatar.uri || '',
+            name: avatar.fileName || '',
+            type: avatar.type || '',
           });
           setTimeout(() => {
             dispatch(actionUpdateUser({...data, avatarUrl: dataImage.url}));

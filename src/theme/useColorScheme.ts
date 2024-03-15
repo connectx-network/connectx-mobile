@@ -3,6 +3,7 @@ import {ColorSchemeContext} from './ColorSchemeProvider';
 import {dist, makeImageFromView, vec} from '@shopify/react-native-skia';
 import {HEIGHT_SCREEN, WIDTH_SCREEN} from '@base/common/responsive';
 import {withTiming} from 'react-native-reanimated';
+import {IS_IOS} from '@base/common/constants';
 
 const wait = async (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
@@ -24,7 +25,15 @@ export const useColorScheme = () => {
   const toggle = useCallback(
     async (x: number, y: number) => {
       const newColorScheme = colorScheme === 'light' ? 'dark' : 'light';
-
+      if (!IS_IOS) {
+        return dispatch({
+          active: false,
+          colorScheme: newColorScheme,
+          overlay1: null,
+          overlay2: null,
+          statusBarStyle: newColorScheme === 'light' ? 'dark' : 'light',
+        });
+      }
       dispatch({
         active: true,
         colorScheme,

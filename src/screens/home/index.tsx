@@ -121,7 +121,7 @@ const HomeScreen = () => {
           )}
         />
 
-        <Banner />
+        <Banner banners={data} />
 
         <Block style={styles.label}>
           <Text style={styles.textLabel}>Near You</Text>
@@ -137,6 +137,9 @@ const HomeScreen = () => {
           )}
         </Block>
         {renderItemEventNear}
+        <Block marginTop={50} marginBottom={12} alignCenter>
+          <Text style={styles.textPower}>Power by Twendee Software</Text>
+        </Block>
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -171,6 +174,12 @@ const getStyles = (colors: TColors) =>
     },
     contentContainerStyle: {
       paddingLeft: getSize.s(20),
+    },
+    textPower: {
+      fontSize: getSize.m(12, 0.3),
+      fontFamily: Font.font_regular_400,
+      color: colors.mainForeground,
+      opacity: 0.5,
     },
   });
 

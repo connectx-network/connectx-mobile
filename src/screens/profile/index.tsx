@@ -22,8 +22,8 @@ import {useQuery} from '@tanstack/react-query';
 import {TColors} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
-import {FC, useCallback, useState} from 'react';
-import {LayoutChangeEvent, StyleSheet} from 'react-native';
+import {FC, useCallback} from 'react';
+import {StyleSheet} from 'react-native';
 import {TabBarProps, Tabs} from 'react-native-collapsible-tab-view';
 import {TabName} from 'react-native-collapsible-tab-view/lib/typescript/src/types';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -41,7 +41,6 @@ interface IProps {
 const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const styles = useStyle(getStyles);
-  const [heightHeader, setHeightHeader] = useState<number>(0);
   const infoUser = useSelector<IRootState, UserState>(uStateUser);
   const idUser = params?.id || infoUser.id;
   const isMe = !params?.id || params.id === infoUser.id;
@@ -50,13 +49,6 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     queryKey: ['fetchInfoUser', {idUser}],
     queryFn: () => FetchInfoUser(idUser),
   });
-
-  const onLayoutHeader = useCallback(
-    ({nativeEvent: {layout}}: LayoutChangeEvent) => {
-      setHeightHeader(layout.height);
-    },
-    [],
-  );
 
   const renderHeader = useCallback(() => {
     return (
@@ -70,7 +62,6 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
         id={params?.id}
         company={data?.data?.company}
         isLogged={infoUser.isLogged}
-        onLayoutHeader={onLayoutHeader}
       />
     );
   }, [
@@ -83,7 +74,6 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
     isMe,
     data?.data?.company,
     infoUser.isLogged,
-    onLayoutHeader,
   ]);
 
   const renderTabBar = useCallback((props: TabBarProps<TabName>) => {
@@ -122,8 +112,8 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
       />
       <Tabs.Container
         headerContainerStyle={styles.headerContainerStyle}
-        allowHeaderOverscroll={true}
-        headerHeight={heightHeader + 100}
+        allowHeaderOverscroll
+        // headerHeight={heightHeader + 100}
         renderHeader={renderHeader}
         renderTabBar={renderTabBar}>
         <Tabs.Tab name="ABOUT">

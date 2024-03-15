@@ -1,13 +1,18 @@
 import {useMemo} from 'react';
 import {TColors, useTheme} from './Theme';
-import {ImageStyle, TextStyle, ViewStyle} from 'react-native';
+import {ColorSchemeName, ImageStyle, TextStyle, ViewStyle} from 'react-native';
 
 type NamedStyles<T> = {[P in keyof T]: ViewStyle | TextStyle | ImageStyle};
 
-export function useStyle<T>(func: (props: TColors) => NamedStyles<T>) {
-  const {colors} = useTheme();
+export function useStyle<T>(
+  func: (props: TColors, colorScheme?: ColorSchemeName) => NamedStyles<T>,
+) {
+  const {colors, colorScheme} = useTheme();
 
-  const styles = useMemo(() => func(colors), [colors]);
+  const styles = useMemo(
+    () => func(colors, colorScheme),
+    [colors, colorScheme],
+  );
 
   return styles;
 }

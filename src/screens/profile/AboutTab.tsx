@@ -177,7 +177,7 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
                 ) : (
                   <Icon
                     name={'checkbox'}
-                    color={'#BF56FF'}
+                    color={'#5669FF'}
                     size={getSize.m(22)}
                   />
                 )}

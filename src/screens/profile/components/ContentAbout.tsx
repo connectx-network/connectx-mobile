@@ -14,7 +14,13 @@ import {TColors, useTheme} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
 import {useFormik} from 'formik';
 import {FC, Fragment, memo, useCallback, useEffect, useState} from 'react';
-import {Linking, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import {
+  ColorSchemeName,
+  Linking,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Yup from 'yup';
 
@@ -151,7 +157,7 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
               multiline
               style={styles.inputAbout}
               placeholder="Enter biography...."
-              placeholderTextColor={`${Color.WHITE}40`}
+              placeholderTextColor={`${colors.mainForeground}40`}
               value={values.content}
               onChangeText={handleChangeValue('content')}
               autoFocus
@@ -173,7 +179,7 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
                 <Icon
                   name={'checkbox'}
                   color={'#5669FF'}
-                  size={getSize.m(22)}
+                  size={getSize.m(20)}
                 />
               )}
             </TouchableOpacity>
@@ -196,7 +202,7 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
   );
 };
 
-const getStyles = (colors: TColors) =>
+const getStyles = (colors: TColors, colorScheme: ColorSchemeName) =>
   StyleSheet.create({
     textAbout: {
       fontSize: getSize.m(16, 0.3),
@@ -241,16 +247,18 @@ const getStyles = (colors: TColors) =>
       color: colors.mainForeground,
     },
     boxInputAbout: {
-      backgroundColor: '#29313E',
+      backgroundColor: colors.input,
       marginTop: getSize.v(12),
       marginBottom: getSize.v(6),
       paddingHorizontal: getSize.s(12),
       borderRadius: getSize.m(12),
       paddingVertical: getSize.m(8),
+      borderColor: `${colors.mainForeground}60`,
+      borderWidth: colorScheme === 'light' ? getSize.m(1) : 0,
     },
     inputAbout: {
       textAlignVertical: 'top',
-      color: Color.WHITE,
+      color: colors.mainForeground,
       minHeight: getSize.v(100),
       fontSize: getSize.m(13, 0.3),
       fontFamily: Font.font_regular_400,
@@ -258,19 +266,19 @@ const getStyles = (colors: TColors) =>
     term: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: getSize.v(8),
+      marginBottom: getSize.v(6),
       marginTop: getSize.m(12),
     },
     btnCheckbox: {
-      width: getSize.m(22),
-      height: getSize.m(22),
+      width: getSize.m(20),
+      height: getSize.m(20),
       borderRadius: getSize.m(4),
       borderWidth: getSize.m(2),
     },
     textTerm: {
       marginLeft: getSize.m(8),
       fontFamily: Font.font_medium_500,
-      fontSize: getSize.m(12),
+      fontSize: getSize.m(11, 0.3),
       textDecorationLine: 'underline',
     },
     textSave: {

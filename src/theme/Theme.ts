@@ -9,6 +9,8 @@ export const theme = createTheme({
     mainForeground: Color.BACKGROUND,
     secondaryBackground: Color.WHITE,
     shadow: '#979797',
+    tabColor: '#5669FF',
+    input: '#EEEEEF',
   },
   spacing: {
     s: 8,
@@ -27,6 +29,8 @@ export const darkTheme: Theme = {
     mainForeground: Color.WHITE,
     secondaryBackground: '#29313E',
     shadow: Color.TRANSPARENT,
+    tabColor: Color.WHITE,
+    input: '#29313E',
   },
 };
 

@@ -1,5 +1,4 @@
-import {Icon} from '@assets/icons';
-import {getSize} from '@base/common/responsive';
+import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {hapticFeedback} from '@base/utils/Utils';
 import {Block, ButtonGradient, ModalBox, Text} from '@components';
 import Color from '@theme/Color';
@@ -7,13 +6,21 @@ import Font from '@theme/Font';
 import {FC, memo, useCallback} from 'react';
 import {StyleSheet} from 'react-native';
 import {HapticFeedbackTypes} from 'react-native-haptic-feedback';
+import QRCode from 'react-native-qrcode-svg';
 
 interface IProps {
   isVisible: boolean;
   onBackdropPress: () => void;
+  userId: string;
+  eventId?: string;
 }
 
-const ModalJoinSuccess: FC<IProps> = ({isVisible, onBackdropPress}) => {
+const ModalJoinSuccess: FC<IProps> = ({
+  isVisible,
+  onBackdropPress,
+  userId,
+  eventId,
+}) => {
   const handleDone = useCallback(() => {
     onBackdropPress();
     hapticFeedback(HapticFeedbackTypes.notificationSuccess);
@@ -24,14 +31,16 @@ const ModalJoinSuccess: FC<IProps> = ({isVisible, onBackdropPress}) => {
       onBackdropPress={onBackdropPress}
       position="center">
       <Block style={styles.container}>
-        <Block alignCenter marginBottom={30} marginTop={12}>
-          <Icon
-            name={'checkmark-circle-outline'}
-            size={getSize.m(60)}
-            color={Color.GREEN_HOLDER}
-          />
+        <Block alignCenter marginBottom={25} marginTop={12}>
           <Text style={styles.title}>Join Event Successfully</Text>
+          <Text style={styles.noteQr}>
+            This is the QR code to join your event
+          </Text>
         </Block>
+        <Block style={styles.boxQr}>
+          <QRCode size={WIDTH_SCREEN * 0.35} value={`${eventId};${userId}`} />
+        </Block>
+
         <ButtonGradient
           onPress={handleDone}
           style={styles.btnDone}
@@ -51,9 +60,9 @@ const styles = StyleSheet.create({
     padding: getSize.m(12),
   },
   title: {
-    fontSize: getSize.m(16, 0.3),
+    fontSize: getSize.m(18, 0.3),
     fontFamily: Font.font_medium_500,
-    marginTop: getSize.m(16),
+    color: Color.GREEN_HOLDER,
   },
   textBtnDone: {
     fontSize: getSize.m(15, 0.3),
@@ -61,6 +70,22 @@ const styles = StyleSheet.create({
   },
   btnDone: {
     height: getSize.m(50),
+  },
+  boxQr: {
+    width: WIDTH_SCREEN * 0.35 + getSize.s(20),
+    height: WIDTH_SCREEN * 0.35 + getSize.s(20),
+    borderRadius: getSize.m(12),
+    backgroundColor: Color.WHITE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: getSize.v(20),
+  },
+  noteQr: {
+    textAlign: 'center',
+    fontFamily: Font.font_regular_400,
+    fontSize: getSize.m(13, 0.3),
+    marginTop: getSize.v(6),
   },
 });
 

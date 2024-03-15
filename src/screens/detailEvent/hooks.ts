@@ -81,7 +81,7 @@ export function useFetchJoinEvent({
   });
 
   useEffect(() => {
-    mutate({page: paging.page, size: paging.size, userId, eventId});
+    eventId && mutate({page: paging.page, size: paging.size, userId, eventId});
   }, [paging.page, paging.size, userId, eventId]);
 
   const onEndReached = useCallback(() => {

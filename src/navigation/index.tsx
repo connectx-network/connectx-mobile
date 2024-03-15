@@ -29,6 +29,7 @@ import RegisterScreen from '@screens/auth/register';
 import VerifyOtpScreen from '@screens/auth/register/VerifyOtpScreen';
 import ChatScreen from '@screens/chat';
 import BubbleChatScreen from '@screens/chat/BubbleChatScreen';
+import ConnectQrScreen from '@screens/connectQr';
 import DetailEventScreen from '@screens/detailEvent';
 import EventsScreen from '@screens/events';
 import BSFilter, {bottomSheetFilterRef} from '@screens/filter';
@@ -64,6 +65,7 @@ import {
   CHAT_SCREEN,
   CHAT_STACK,
   CONFIRM_INFO_USER_SCREEN,
+  CONNECT_QR_SCREEN,
   DETAIL_EVENT_SCREEN,
   DRAWER_STACK,
   EDIT_PROFILE_SCREEN,
@@ -307,6 +309,11 @@ const MainStack = memo(() => {
           <Stack.Screen
             name={BUBBLE_CHAT_SCREEN}
             component={BubbleChatScreen}
+          />
+          <Stack.Screen
+            options={{animation: 'fade'}}
+            name={CONNECT_QR_SCREEN}
+            component={ConnectQrScreen}
           />
         </Stack.Navigator>
         <BSFilter ref={bottomSheetFilterRef} />
