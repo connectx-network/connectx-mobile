@@ -1,6 +1,6 @@
 import {Icon} from '@assets/icons';
 import Images from '@assets/images';
-import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
+import {IS_IOS, JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {getSize} from '@base/common/responsive';
 import {Block, ButtonGradient, Image, TabBar, Text} from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
@@ -196,7 +196,7 @@ const EditProfileScreen: FC<IProps> = ({route: {params}}) => {
       await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
       if (auth().currentUser) {
         await auth().signOut();
-        await GoogleSignin.revokeAccess();
+        !IS_IOS && (await GoogleSignin.revokeAccess());
       }
       showSuccessTop('Delete account successfully!');
     } catch (error) {

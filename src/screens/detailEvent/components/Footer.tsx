@@ -14,7 +14,7 @@ interface IProps {
 }
 
 const Footer: FC<IProps> = ({handleJoinEvent, isLoading, userRole}) => {
-  const [checkbox, setCheckbox] = useState<boolean>(false);
+  const [checkbox, setCheckbox] = useState<boolean>(userRole === 'ADMIN');
 
   const handleCheckBox = () => setCheckbox(!checkbox);
   const handleTerm = () =>

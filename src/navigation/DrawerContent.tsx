@@ -2,7 +2,7 @@ import {Icon, IconApp} from '@assets/icons';
 import AvatarIcon from '@assets/icons/common/AvatarIcon';
 import LogoutIcon from '@assets/icons/home/LogoutIcon';
 import ProfileIcon from '@assets/icons/home/ProfileIcon';
-import {JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
+import {IS_IOS, JWT_KEY, JWT_REFRESH_KEY} from '@base/common/constants';
 import {WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import {hapticFeedback, keyExtractor} from '@base/utils/Utils';
 import {Block, Image, Text} from '@components';
@@ -170,7 +170,7 @@ const DrawerContent: FC<IProps> = ({}) => {
           await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
           if (auth().currentUser) {
             await auth().signOut();
-            await GoogleSignin.revokeAccess();
+            !IS_IOS && (await GoogleSignin.revokeAccess());
           }
         }
       };
