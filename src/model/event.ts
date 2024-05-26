@@ -48,6 +48,8 @@ export interface Event {
     joinedEventUsers: number;
   };
   shortId: string;
+  eventType: 'READONLY' | 'NORMAL';
+  registUrl: string | null;
 }
 
 export interface EventHost {

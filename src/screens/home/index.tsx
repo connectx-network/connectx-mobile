@@ -26,6 +26,7 @@ import ItemEvent from './Items/ItemEvent';
 import ItemEventNear from './Items/ItemEventNear';
 import Banner from './components/Banner';
 import Header from './components/Header';
+import moment from 'moment';
 
 const HomeScreen = () => {
   const {top} = useSafeAreaInsets();
@@ -35,6 +36,12 @@ const HomeScreen = () => {
   const {position} = useGetLocationCurrent();
   const {data} = useFetchEvents({page: 1, size: 10});
   const styles = useStyle(getStyles);
+
+  const dataEvents = data.filter(
+    item => moment(item.eventEndDate).unix() > moment().unix(),
+  );
+
+  const listEvent = dataEvents.length === 0 ? data : dataEvents;
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: ({contentOffset: {y}}) => {
@@ -92,7 +99,9 @@ const HomeScreen = () => {
           paddingTop: heightTabBar,
         }}>
         <Block style={styles.label}>
-          <Text style={styles.textLabel}>Upcoming Events</Text>
+          <Text style={styles.textLabel}>
+            {dataEvents.length === 0 ? 'Event has ended' : 'Upcoming Events'}
+          </Text>
           {false && (
             <TouchableOpacity activeOpacity={0.5} style={styles.seeAll}>
               <Text style={styles.textSeeAll}>See All</Text>
@@ -107,7 +116,7 @@ const HomeScreen = () => {
 
         <FlatList
           horizontal
-          data={data}
+          data={listEvent}
           keyExtractor={keyExtractor}
           showsHorizontalScrollIndicator={false}
           renderItem={renderItemEvent}

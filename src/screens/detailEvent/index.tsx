@@ -1,7 +1,7 @@
 import {Icon} from '@assets/icons';
 import CalendarIcon from '@assets/icons/detailEvent/CalendarIcon';
 import LocationIcon from '@assets/icons/detailEvent/LocationIcon';
-import {HEIGHT_SCREEN, getSize} from '@base/common/responsive';
+import {HEIGHT_SCREEN, WIDTH_SCREEN, getSize} from '@base/common/responsive';
 import Styles from '@base/common/styles';
 import {getDateEvent, getTimeEvent, hapticFeedback} from '@base/utils/Utils';
 import {Block, ButtonGradient, Text} from '@components';
@@ -29,8 +29,15 @@ import Font from '@theme/Font';
 import {TColors, useTheme} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
-import {FC, Fragment, useCallback, useState} from 'react';
-import {Linking, Share, StyleSheet, TouchableOpacity} from 'react-native';
+import moment from 'moment';
+import {FC, Fragment, useCallback, useEffect, useState} from 'react';
+import {
+  Image,
+  Linking,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -68,6 +75,17 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   );
   const [isLoading, setLoading] = useState<boolean>(false);
   const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
+  const [heightCover, setHeightCover] = useState<number>(0);
+
+  useEffect(() => {
+    if (data?.eventAssets?.[0]?.url) {
+      Image.getSize(data?.eventAssets?.[0]?.url, (width, height) => {
+        width && height && setHeightCover((WIDTH_SCREEN * height) / width);
+      });
+    } else {
+      setHeightCover(0);
+    }
+  }, [data?.eventAssets?.[0]?.url]);
 
   const {data: dataCheckJoinEvent, refetch} = useQuery<
     AxiosResponse<{joined: boolean}>,
@@ -85,12 +103,18 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   });
 
   const handleJoinEvent = useCallback(async () => {
+    if (data?.eventType === 'READONLY') {
+      return data.registUrl && Linking.openURL(data.registUrl);
+    }
+
     if (!isLogged) {
       return reset(LOGIN_SCREEN, {shortId: params.shortId});
     }
+
     if (userRole === 'ADMIN') {
       return navigate(SCAN_QR_SCREEN);
     }
+
     try {
       setLoading(true);
       await JoinEvent(data?.id || params.id);
@@ -154,10 +178,16 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
         top={top}
         scrollY={scrollY}
         title={data?.name || params.name}
+        heightCover={heightCover}
       />
       <Animated.ScrollView
         onScroll={onScroll}
-        contentContainerStyle={styles.contentContainerStyle}>
+        contentContainerStyle={[
+          styles.contentContainerStyle,
+          !!heightCover && {
+            paddingTop: heightCover - getSize.m(30),
+          },
+        ]}>
         {!!data?.joinedEventUsers?.length && (
           <Block style={styles.boxInvite}>
             <UserJoined
@@ -286,13 +316,14 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
       </Animated.ScrollView>
       {(dataCheckJoinEvent?.data?.joined === false ||
         userRole === 'ADMIN' ||
-        !isLogged) && (
-        <Footer
-          isLoading={isLoading}
-          userRole={userRole}
-          handleJoinEvent={handleJoinEvent}
-        />
-      )}
+        !isLogged) &&
+        moment(data?.eventEndDate).unix() > moment().unix() && (
+          <Footer
+            isLoading={isLoading}
+            userRole={userRole}
+            handleJoinEvent={handleJoinEvent}
+          />
+        )}
       <ModalJoinSuccess
         isVisible={showModalSuccess}
         onBackdropPress={handleCloseModalJoin}

@@ -4,13 +4,13 @@ import {keyExtractor} from '@base/utils/Utils';
 import {Event} from '@model/event';
 import ItemEventNear from '@screens/home/Items/ItemEventNear';
 import Color from '@theme/Color';
+import {TColors} from '@theme/Theme';
+import {useStyle} from '@theme/useStyle';
 import {useCallback} from 'react';
 import {FlatList, RefreshControl, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from './components/Header';
 import {useFetchEvents} from './hooks';
-import {TColors} from '@theme/Theme';
-import {useStyle} from '@theme/useStyle';
 
 const EventsScreen = () => {
   const styles = useStyle(getStyles);

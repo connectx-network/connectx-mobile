@@ -23,11 +23,19 @@ interface IProps {
   title: string;
   banner?: string;
   handleBack: () => void;
+  heightCover: number;
 }
 
 const Icon = Animated.createAnimatedComponent<any>(IconVt);
 
-const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
+const Header: FC<IProps> = ({
+  top,
+  scrollY,
+  title,
+  banner,
+  handleBack,
+  heightCover,
+}) => {
   const {colorScheme, colors} = useTheme();
   const [heightTabBar, setHeightTabBar] = useState<number>(0);
   const onLayoutTabBar = useCallback(
@@ -43,40 +51,40 @@ const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
     }
     const translateY = interpolate(
       scrollY.value,
-      [-100, 0, HEIGHT_COVER],
-      [0, 0, -HEIGHT_COVER],
+      [-100, 0, heightCover || HEIGHT_COVER],
+      [0, 0, -(heightCover || HEIGHT_COVER)],
       Extrapolation.CLAMP,
     );
     const scale = interpolate(
       scrollY.value,
-      [0, -HEIGHT_COVER],
+      [0, -(heightCover || HEIGHT_COVER)],
       [1, 1.5],
       Extrapolation.CLAMP,
     );
     return {transform: [{translateY}, {scale}]};
-  }, []);
+  }, [heightCover]);
 
   const styleTabBar = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       scrollY.value,
-      [0, HEIGHT_COVER / 2.2],
+      [0, (heightCover || HEIGHT_COVER) / 2.2],
       [Color.TRANSPARENT, colors.mainBackground],
     );
     return {
       backgroundColor,
     };
-  }, [colors.mainBackground]);
+  }, [colors.mainBackground, heightCover]);
 
   const styleTitle = useAnimatedStyle(() => {
     const color = interpolateColor(
       scrollY.value,
-      [0, HEIGHT_COVER / 2.2],
+      [0, (heightCover || HEIGHT_COVER) / 2.2],
       [colors.mainBackground, colors.mainForeground],
     );
     return {
       color,
     };
-  }, [colors.mainForeground, colors.mainBackground]);
+  }, [colors.mainForeground, colors.mainBackground, heightCover]);
 
   return (
     <Fragment>
@@ -92,7 +100,11 @@ const Header: FC<IProps> = ({top, scrollY, title, banner, handleBack}) => {
         />
         <Image
           source={banner ? {uri: banner} : Images.BANNER_DEFAULT}
-          style={styles.imageCover}
+          style={StyleSheet.flatten([
+            styles.imageCover,
+            heightCover && {height: heightCover},
+          ])}
+          resizeMode={'cover'}
         />
       </Animated.View>
       <Animated.View
