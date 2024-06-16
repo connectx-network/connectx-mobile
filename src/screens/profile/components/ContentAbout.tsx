@@ -4,6 +4,8 @@ import {getSize} from '@base/common/responsive';
 import {Block, ButtonGradient, Text} from '@components';
 import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import {useToastMessage} from '@hooks/useToastMessage';
+import {navigate} from '@navigation/navigationService';
+import {LOGIN_SCREEN} from '@navigation/routes';
 import {UserState, actionUpdateUser} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
@@ -45,8 +47,15 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
   const styles = useStyle(getStyles);
   const [editAbout, setEditAbout] = useState<boolean>(false);
   const isEditAbout = useDelayedValueWithLayoutAnimation(editAbout);
-  const {fullName, country, nickname, gender, address, userInterests} =
-    useSelector<IRootState, UserState>(uStateUser);
+  const {
+    fullName,
+    country,
+    nickname,
+    gender,
+    address,
+    userInterests,
+    isLogged,
+  } = useSelector<IRootState, UserState>(uStateUser);
   const {showSuccessTop, showWarningTop} = useToastMessage();
   const dispatch = useDispatch();
 
@@ -90,6 +99,9 @@ const ContentAbout: FC<IProps> = ({isMe, description, refetch}) => {
   }, [description]);
 
   const handleEditAbout = useCallback(() => {
+    if (!isLogged) {
+      return navigate(LOGIN_SCREEN);
+    }
     setEditAbout(prev => !prev);
   }, []);
 

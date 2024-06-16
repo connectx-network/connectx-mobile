@@ -9,7 +9,7 @@ import {
 import {AxiosResponse} from 'axios';
 import api from './api';
 import {EventRouteEnum} from './routeApi';
-import {DataList} from '@model';
+import {Contact, DataList} from '@model';
 import {UserInfo} from '@model/user';
 
 export async function FetchEvents(
@@ -65,4 +65,8 @@ export async function CheckIneEvent(
   body: GetQrCodeEventParams,
 ): Promise<AxiosResponse<any>> {
   return api(EventRouteEnum.CheckInEvent, body, {method: 'PATCH'});
+}
+
+export async function ImportEvent(body: Contact): Promise<any> {
+  return api(EventRouteEnum.ImportEvent, body);
 }

@@ -6,6 +6,7 @@ import Styles from '@base/common/styles';
 import {getDateEvent, getTimeEvent, hapticFeedback} from '@base/utils/Utils';
 import {Block, ButtonGradient, Text} from '@components';
 import {useToastMessage} from '@hooks/useToastMessage';
+import {Contact} from '@model';
 import {
   checkCanGoBack,
   goBack,
@@ -22,13 +23,14 @@ import {UserState} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
 import {uStateUser} from '@redux/stores/selection';
 import UserJoined from '@screens/home/components/UserJoined';
-import {CheckJoinEvent, JoinEvent} from '@services/event.service';
+import {CheckJoinEvent, ImportEvent} from '@services/event.service';
 import {useQuery} from '@tanstack/react-query';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
 import {TColors, useTheme} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
 import {AxiosResponse} from 'axios';
+import {FormikHelpers} from 'formik';
 import moment from 'moment';
 import {FC, Fragment, useCallback, useEffect, useState} from 'react';
 import {
@@ -39,6 +41,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Animated, {
+  useAnimatedRef,
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -49,6 +52,10 @@ import BSListJoinEvent, {
   listJoinEventRef,
 } from './BSListJoinEvent';
 import Footer from './components/Footer';
+import FormContact, {
+  formContactControl,
+  refFormContract,
+} from './components/FormContact';
 import Header from './components/Header';
 import ModalJoinSuccess from './components/ModalJoinSuccess';
 import ModalQrCode, {
@@ -67,7 +74,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const {top} = useSafeAreaInsets();
   const styles = useStyle(getStyles);
   const {colors} = useTheme();
-  const {showWarningTop} = useToastMessage();
+  const {showWarningTop, showSuccessTop} = useToastMessage();
   const scrollY = useSharedValue<number>(0);
   const {data, onRefresh} = useDetailEvent(params.shortId);
   const {id, userRole, isLogged} = useSelector<IRootState, UserState>(
@@ -76,6 +83,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
   const [heightCover, setHeightCover] = useState<number>(0);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   useEffect(() => {
     if (data?.eventAssets?.[0]?.url) {
@@ -106,22 +114,29 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     if (data?.eventType === 'READONLY') {
       return data.registUrl && Linking.openURL(data.registUrl);
     }
-
-    if (!isLogged) {
-      return reset(LOGIN_SCREEN, {shortId: params.shortId});
-    }
-
     if (userRole === 'ADMIN') {
       return navigate(SCAN_QR_SCREEN);
     }
+    formContactControl.submitForm();
+  }, [userRole, data?.registUrl, data?.eventType]);
 
+  const onSubmitEvent = async (
+    values: Contact,
+    formikHelpers: FormikHelpers<Contact>,
+  ) => {
     try {
       setLoading(true);
-      await JoinEvent(data?.id || params.id);
-      refetch();
+      await ImportEvent(values);
+      if (isLogged) {
+        // await JoinEvent(data?.id || params.id);
+        refetch();
+        listJoinEventControl.refresh();
+        setShowModalSuccess(true);
+      } else {
+        showSuccessTop('Registration event successfully!');
+      }
       onRefresh();
-      listJoinEventControl.refresh();
-      setShowModalSuccess(true);
+      formikHelpers.resetForm();
     } catch (error) {
       showWarningTop(
         typeof error === 'string'
@@ -131,15 +146,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     } finally {
       setLoading(false);
     }
-  }, [
-    data?.id,
-    params.id,
-    refetch,
-    onRefresh,
-    userRole,
-    isLogged,
-    params.shortId,
-  ]);
+  };
 
   const handleCloseModalJoin = useCallback(() => {
     setShowModalSuccess(false);
@@ -170,6 +177,16 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
     reset(isLogged ? DRAWER_STACK : LOGIN_SCREEN);
   }, [isLogged, params.shortId]);
 
+  const pressSubmit = () => {
+    const y = formContactControl.getPositionError();
+    if (y) {
+      scrollViewRef.current?.scrollTo({
+        y: y + heightCover - getSize.m(80),
+        animated: true,
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       <Header
@@ -181,6 +198,7 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
         heightCover={heightCover}
       />
       <Animated.ScrollView
+        ref={scrollViewRef}
         onScroll={onScroll}
         contentContainerStyle={[
           styles.contentContainerStyle,
@@ -312,11 +330,23 @@ const DetailEventScreen: FC<IProps> = ({route: {params}}) => {
               );
             })}
           </Block>
+          {(isLogged
+            ? dataCheckJoinEvent?.data?.joined === false
+            : !isLogged) &&
+            data?.eventType !== 'READONLY' &&
+            moment(data?.eventEndDate).unix() > moment().unix() && (
+              <FormContact
+                pressSubmit={pressSubmit}
+                eventId={params.id || data?.id}
+                ref={refFormContract}
+                onSubmit={onSubmitEvent}
+              />
+            )}
         </Block>
       </Animated.ScrollView>
-      {(dataCheckJoinEvent?.data?.joined === false ||
-        userRole === 'ADMIN' ||
-        !isLogged) &&
+      {(isLogged
+        ? dataCheckJoinEvent?.data?.joined === false || userRole === 'ADMIN'
+        : !isLogged) &&
         moment(data?.eventEndDate).unix() > moment().unix() && (
           <Footer
             isLoading={isLoading}
@@ -344,7 +374,7 @@ const getStyles = (colors: TColors) =>
     },
     contentContainerStyle: {
       paddingTop: HEIGHT_COVER - getSize.m(30),
-      paddingBottom: HEIGHT_SCREEN * 0.25,
+      paddingBottom: HEIGHT_SCREEN * 0.4,
     },
     boxInvite: {
       backgroundColor: colors.secondaryBackground,

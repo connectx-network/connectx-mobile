@@ -17,3 +17,16 @@ export interface FileUpload {
   type: string;
   name: string;
 }
+
+export type Contact = {
+  email: string;
+  fullName: string;
+  company: string;
+  jobTitle: string;
+  eventId: string;
+  phaseIds?: string[];
+  knowEventBy: string;
+  linkedInUrl: string;
+  companyUrl: string;
+  telegramId: string;
+};

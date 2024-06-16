@@ -17,6 +17,7 @@ export enum EventRouteEnum {
   ListJoinUserEvent = '/event/joined-user',
   GetInfoQREvent = '/event/user-event',
   CheckInEvent = '/event/check-in',
+  ImportEvent = '/user/import-event',
 }
 
 export enum UserRouteEnum {

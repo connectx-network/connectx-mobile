@@ -1,11 +1,9 @@
-import {IconApp} from '@assets/icons';
 import {getSize} from '@base/common/responsive';
 import Block from '@components/Block';
 import Text from '@components/Text';
-import useDelayedValueWithLayoutAnimation from '@hooks/useDelayedValueWithLayoutAnimation';
 import Color from '@theme/Color';
 import Font from '@theme/Font';
-import React, {FC, ReactNode, memo, useCallback, useState} from 'react';
+import React, {FC, ReactNode, useCallback, useState} from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -38,8 +36,8 @@ const InputField: FC<IProps> = props => {
     <Block style={[styles.container, props.styleContainer]}>
       {props.label && (
         <Block row alignCenter marginBottom={8}>
-          {props.required && <Text style={styles.textRequired}>*</Text>}
           <Text style={styles.textLabel}>{props.label}</Text>
+          {props.required && <Text style={styles.textRequired}>*</Text>}
         </Block>
       )}
       <Block style={[styles.box, props.error ? styles.inputError : {}]}>
@@ -83,8 +81,8 @@ const styles = StyleSheet.create({
     marginRight: getSize.m(4),
   },
   textLabel: {
-    fontSize: getSize.m(13, 0.3),
-    fontFamily: Font.font_regular_400,
+    fontSize: getSize.m(15, 0.3),
+    fontFamily: Font.font_medium_500,
     color: Color.WHITE,
   },
   box: {

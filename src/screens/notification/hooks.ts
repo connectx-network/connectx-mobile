@@ -1,14 +1,19 @@
 import {DataList, Paging} from '@model';
 import {ItemNotification} from '@model/notification';
+import {UserState} from '@redux/slices/userSlice';
+import {IRootState} from '@redux/stores';
+import {uStateUser} from '@redux/stores/selection';
 import {FetchNotification} from '@services/notification.service';
 import {useMutation} from '@tanstack/react-query';
 import {AxiosResponse} from 'axios';
 import {useCallback, useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 
 export function useFetchNotification({
   page,
   size,
 }: Pick<Paging, 'page' | 'size'>) {
+  const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
   const [data, setData] = useState<ItemNotification[]>([]);
 
   const [paging, setPaging] = useState<Paging>({
@@ -41,7 +46,7 @@ export function useFetchNotification({
   });
 
   useEffect(() => {
-    mutate({page: paging.page, size: paging.size});
+    isLogged && mutate({page: paging.page, size: paging.size});
   }, [paging.page, paging.size]);
 
   const onEndReached = useCallback(() => {

@@ -25,6 +25,8 @@ import ContentAbout from './components/ContentAbout';
 import {IS_IOS} from '@base/common/constants';
 import {useStyle} from '@theme/useStyle';
 import {TColors} from '@theme/Theme';
+import {navigate} from '@navigation/navigationService';
+import {LOGIN_SCREEN} from '@navigation/routes';
 
 interface IProps {
   isMe: boolean;
@@ -35,7 +37,7 @@ interface IProps {
 
 const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
   const styles = useStyle(getStyles);
-  const {fullName, country, nickname, gender, address} = useSelector<
+  const {fullName, country, nickname, gender, address, isLogged} = useSelector<
     IRootState,
     UserState
   >(uStateUser);
@@ -54,6 +56,9 @@ const AboutTab: FC<IProps> = ({isMe, description, userInterests, refetch}) => {
   }, [userInterests]);
 
   const handleActionInterest = useCallback(() => {
+    if (!isLogged) {
+      return navigate(LOGIN_SCREEN);
+    }
     setChangeInterest(prev => !prev);
     userInterests && setListInterest(userInterests);
   }, [userInterests]);

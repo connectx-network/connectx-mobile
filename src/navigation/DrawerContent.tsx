@@ -23,6 +23,7 @@ import React, {
   memo,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
@@ -31,7 +32,7 @@ import * as Keychain from 'react-native-keychain';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SvgProps} from 'react-native-svg';
 import {useDispatch, useSelector} from 'react-redux';
-import NavigationService, {reset} from './navigationService';
+import NavigationService from './navigationService';
 import {
   CHAT_SCREEN,
   CHAT_STACK,
@@ -51,63 +52,6 @@ import {
 } from './routes';
 
 interface IProps extends DrawerContentComponentProps {}
-
-export const LIST_MENU = [
-  {
-    name: 'Home',
-    screens: [HOME_SCREEN, DETAIL_EVENT_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
-    screen: HOME_STACK,
-    icon: (props?: SvgProps) => (
-      <IconApp
-        name={'-icon-_home'}
-        size={getSize.m(22)}
-        color={props?.color || '#767676'}
-      />
-    ),
-  },
-  {
-    name: 'Message',
-    screens: [CHAT_SCREEN],
-    screen: CHAT_STACK,
-    icon: (props?: SvgProps) => (
-      <Icon name={'chatbubbles-outline'} size={24} {...props} />
-    ),
-  },
-  {
-    name: 'Events',
-    screens: [EVENTS_SCREEN],
-    screen: EVENT_STACK,
-    icon: (props?: SvgProps) => (
-      <Icon name={'calendar-outline'} size={24} {...props} />
-    ),
-  },
-  {
-    name: 'Map',
-    screens: [MAP_SCREEN],
-    screen: MAP_STACK,
-    icon: (props?: SvgProps) => (
-      <Icon name={'location-outline'} size={24} {...props} />
-    ),
-  },
-  {
-    name: 'My Profile',
-    screens: [PROFILE_SCREEN, EDIT_PROFILE_SCREEN],
-    screen: PROFILE_STACK,
-    icon: (props?: SvgProps) => <ProfileIcon {...props} />,
-  },
-  {
-    name: 'Connect with QR',
-    screens: [CONNECT_QR_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
-    screen: CONNECT_QR_SCREEN,
-    icon: (props?: SvgProps) => (
-      <Icon name={'qr-code-outline'} size={24} {...props} />
-    ),
-  },
-  {
-    name: 'Sign Out',
-    icon: (props?: SvgProps) => <LogoutIcon {...props} />,
-  },
-];
 
 const ItemMenu = memo(
   ({
@@ -144,11 +88,79 @@ const DrawerContent: FC<IProps> = ({}) => {
   const [currentRoute, setCurrentRoute] = useState<string | undefined>(
     NavigationService.getCurrentRoute()?.name,
   );
-  const {avatarUrl, fullName} = useSelector<IRootState, UserState>(uStateUser);
+  const {avatarUrl, fullName, isLogged} = useSelector<IRootState, UserState>(
+    uStateUser,
+  );
   const {colors} = useTheme();
   const {toggle, colorScheme, active} = useColorScheme();
   const styles = useStyle(getStyles);
   const dispatch = useDispatch();
+
+  const menus = useMemo(
+    () => [
+      {
+        name: 'Home',
+        screens: [HOME_SCREEN, DETAIL_EVENT_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
+        screen: HOME_STACK,
+        icon: (props?: SvgProps) => (
+          <IconApp
+            name={'-icon-_home'}
+            size={getSize.m(22)}
+            color={props?.color || '#767676'}
+          />
+        ),
+      },
+      {
+        name: 'Message',
+        screens: [CHAT_SCREEN],
+        screen: CHAT_STACK,
+        icon: (props?: SvgProps) => (
+          <Icon name={'chatbubbles-outline'} size={24} {...props} />
+        ),
+      },
+      {
+        name: 'Events',
+        screens: [EVENTS_SCREEN],
+        screen: EVENT_STACK,
+        icon: (props?: SvgProps) => (
+          <Icon name={'calendar-outline'} size={24} {...props} />
+        ),
+      },
+      {
+        name: 'Map',
+        screens: [MAP_SCREEN],
+        screen: MAP_STACK,
+        icon: (props?: SvgProps) => (
+          <Icon name={'location-outline'} size={24} {...props} />
+        ),
+      },
+      {
+        name: 'My Profile',
+        screens: [PROFILE_SCREEN, EDIT_PROFILE_SCREEN],
+        screen: PROFILE_STACK,
+        icon: (props?: SvgProps) => <ProfileIcon {...props} />,
+      },
+      {
+        name: 'Connect with QR',
+        screens: [CONNECT_QR_SCREEN, PROFILE_OWNER_EVENT_SCREEN],
+        screen: CONNECT_QR_SCREEN,
+        icon: (props?: SvgProps) => (
+          <Icon name={'qr-code-outline'} size={24} {...props} />
+        ),
+      },
+      isLogged
+        ? {
+            name: 'Sign Out',
+            icon: (props?: SvgProps) => <LogoutIcon {...props} />,
+          }
+        : {
+            name: 'SignIn',
+            icon: (props?: SvgProps) => <LogoutIcon {...props} />,
+            screen: LOGIN_SCREEN,
+          },
+    ],
+    [isLogged],
+  );
 
   useEffect(() => {
     const nextRoute = NavigationService.getCurrentRoute();
@@ -164,7 +176,7 @@ const DrawerContent: FC<IProps> = ({}) => {
         if (item.screen) {
           NavigationService.navigate(item.screen);
         } else {
-          reset(LOGIN_SCREEN);
+          NavigationService.push(LOGIN_SCREEN);
           dispatch(actionLogoutUser());
           await Keychain.resetInternetCredentials(JWT_KEY);
           await Keychain.resetInternetCredentials(JWT_REFRESH_KEY);
@@ -199,6 +211,10 @@ const DrawerContent: FC<IProps> = ({}) => {
       }
     });
 
+  const handleSignIn = () => {
+    NavigationService.push(LOGIN_SCREEN);
+  };
+
   return (
     <Block style={[styles.container, {paddingTop: top || getSize.m(10)}]}>
       <Block style={styles.modeTheme} top={top || getSize.m(10)}>
@@ -210,16 +226,27 @@ const DrawerContent: FC<IProps> = ({}) => {
           />
         </GestureDetector>
       </Block>
-      <Block style={styles.avatarDefault}>
-        {avatarUrl ? (
-          <Image style={styles.avatar} source={{uri: avatarUrl}} />
+      <Block alignCenter alignSelf="flex-start" marginBottom={30}>
+        <Block style={styles.avatarDefault}>
+          {avatarUrl ? (
+            <Image style={styles.avatar} source={{uri: avatarUrl}} />
+          ) : (
+            <AvatarIcon />
+          )}
+        </Block>
+        {isLogged ? (
+          <Text style={styles.username}>{fullName}</Text>
         ) : (
-          <AvatarIcon />
+          <TouchableOpacity
+            onPress={handleSignIn}
+            activeOpacity={0.5}
+            style={styles.btnSignIn}>
+            <Text style={styles.textSignIn}>SignIn</Text>
+          </TouchableOpacity>
         )}
       </Block>
-      <Text style={styles.username}>{fullName}</Text>
       <FlatList
-        data={LIST_MENU}
+        data={menus}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
@@ -253,7 +280,6 @@ const getStyles = (colors: TColors) =>
       fontSize: getSize.m(19, 0.3),
       fontFamily: Font.font_medium_500,
       marginTop: getSize.m(12),
-      marginBottom: getSize.v(30),
       color: colors.mainForeground,
     },
     itemMenu: {
@@ -273,6 +299,16 @@ const getStyles = (colors: TColors) =>
     modeTheme: {
       position: 'absolute',
       right: getSize.s(24),
+    },
+    btnSignIn: {
+      marginTop: getSize.m(12),
+      paddingHorizontal: 8,
+    },
+    textSignIn: {
+      fontSize: getSize.m(18, 0.3),
+      fontFamily: Font.font_medium_500,
+      color: '#5669FF',
+      textDecorationLine: 'underline',
     },
   });
 

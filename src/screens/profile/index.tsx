@@ -48,6 +48,7 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
   const {data, refetch} = useQuery<AxiosResponse<UserInfo>, Error>({
     queryKey: ['fetchInfoUser', {idUser}],
     queryFn: () => FetchInfoUser(idUser),
+    enabled: infoUser.isLogged,
   });
 
   const renderHeader = useCallback(() => {
@@ -105,7 +106,9 @@ const ProfileScreen: FC<IProps> = ({route: {params}}) => {
             />
           ) : null
         }
-        customActionRight={() => <ActionRightTabBar />}
+        customActionRight={() => (
+          <ActionRightTabBar isLogged={infoUser.isLogged} />
+        )}
         hideRightIcon={!isMe}
         handleLeftIcon={!params?.id ? handleDrawer : handleBack}
         styleContainer={StyleSheet.flatten([styles.tabBar, {paddingTop: top}])}

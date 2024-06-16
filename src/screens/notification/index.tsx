@@ -1,14 +1,14 @@
 import Styles from '@base/common/styles';
 import {keyExtractor} from '@base/utils/Utils';
 import {TabBar} from '@components';
+import {ItemNotification} from '@model/notification';
+import {useTheme} from '@theme/Theme';
 import {useCallback} from 'react';
 import {FlatList} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ItemNotify from './Items/ItemNotify';
 import NotifyEmpty from './components/NotifyEmpty';
 import {useFetchNotification} from './hooks';
-import {ItemNotification} from '@model/notification';
-import {useTheme} from '@theme/Theme';
 
 const NotificationScreen = () => {
   const {colors} = useTheme();

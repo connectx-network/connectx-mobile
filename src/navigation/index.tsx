@@ -12,6 +12,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PushController from '@base/common/pushNotification';
 import {WIDTH_SCREEN} from '@base/common/responsive';
 import Styles from '@base/common/styles';
+import Analytics from '@base/utils/Analytics';
 import {Block} from '@components';
 import {
   BottomTabBarProps,
@@ -19,9 +20,8 @@ import {
 } from '@react-navigation/bottom-tabs';
 import {TransitionSpec} from '@react-navigation/stack/lib/typescript/src/types';
 import {IAppSettingState} from '@redux/slices/appSettingSlice';
-import {UserState} from '@redux/slices/userSlice';
 import {IRootState} from '@redux/stores';
-import {uStateAppSetting, uStateUser} from '@redux/stores/selection';
+import {uStateAppSetting} from '@redux/stores/selection';
 import LoginScreen from '@screens/auth/login';
 import ForgotPasswordScreen from '@screens/auth/login/ForgotPasswordScreen';
 import ResetPasswordScreen from '@screens/auth/login/ResetPasswordScreen';
@@ -92,7 +92,6 @@ import {
   VERIFY_OTP_SCREEN,
   linking,
 } from './routes';
-import Analytics from '@base/utils/Analytics';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -351,7 +350,6 @@ const DrawerStack = memo(() => {
 const RootStack: FC<{}> = () => {
   const navigationRef = useRef<NavigationContainerRef<{}>>();
   const routeNameRef = useRef<string>();
-  const {isLogged} = useSelector<IRootState, UserState>(uStateUser);
   const {colorScheme} = useSelector<IRootState, IAppSettingState>(
     uStateAppSetting,
   );
@@ -406,7 +404,7 @@ const RootStack: FC<{}> = () => {
           orientation: 'portrait',
           animation: 'slide_from_right',
         }}
-        initialRouteName={isLogged ? DRAWER_STACK : LOGIN_SCREEN}>
+        initialRouteName={DRAWER_STACK}>
         <Stack.Screen name={LOGIN_SCREEN} component={LoginScreen} />
         <Stack.Screen name={REGISTER_SCREEN} component={RegisterScreen} />
         <Stack.Screen name={VERIFY_OTP_SCREEN} component={VerifyOtpScreen} />

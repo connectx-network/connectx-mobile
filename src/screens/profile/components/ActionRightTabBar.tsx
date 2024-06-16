@@ -3,15 +3,19 @@ import {getSize} from '@base/common/responsive';
 import {hapticFeedback} from '@base/utils/Utils';
 import {Text} from '@components';
 import {navigate} from '@navigation/navigationService';
-import {SHARE_PROFILE_SCREEN} from '@navigation/routes';
+import {LOGIN_SCREEN, SHARE_PROFILE_SCREEN} from '@navigation/routes';
 import Font from '@theme/Font';
 import {TColors} from '@theme/Theme';
 import {useStyle} from '@theme/useStyle';
-import {memo, useCallback, useState} from 'react';
+import {FC, memo, useCallback, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Menu} from 'react-native-material-menu';
 
-const ActionRightTabBar = () => {
+interface IProps {
+  isLogged: boolean;
+}
+
+const ActionRightTabBar: FC<IProps> = ({isLogged}) => {
   const styles = useStyle(getStyles);
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -23,6 +27,9 @@ const ActionRightTabBar = () => {
 
   const handleShareProfile = useCallback(() => {
     setVisible(false);
+    if (!isLogged) {
+      return navigate(LOGIN_SCREEN);
+    }
     navigate(SHARE_PROFILE_SCREEN);
   }, []);
 

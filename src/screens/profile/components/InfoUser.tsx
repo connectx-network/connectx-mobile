@@ -6,7 +6,7 @@ import {getSize} from '@base/common/responsive';
 import {Block, ButtonGradient, Image, Text} from '@components';
 import {StatusConnect} from '@model/user';
 import {navigate} from '@navigation/navigationService';
-import {EDIT_PROFILE_SCREEN} from '@navigation/routes';
+import {EDIT_PROFILE_SCREEN, LOGIN_SCREEN} from '@navigation/routes';
 import {
   CheckConnectUser,
   ConnectUser,
@@ -46,6 +46,9 @@ const InfoUser: FC<IProps> = ({
 }) => {
   const styles = useStyle(getStyles);
   const handleEditProfile = () => {
+    if (!isLogged) {
+      return navigate(LOGIN_SCREEN);
+    }
     navigate(EDIT_PROFILE_SCREEN, {refetch});
   };
 
@@ -92,12 +95,12 @@ const InfoUser: FC<IProps> = ({
         )}
         <Block row alignCenter justifyCenter marginTop={8}>
           <Block alignCenter>
-            <Text style={styles.numberFollow}>{following}</Text>
+            <Text style={styles.numberFollow}>{following || 0}</Text>
             <Text style={styles.textFollow}>Following</Text>
           </Block>
           <Block style={styles.wall} />
           <Block alignCenter>
-            <Text style={styles.numberFollow}>{followers}</Text>
+            <Text style={styles.numberFollow}>{followers || 0}</Text>
             <Text style={styles.textFollow}>Followers</Text>
           </Block>
         </Block>
